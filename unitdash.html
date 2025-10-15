@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
             --primary-color: #0078d4;
@@ -91,7 +90,6 @@
         .grid-card p { color: var(--light-text); margin-bottom: 15px; font-size: 0.95rem; }
         .chart-container { height: 350px; position: relative; }
         
-        /* Modal Styles */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
         .modal-content { background-color: #fefefe; margin: 4% auto; padding: 30px; border: none; width: 95%; max-width: 1400px; border-radius: var(--border-radius); animation: fadeIn 0.4s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
@@ -107,16 +105,8 @@
         
         .action-btn-group { display: flex; gap: 6px; justify-content: flex-start; }
         .row-action-btn {
-            padding: 6px 10px;
-            font-size: 1em; /* Icon size */
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            padding: 6px 10px; font-size: 1em; border: none; border-radius: 5px; cursor: pointer; color: white;
+            transition: transform 0.2s, box-shadow 0.2s; display: inline-flex; align-items: center; justify-content: center;
         }
         .row-action-btn:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .row-action-btn:disabled { background-color: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -127,46 +117,34 @@
 
         #file-modal-body { max-height: 60vh; overflow-y: auto; padding: 10px; }
         
-        /* --- NEW STYLES FOR PHOTO GRID & DOCUMENT LIST --- */
         .file-link-list { display: flex; flex-direction: column; gap: 12px; }
         .file-link {
             display: block; padding: 10px 15px; background-color: #f0f0f0; border-radius: 5px;
             text-decoration: none; color: var(--dark-text); font-weight: 500;
-            transition: background-color 0.2s, color 0.2s;
-            word-break: break-all;
+            transition: background-color 0.2s, color 0.2s; word-break: break-all;
         }
         .file-link:hover { background-color: var(--primary-color); color: white; }
         .file-link i { margin-left: 10px; }
 
         .photo-thumbnail-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px;
         }
         .photo-thumbnail {
-            display: block;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
+            display: block; border-radius: var(--border-radius); overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s;
         }
-        .photo-thumbnail:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .photo-thumbnail img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            display: block;
-        }
+        .photo-thumbnail:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .photo-thumbnail img { width: 100%; height: 100px; object-fit: cover; display: block; }
+        
         .modal-footer { text-align: right; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 10px; }
         
-        #print-area { visibility: hidden; position: absolute; left: -9999px; top: -9999px; height: 1px; width: 1px; overflow: hidden; }
+        /* === PRINT FIX: Removed 'display: none'. Element is now hidden off-screen. === */
+        #print-area { position: absolute; left: -9999px; } 
+
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { position: static; width: auto; height: auto; overflow: visible; left: auto; top: auto; }
+            #print-area { position: static; display: block; left: auto; top: auto; margin: 0; padding: 0; }
         }
     </style>
 </head>
@@ -175,58 +153,44 @@
     
     <div class="dashboard-container">
         <header class="dashboard-header"><h1><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo">युनिट परफॉर्मन्स डॅशबोर्ड</h1></header>
-        <section class="filter-bar"><div class="filter-group"><label for="customer-search">ग्राहक नावाने शोधा</label><input type="search" id="customer-search" placeholder="ग्राहकाचे नाव टाईप करा..."></div><div class="filter-group"><label for="unit-filter">युनिट निवडा</label><select id="unit-filter"></select></div><div class="filter-group"><label for="staff-filter">कर्मचारी निवडा</label><select id="staff-filter"></select></div><div class="filter-group"><label for="date-from">या तारखेपासून</label><input type="date" id="date-from"></div><div class="filter-group"><label for="date-to">या तारखेपर्यंत</label><input type="date" id="date-to"></div></section>
-        <section class="kpi-container"><div class="kpi-card clickable" id="kpi-total" data-status="Total"><div class="kpi-icon"><i class="fas fa-file-alt"></i></div><div class="kpi-content"><h3 id="total-count">0</h3><p>एकूण अर्ज</p></div></div><div class="kpi-card clickable" id="kpi-pending" data-status="Pending"><div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div><div class="kpi-content"><h3 id="pending-count">0</h3><p>प्रोसेस / प्रलंबित</p></div></div><div class="kpi-card clickable" id="kpi-approved" data-status="Approved"><div class="kpi-icon"><i class="fas fa-check-double"></i></div><div class="kpi-content"><h3 id="approved-count">0</h3><p>मंजूर अर्ज</p></div></div><div class="kpi-card clickable" id="kpi-rejected" data-status="Rejected"><div class="kpi-icon"><i class="fas fa-times-circle"></i></div><div class="kpi-content"><h3 id="rejected-count">0</h3><p>नामंजूर अर्ज</p></div></div></section>
-        <section class="grid-card grid-card-full" id="customer-insights-section"><h2>मंजूर अर्जदारांचे विशेष विश्लेषण (Approved Customer Insights)</h2><p>खालील कार्ड्स फक्त मंजूर झालेल्या अर्जांमधून तयार केलेले मुख्य ग्राहक अंतर्दृष्टी (Insights) दर्शवतात.</p><div class="dynamic-kpi-container insights-grid" id="approved-insights-container" style="margin-top: 20px;"></div></section>
-        <section class="dashboard-grid"><div class="grid-card"><h2>कर्ज प्रकारानुसार अर्ज वितरण</h2><div class="chart-container"><canvas id="loanTypeChart"></canvas></div></div><div class="grid-card"><h2>तालुक्यानुसार अर्ज वितरण</h2><div class="chart-container"><canvas id="talukaChart"></canvas></div></div></section>
+        <section class="filter-bar">
+            <div class="filter-group"><label for="customer-search">ग्राहक नावाने शोधा</label><input type="search" id="customer-search" placeholder="ग्राहकाचे नाव टाईप करा..."></div>
+            <div class="filter-group"><label for="unit-filter">युनिट निवडा</label><select id="unit-filter"></select></div>
+            <div class="filter-group"><label for="staff-filter">कर्मचारी निवडा</label><select id="staff-filter"></select></div>
+            <div class="filter-group"><label for="date-from">या तारखेपासून</label><input type="date" id="date-from"></div>
+            <div class="filter-group"><label for="date-to">या तारखेपर्यंत</label><input type="date" id="date-to"></div>
+        </section>
+        <section class="kpi-container">
+            <div class="kpi-card clickable" id="kpi-total" data-status="Total"><div class="kpi-icon"><i class="fas fa-file-alt"></i></div><div class="kpi-content"><h3 id="total-count">0</h3><p>एकूण अर्ज</p></div></div>
+            <div class="kpi-card clickable" id="kpi-pending" data-status="Pending"><div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div><div class="kpi-content"><h3 id="pending-count">0</h3><p>प्रोसेस / प्रलंबित</p></div></div>
+            <div class="kpi-card clickable" id="kpi-approved" data-status="Approved"><div class="kpi-icon"><i class="fas fa-check-double"></i></div><div class="kpi-content"><h3 id="approved-count">0</h3><p>मंजूर अर्ज</p></div></div>
+            <div class="kpi-card clickable" id="kpi-rejected" data-status="Rejected"><div class="kpi-icon"><i class="fas fa-times-circle"></i></div><div class="kpi-content"><h3 id="rejected-count">0</h3><p>नामंजूर अर्ज</p></div></div>
+        </section>
+        <section class="grid-card grid-card-full" id="customer-insights-section">
+            <h2>मंजूर अर्जदारांचे विशेष विश्लेषण (Approved Customer Insights)</h2>
+            <p>खालील कार्ड्स फक्त मंजूर झालेल्या अर्जांमधून तयार केलेले मुख्य ग्राहक अंतर्दृष्टी (Insights) दर्शवतात.</p>
+            <div class="dynamic-kpi-container insights-grid" id="approved-insights-container" style="margin-top: 20px;"></div>
+        </section>
+        <section class="dashboard-grid">
+            <div class="grid-card"><h2>कर्ज प्रकारानुसार अर्ज वितरण</h2><div class="chart-container"><canvas id="loanTypeChart"></canvas></div></div>
+            <div class="grid-card"><h2>तालुक्यानुसार अर्ज वितरण</h2><div class="chart-container"><canvas id="talukaChart"></canvas></div></div>
+        </section>
     </div>
 
-    <!-- Modal for showing applicant lists -->
-    <div id="applicant-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">अर्जदारांची यादी</h2>
-                <span class="close-btn applicant-modal-close">&times;</span>
-            </div>
-            <div id="modal-table-container">
-                <table id="modal-table">
-                    <thead></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for showing individual file links -->
-    <div id="file-modal" class="modal">
-        <div class="modal-content" style="max-width: 900px; margin-top: 5%;">
-            <div class="modal-header">
-                <h2 id="file-modal-title">फाइल्स</h2>
-                <span class="close-btn file-modal-close">&times;</span>
-            </div>
-            <div id="file-modal-body">
-                <!-- Content (photo grid or file list) will be injected here -->
-            </div>
-            <div class="modal-footer">
-                <button id="download-zip-btn" class="row-action-btn excel-btn"><i class="fas fa-file-archive"></i> सर्व फाइल्स .zip डाउनलोड करा</button>
-            </div>
-        </div>
-    </div>
-    
+    <!-- Modals -->
+    <div id="applicant-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2 id="modal-title">अर्जदारांची यादी</h2><span class="close-btn applicant-modal-close">&times;</span></div><div id="modal-table-container"><table id="modal-table"><thead></thead><tbody></tbody></table></div></div></div>
+    <div id="file-modal" class="modal"><div class="modal-content" style="max-width: 900px; margin-top: 5%;"><div class="modal-header"><h2 id="file-modal-title">फाइल्स</h2><span class="close-btn file-modal-close">&times;</span></div><div id="file-modal-body"></div><div class="modal-footer"><button id="open-links-btn" class="row-action-btn excel-btn"><i class="fas fa-external-link-alt"></i> सर्व फाइल्स उघडा</button></div></div></div>
     <div id="print-area"></div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPURxNiuk3u1oRGA9WWSj6ec_zaOzALeYt4j3TIIRtdQCtBrNJq_TNgBkjO1H5SCM/exec';
-
-        const MARATHI_LABELS = { actualTime: "अर्जाची वेळ/तारीख", timestamp: "अर्जाची वेळ/तारीख", customerName: "नाव", applicantAge: "वय", applicantGender: "लिंग", mobileNumber: "मोबाईल क्रमांक", aadhaarNumber: "आधार क्रमांक", panNumber: "पॅन क्रमांक", villageName: "गावाचे नांव", taluka: "तालुका", district: "जिल्हा", centerName: "केंद्राचे नाव/कोड", gpsLatitude: "GPS अक्षांश", gpsLongitude: "GPS रेखांश", gpsAddress: "GPS नुसार पत्ता", googleMapsLink: "Google Maps लिंक", coApplicantName: "सहकर्जदार/पती/पत्नीचे नाव", coApplicantAadhaar: "सहकर्जदार आधार नंबर", coApplicantPan: "सहकर्जदार पॅन नंबर", isExistingCustomer: "सध्या अनिकचे ग्राहक आहात?", existingAccountNumber: "सध्याचा खाते क्रमांक", branchName: "शाखेचे नाव", familyTotalMembers: "घरातील एकूण सदस्य", familyEarningMembers: "कमावणारे सदस्य", familyTotalIncome: "एकूण मासिक उत्पन्न (रु)", expenseHousehold: "घरखर्च (रु)", expenseEducation: "शिक्षण खर्च (रु)", expenseMedical: "वैद्यकीय खर्च (रु)", expenseOther: "इतर खर्च (रु)", expenseTotal: "एकूण मासिक खर्च (रु)", primaryIncomeSource: "प्राथमिक उत्पन्न स्रोत", primaryIncomeTypeDetails: "प्राथमिक उत्पन्नाचा तपशील", secondaryIncomeSource: "दुय्यम उत्पन्न स्रोत", secondaryIncomeAmount: "दुय्यम मासिक उत्पन्न (रु)", assetLandAcres: "जमीन (एकर)", assetLandType: "जमीनीचा प्रकार", assetHouseType: "घराचा प्रकार", assetPlots: "प्लॉट्स/Shopes", cows: "गायी", buffaloes: "म्हशी", goats: "बकऱ्या/मेंढ्या", 'other livestok': "इतर", bulls: "बैलजोडी", pigs: "वराह पालन", poultry: "कोंबड्या", milkProductionLiters: "दुग्धउत्पादन किती होते (लिटर मध्ये उल्लेख करा)", assetEquipmentFarm: "शेतीसाठीची उपकरणे", assetEquipmentBusiness: "व्यवसायासाठीची उपकरणे", assetVehicle: "वाहन (उदा. दुचाकी, ट्रॅक्टर)", savingsBankAccount: "बँक खाते क्रमांक", savingsPigmy: "पिग्मी खाते", savingsInsurancePolicy: "विमा पॉलिसी", savingsInsuranceType: "विमा प्रकार", savingsOther: "इतर बचत/गुंतवणूक", loanAmountRequested: "मागितलेली रक्कम (रु)", previousLoanSource: "यापूर्वी कुठून कर्ज घेतले?", loanPurpose: "कर्जाचा उद्देश", previousLoanDetails: "मागील कर्ज तपशील (बाकी रक्कम)", repaymentPeriod: "परतफेड कालावधी (महिने)", guarantorDetails: "हमीदाराची माहिती", loanCycle: "कर्ज सायकल (कितवे कर्ज?)", loanProductType: "कर्ज प्रकार", maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", existingEMI: "इतर कर्जाचा चालू EMI", VerificationStatus: "सद्यस्थिती (Status)", fieldOfficerName: "क्षेत्र अधिकारी", Unit: "युनिट", remarks: "शेरा (Remarks)", visitDate: "भेटीची तारीख", IsInfoCorrect: "माहिती बरोबर आहे का?", IsVideoCallDone: "व्हिडिओ कॉल झाला का?", ApprovedLoanAmount: "मंजूर कर्ज रक्कम", VerifierRemarks: "पडताळणी शेरा", VerifierName: "पडताळणी करणाऱ्याचे नाव", VerificationTimestamp: "पडताळणीची वेळ", photoLinks: "फोटो लिंक्स", supportdoc: "जोडलेली कागदपत्रे"};
+        const MARATHI_LABELS = { actualTime: "अर्जाची वेळ/तारीख", timestamp: "अर्जाची वेळ/तारीख", customerName: "नाव", applicantAge: "वय", applicantGender: "लिंग", mobileNumber: "मोबाईल क्रमांक", aadhaarNumber: "आधार क्रमांक", panNumber: "पॅन क्रमांक", villageName: "गावाचे नांव", taluka: "तालुका", district: "जिल्हा", centerName: "केंद्राचे नाव/कोड", gpsLatitude: "GPS अक्षांश", gpsLongitude: "GPS रेखांश", gpsAddress: "GPS नुसार पत्ता", googleMapsLink: "Google Maps लिंक", coApplicantName: "सहकर्जदार/पती/पत्नीचे नाव", coApplicantAadhaar: "सहकर्जदार आधार नंबर", coApplicantPan: "सहकर्जदार पॅन नंबर", isExistingCustomer: "सध्या अनिकचे ग्राहक आहात?", existingAccountNumber: "सध्याचा खाते क्रमांक", branchName: "शाखेचे नाव", familyTotalMembers: "घरातील एकूण सदस्य", familyEarningMembers: "कमावणारे सदस्य", familyTotalIncome: "एकूण मासिक उत्पन्न", expenseHousehold: "घरखर्च", expenseEducation: "शिक्षण खर्च", expenseMedical: "वैद्यकीय खर्च", expenseOther: "इतर खर्च", expenseTotal: "एकूण मासिक खर्च", primaryIncomeSource: "प्राथमिक उत्पन्न स्रोत", primaryIncomeTypeDetails: "प्राथमिक उत्पन्नाचा तपशील", secondaryIncomeSource: "दुय्यम उत्पन्न स्रोत", secondaryIncomeAmount: "दुय्यम मासिक उत्पन्न", assetLandAcres: "जमीन (एकर)", assetLandType: "जमीनीचा प्रकार", assetHouseType: "घराचा प्रकार", assetPlots: "प्लॉट्स/Shopes", cows: "गायी", buffaloes: "म्हशी", goats: "बकऱ्या/मेंढ्या", 'other livestok': "इतर", bulls: "बैलजोडी", pigs: "वराह पालन", poultry: "कोंबड्या", milkProductionLiters: "दुग्धउत्पादन (लिटर)", assetEquipmentFarm: "शेतीसाठीची उपकरणे", assetEquipmentBusiness: "व्यवसायासाठीची उपकरणे", assetVehicle: "वाहन", savingsBankAccount: "बँक खाते क्रमांक", savingsPigmy: "पिग्मी खाते", savingsInsurancePolicy: "विमा पॉलिसी", savingsInsuranceType: "विमा प्रकार", savingsOther: "इतर बचत/गुंतवणूक", loanAmountRequested: "मागितलेली रक्कम", previousLoanSource: "यापूर्वी कुठून कर्ज घेतले?", loanPurpose: "कर्जाचा उद्देश", previousLoanDetails: "मागील कर्ज तपशील", repaymentPeriod: "परतफेड कालावधी (महिने)", guarantorDetails: "हमीदाराची माहिती", loanCycle: "कर्ज सायकल", loanProductType: "कर्ज प्रकार", maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", existingEMI: "इतर कर्जाचा चालू EMI", VerificationStatus: "सद्यस्थिती (Status)", fieldOfficerName: "क्षेत्र अधिकारी", Unit: "युनिट", remarks: "शेरा (Remarks)", visitDate: "भेटीची तारीख", IsInfoCorrect: "माहिती बरोबर आहे का?", IsVideoCallDone: "व्हिडिओ कॉल झाला का?", ApprovedLoanAmount: "मंजूर कर्ज रक्कम", VerifierRemarks: "पडताळणी शेरा", VerifierName: "पडताळणी करणाऱ्याचे नाव", VerificationTimestamp: "पडताळणीची वेळ", photoLinks: "फोटो लिंक्स", supportdoc: "जोडलेली कागदपत्रे"};
         const INSIGHT_KPIS = [{ key: 'highIncome', label: 'उच्च मासिक उत्पन्न (>रु 30K)', icon: 'fas fa-sack-dollar', filter: (d) => parseInt(d.familyTotalIncome || 0) >= 30000 },{ key: 'bagayatiLand', label: 'बागायती जमीन असलेले ग्राहक', icon: 'fas fa-seedling', filter: (d) => d.assetLandType && d.assetLandType.includes('बागायती') },{ key: 'milkingCows', label: 'गाई असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseInt(d.cows || 0) > 0 },{ key: 'pigmyAccount', label: 'पिग्मी खाते असलेले ग्राहक', icon: 'fas fa-piggy-bank', filter: (d) => d.savingsPigmy === 'होय' },{ key: 'businessLoan', label: 'व्यवसायासाठी कर्ज मागणारे', icon: 'fas fa-store', filter: (d) => d.loanPurpose && d.loanPurpose.includes('व्यवसाय') },{ key: 'highLoanCycle', label: 'पुनरावृत्ती (Repeat) कर्जदार (>= 3 सायकल)', icon: 'fas fa-redo-alt', filter: (d) => parseInt(d.loanCycle || 0) >= 3 },{ key: 'houseOwner', label: 'स्वतःच्या मालकीचे घर असलेले', icon: 'fas fa-home', filter: (d) => d.assetHouseType && d.assetHouseType.includes('स्वतः') },{ key: 'maxLoanAmount', label: 'मोठी कर्ज मागणी (>रु 1 लाख)', icon: 'fas fa-hand-holding-usd', filter: (d) => parseInt(d.loanAmountRequested || 0) > 100000 }];
         const PRINT_ALLOWED_STATUSES = ['Approved', 'Rejected'];
         
-        let allData = [];
-        let filteredData = [];
-        let chartInstances = {};
+        let allData = [], filteredData = [], chartInstances = {};
         
-        const ui = { loader: document.getElementById('loader'), customerSearch: document.getElementById('customer-search'), unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), dateFrom: document.getElementById('date-from'), dateTo: document.getElementById('date-to'), kpi: { total: document.getElementById('total-count'), pending: document.getElementById('pending-count'), approved: document.getElementById('approved-count'), rejected: document.getElementById('rejected-count'), }, approvedInsightsContainer: document.getElementById('approved-insights-container'), applicantModal: document.getElementById('applicant-modal'), modalTitle: document.getElementById('modal-title'), applicantModalCloseBtn: document.querySelector('.applicant-modal-close'), printArea: document.getElementById('print-area'), fileModal: document.getElementById('file-modal'), fileModalTitle: document.getElementById('file-modal-title'), fileModalBody: document.getElementById('file-modal-body'), fileModalCloseBtns: document.querySelectorAll('.file-modal-close'), downloadZipBtn: document.getElementById('download-zip-btn') };
+        const ui = { loader: document.getElementById('loader'), customerSearch: document.getElementById('customer-search'), unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), dateFrom: document.getElementById('date-from'), dateTo: document.getElementById('date-to'), kpi: { total: document.getElementById('total-count'), pending: document.getElementById('pending-count'), approved: document.getElementById('approved-count'), rejected: document.getElementById('rejected-count'), }, approvedInsightsContainer: document.getElementById('approved-insights-container'), applicantModal: document.getElementById('applicant-modal'), modalTitle: document.getElementById('modal-title'), applicantModalCloseBtn: document.querySelector('.applicant-modal-close'), printArea: document.getElementById('print-area'), fileModal: document.getElementById('file-modal'), fileModalTitle: document.getElementById('file-modal-title'), fileModalBody: document.getElementById('file-modal-body'), fileModalCloseBtns: document.querySelectorAll('.file-modal-close'), openLinksBtn: document.getElementById('open-links-btn') };
 
         window.addEventListener('load', initializeDashboard);
 
@@ -240,9 +204,14 @@
                     allData = result.data.map(row => ({ ...row, actualTime: row.actualTime || row.timestamp, VerificationStatus: row.VerificationStatus || 'Pending' })).sort((a, b) => {
                         const dateA = parseDate(a.actualTime); const dateB = parseDate(b.actualTime); return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
                     });
-                    setupFilters(); setupEventListeners(); applyFiltersAndRender();
+                    setupFilters(); 
+                    setupEventListeners(); 
+                    applyFiltersAndRender();
                 } else { throw new Error(result.message); }
-            } catch (error) { document.body.innerHTML = `<p style="text-align:center; padding:20px; color:red;">डॅशबोर्ड लोड करताना गंभीर त्रटी आली: ${error.message}</p>`; } 
+            } catch (error) { 
+                console.error("Initialization Error:", error);
+                document.body.innerHTML = `<p style="text-align:center; padding:20px; color:red;">डॅशबोर्ड लोड करताना गंभीर त्रटी आली: ${error.message}</p>`; 
+            } 
             finally { ui.loader.style.display = 'none'; }
         }
 
@@ -263,7 +232,7 @@
 
         function applyFiltersAndRender() { const s = ui.customerSearch.value.toLowerCase(), u = ui.unitFilter.value, f = ui.staffFilter.value, dF = ui.dateFrom.value ? parseDate(ui.dateFrom.value) : null, dT = ui.dateTo.value ? parseDate(ui.dateTo.value) : null; if (dT) dT.setHours(23, 59, 59, 999); if (dF) dF.setHours(0, 0, 0, 0); filteredData = allData.filter(d => (!s || (d.customerName && d.customerName.toLowerCase().includes(s))) && (!u || d.Unit === u) && (!f || d.fieldOfficerName === f) && (!dF || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() >= dF.getTime())) && (!dT || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() <= dT.getTime()))); updateKPIs(); renderCharts(); generateApprovedCustomerInsights(); }
         function updateKPIs() { ui.kpi.total.textContent = filteredData.length; ui.kpi.pending.textContent = filteredData.filter(d => d.VerificationStatus === 'Pending').length; ui.kpi.approved.textContent = filteredData.filter(d => d.VerificationStatus === 'Approved').length; ui.kpi.rejected.textContent = filteredData.filter(d => d.VerificationStatus === 'Rejected').length; }
-        function renderCharts() {['loanTypeChart', 'talukaChart'].forEach((id, i) => { if (chartInstances[id]) chartInstances[id].destroy(); const ctx = document.getElementById(id)?.getContext('2d'); if (!ctx) return; const field = i === 0 ? 'loanProductType' : 'taluka'; const counts = filteredData.reduce((a, item) => { const k = item[field] || 'माहिती नाही'; a[k] = (a[k] || 0) + 1; return a; }, {}); const colors = ['#0078d4', '#28a745', '#ffb900', '#e81123', '#17a2b8', '#6c757d', '#512da8']; chartInstances[id] = new Chart(ctx, { type: i === 0 ? 'doughnut' : 'bar', data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: Object.keys(counts).map((_, i) => colors[i % colors.length]) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: i === 0, position: 'bottom' } }, scales: i === 1 ? { y: { beginAtZero: true } } : {} } }); }); }
+        function renderCharts() {['loanTypeChart', 'talukaChart'].forEach((id, i) => { if (chartInstances[id]) chartInstances[id].destroy(); const ctx = document.getElementById(id)?.getContext('2d'); if (!ctx) return; const field = i === 0 ? 'loanProductType' : 'taluka'; const counts = filteredData.reduce((a, item) => { const k = item[field] || 'माहिती नाही'; a[k] = (a[k] || 0) + 1; return a; }, {}); const colors = ['#0078d4', '#28a745', '#ffb900', '#e81123', '#17a2b8', '#6c757d', '#512da8']; chartInstances[id] = new Chart(ctx, { type: i === 0 ? 'doughnut' : 'bar', data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: Object.keys(counts).map((_, idx) => colors[idx % colors.length]) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: i === 0, position: 'bottom' } }, scales: i === 1 ? { y: { beginAtZero: true } } : {} } }); }); }
         function generateApprovedCustomerInsights() { const approvedData = filteredData.filter(d => d.VerificationStatus === 'Approved'); ui.approvedInsightsContainer.innerHTML = ''; INSIGHT_KPIS.forEach(kpi => { const count = approvedData.filter(kpi.filter).length; ui.approvedInsightsContainer.innerHTML += `<div class="kpi-card clickable insights-card" data-kpi-key="${kpi.key}" data-kpi-label="${kpi.label}"><div class="kpi-icon"><i class="${kpi.icon}"></i></div><div class="kpi-content"><h3>${count}</h3><p>${kpi.label}</p></div></div>`; }); ui.approvedInsightsContainer.querySelectorAll('.clickable').forEach(card => card.addEventListener('click', (e) => showApprovedInsightDetailsModal(e.currentTarget.dataset.kpiKey, e.currentTarget.dataset.kpiLabel))); }
         function showApprovedInsightDetailsModal(k, l) { const a = filteredData.filter(d => d.VerificationStatus === 'Approved'); const kpi = INSIGHT_KPIS.find(i => i.key === k); if (!kpi) return; const data = a.filter(kpi.filter); ui.modalTitle.textContent = `${l} (${data.length})`; const t = document.getElementById('modal-table'); t.innerHTML = `<thead><tr><th>ग्राहक</th><th>गाव</th><th>मोबाईल</th><th>कर्ज मागणी</th></tr></thead><tbody></tbody>`; const tbody = t.querySelector('tbody'); tbody.innerHTML = data.length === 0 ? `<tr><td colspan="4" style="text-align:center;">या गटात मंजूर अर्जदार नाहीत.</td></tr>` : data.map(i => `<tr><td>${i.customerName || 'N/A'}</td><td>${i.villageName || 'N/A'}</td><td>${i.mobileNumber || 'N/A'}</td><td>₹ ${parseInt(i.loanAmountRequested || 0).toLocaleString('en-IN')}</td></tr>`).join(''); ui.applicantModal.style.display = 'block'; }
         
@@ -276,200 +245,169 @@
                 else if (status === 'Approved') statusMarathi = 'मंजूर';
                 else if (status === 'Rejected') statusMarathi = 'नामंजूर';
             }
-            
             ui.modalTitle.textContent = `${statusMarathi} अर्जदारांची यादी (${data.length})`;
-            
             const modalTable = document.getElementById('modal-table');
             const hasActions = PRINT_ALLOWED_STATUSES.includes(status);
-            let headerHTML = `<thead><tr><th>ग्राहक</th><th>गाव</th><th>मोबाईल</th><th>अर्ज तारीख</th><th>कर्ज मागणी</th><th>मंजूर रक्कम</th>`;
-            if (hasActions) headerHTML += `<th style="width: 200px;">कृती (Actions)</th>`;
-            headerHTML += `</tr></thead><tbody></tbody>`;
+            let headerHTML = `<thead><tr><th>ग्राहक</th><th>गाव</th><th>मोबाईल</th><th>अर्ज तारीख</th><th>कर्ज मागणी</th><th>मंजूर रक्कम</th>` + (hasActions ? `<th style="width: 200px;">कृती (Actions)</th>` : ``) + `</tr></thead><tbody></tbody>`;
             modalTable.innerHTML = headerHTML;
-            
             const tbody = modalTable.querySelector('tbody');
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${hasActions ? 7 : 6}" style="text-align:center;">या गटात एकही अर्ज नाही.</td></tr>`;
-            } else {
-                tbody.innerHTML = data.map(item => {
-                    let actionCellHTML = '';
-                    if (status === 'Approved') {
-                        const hasPhotos = item.photoLinks && item.photoLinks.trim() !== '';
-                        const hasDocs = item.supportdoc && item.supportdoc.trim() !== '';
-                        actionCellHTML = `
-                        <div class="action-btn-group">
-                            <button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${item.row}"><i class="fas fa-print"></i></button>
-                            <button class="row-action-btn excel-btn" title="एक्सेलमध्ये एक्सपोर्ट करा" data-row="${item.row}"><i class="fas fa-file-excel"></i></button>
-                            <button class="row-action-btn photos-btn" title="फोटो पहा" data-row="${item.row}" ${!hasPhotos ? 'disabled' : ''}><i class="fas fa-camera"></i></button>
-                            <button class="row-action-btn docs-btn" title="कागदपत्रे पहा" data-row="${item.row}" ${!hasDocs ? 'disabled' : ''}><i class="fas fa-file-alt"></i></button>
-                        </div>`;
-                    } else if (status === 'Rejected') {
-                        actionCellHTML = `<button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${item.row}"><i class="fas fa-print"></i></button>`;
-                    }
-
-                    return `<tr>
-                        <td>${item.customerName || 'N/A'}</td>
-                        <td>${item.villageName || 'N/A'}</td>
-                        <td>${item.mobileNumber || 'N/A'}</td> 
-                        <td>${formatDate(item.actualTime)}</td>
-                        <td>₹ ${parseInt(item.loanAmountRequested || 0).toLocaleString('en-IN')}</td>
-                        <td>₹ ${parseInt(item.ApprovedLoanAmount || 0).toLocaleString('en-IN')}</td>
-                        ${hasActions ? `<td>${actionCellHTML}</td>` : ''}
-                    </tr>`;
-                }).join('');
-            }
+            tbody.innerHTML = data.length === 0 ? `<tr><td colspan="${hasActions ? 7 : 6}" style="text-align:center;">या गटात एकही अर्ज नाही.</td></tr>` : data.map(item => {
+                let actionCellHTML = '';
+                if (status === 'Approved') {
+                    const hasPhotos = item.photoLinks && item.photoLinks.trim() !== '';
+                    const hasDocs = item.supportdoc && item.supportdoc.trim() !== '';
+                    actionCellHTML = `<div class="action-btn-group"><button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${item.row}"><i class="fas fa-print"></i></button><button class="row-action-btn excel-btn" title="एक्सेलमध्ये एक्सपोर्ट करा" data-row="${item.row}"><i class="fas fa-file-excel"></i></button><button class="row-action-btn photos-btn" title="फोटो पहा" data-row="${item.row}" ${!hasPhotos ? 'disabled' : ''}><i class="fas fa-camera"></i></button><button class="row-action-btn docs-btn" title="कागदपत्रे पहा" data-row="${item.row}" ${!hasDocs ? 'disabled' : ''}><i class="fas fa-file-alt"></i></button></div>`;
+                } else if (status === 'Rejected') {
+                    actionCellHTML = `<button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${item.row}"><i class="fas fa-print"></i></button>`;
+                }
+                return `<tr><td>${item.customerName || 'N/A'}</td><td>${item.villageName || 'N/A'}</td><td>${item.mobileNumber || 'N/A'}</td> <td>${formatDate(item.actualTime)}</td><td>₹ ${parseInt(item.loanAmountRequested || 0).toLocaleString('en-IN')}</td><td>₹ ${parseInt(item.ApprovedLoanAmount || 0).toLocaleString('en-IN')}</td>${hasActions ? `<td>${actionCellHTML}</td>` : ''}</tr>`;
+            }).join('');
             
             ui.applicantModal.style.display = "block";
-            
             modalTable.querySelectorAll('.row-action-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const button = e.currentTarget;
                     const rowId = parseInt(button.dataset.row);
                     const applicantData = allData.find(d => d.row === rowId);
                     if (!applicantData) return;
-
-                    if (button.classList.contains('print-btn')) {
-                        printReport(applicantData);
-                    } else if (button.classList.contains('excel-btn')) {
-                        exportDataToExcel([applicantData], `Applicant_${applicantData.customerName || rowId}`);
-                    } else if (button.classList.contains('photos-btn')) {
-                        showFilesModal(applicantData, 'photoLinks', 'फोटो');
-                    } else if (button.classList.contains('docs-btn')) {
-                        showFilesModal(applicantData, 'supportdoc', 'कागदपत्रे');
-                    }
+                    if (button.classList.contains('print-btn')) printReport(applicantData);
+                    else if (button.classList.contains('excel-btn')) exportDataToExcel([applicantData], `Applicant_${applicantData.customerName || rowId}`);
+                    else if (button.classList.contains('photos-btn')) showFilesModal(applicantData, 'photoLinks', 'फोटो');
+                    else if (button.classList.contains('docs-btn')) showFilesModal(applicantData, 'supportdoc', 'कागदपत्रे');
                 });
             });
         }
         
-        // --- IMPROVED FUNCTION TO SHOW ALL PHOTOS/DOCS ---
         function showFilesModal(applicantData, linkFieldKey, fileType) {
             ui.fileModalTitle.textContent = `${applicantData.customerName || 'अर्जदार'} यांचे ${fileType}`;
             const urlString = applicantData[linkFieldKey] || '';
-            // Robustly split by comma, space, or newline and filter out empty entries
             const urls = urlString.split(/[\s,]+/).filter(url => url.trim() !== '');
-
             if (urls.length === 0) {
                 ui.fileModalBody.innerHTML = `<p style="text-align:center;">या अर्जदारासाठी कोणत्याही ${fileType} फाइल्स सापडल्या नाहीत.</p>`;
-                ui.downloadZipBtn.style.display = 'none';
+                ui.openLinksBtn.style.display = 'none';
             } else {
                 if (fileType === 'फोटो') {
-                    // Display a grid of photo thumbnails
-                    ui.fileModalBody.innerHTML = `<div class="photo-thumbnail-grid">` + 
-                        urls.map(url => `
-                            <a href="${url}" target="_blank" class="photo-thumbnail">
-                                <img src="${url}" alt="Photo Thumbnail" loading="lazy">
-                            </a>
-                        `).join('') + 
-                    `</div>`;
+                    ui.fileModalBody.innerHTML = `<div class="photo-thumbnail-grid">${urls.map(url => `<a href="${url}" target="_blank" class="photo-thumbnail"><img src="${url}" alt="Photo Thumbnail" loading="lazy"></a>`).join('')}</div>`;
                 } else {
-                    // Display a list of document links
-                    ui.fileModalBody.innerHTML = `<div class="file-link-list">` + 
-                        urls.map((url, index) => `
-                            <a href="${url}" target="_blank" class="file-link">
-                                ${fileType} ${index + 1} <i class="fas fa-external-link-alt"></i>
-                            </a>
-                        `).join('') +
-                    `</div>`;
+                    ui.fileModalBody.innerHTML = `<div class="file-link-list">${urls.map((url, index) => `<a href="${url}" target="_blank" class="file-link">${fileType} ${index + 1} <i class="fas fa-external-link-alt"></i></a>`).join('')}</div>`;
                 }
-
-                ui.downloadZipBtn.style.display = 'inline-flex';
-                ui.downloadZipBtn.onclick = (e) => {
-                    downloadAllFilesAsZip(e.currentTarget, urls, `${fileType}_${applicantData.customerName || applicantData.row}`);
-                };
+                ui.openLinksBtn.style.display = 'inline-flex';
+                ui.openLinksBtn.onclick = () => openAllLinks(urls);
             }
             ui.fileModal.style.display = 'block';
         }
+
+        function openAllLinks(urls) { if (!urls || urls.length === 0) return; alert(`${urls.length} फाइल्स नवीन टॅबमध्ये उघडल्या जात आहेत. कृपया तुमच्या ब्राउझरमध्ये पॉप-अप्सना परवानगी द्या.`); urls.forEach(url => { if (url.trim()) window.open(url.trim(), '_blank'); }); }
         
-        function exportDataToExcel(data, filename = "Report") {
-            try {
-                const mappedData = data.map(row => {
-                    const newRow = {};
-                    Object.keys(row).forEach(key => { if (MARATHI_LABELS[key]) newRow[MARATHI_LABELS[key]] = row[key]; });
-                    return newRow;
-                });
-                const worksheet = XLSX.utils.json_to_sheet(mappedData);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-                XLSX.writeFile(workbook, `${filename.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`);
-            } catch (error) { console.error("Excel Export Error:", error); alert("एक्सेल फाइल तयार करताना त्रुटी आली."); }
-        }
-
-        async function downloadAllFilesAsZip(button, urls, zipFileName) {
-            const originalIconHTML = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> डाउनलोड होत आहे...`;
-            try {
-                const zip = new JSZip();
-                if (urls.length === 0) { alert(`या अर्जदारासाठी फाइल्स आढळल्या नाहीत.`); return; }
-                
-                const filePromises = urls.map(async (url, index) => {
-                    try {
-                        // Use a proxy to bypass potential CORS issues with Google Drive links
-                        const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
-                        const response = await fetch(proxyUrl);
-                        if (!response.ok) throw new Error(`Fetch failed for ${url}`);
-                        const blob = await response.blob();
-                        const fileExtension = blob.type.split('/')[1] || 'jpg';
-                        const fileName = `${zipFileName.split('_')[0]}_${index + 1}.${fileExtension}`;
-                        zip.file(fileName, blob);
-                    } catch (e) {
-                        console.error(`Failed to download ${url}:`, e);
-                        zip.file(`FAILED_Download_${index + 1}.txt`, `Failed to download: ${url}\nError: ${e.message}\nNote: Google Drive links might require a CORS proxy to work.`);
-                    }
-                });
-
-                await Promise.all(filePromises);
-                const content = await zip.generateAsync({ type: "blob" });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(content);
-                link.download = `${zipFileName.replace(/[^a-zA-Z0-9]/g, '_')}.zip`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (error) { console.error(`ZIP Error:`, error); alert(`ZIP फाइल तयार करताना त्रुटी आली. कृपया ब्राउझरच्या कॉन्सोलमध्ये त्रुटी तपासा.`); } 
-            finally { button.disabled = false; button.innerHTML = originalIconHTML; }
-        }
+        function exportDataToExcel(data, filename = "Report") { try { const mappedData = data.map(row => { const newRow = {}; Object.keys(row).forEach(key => { if (MARATHI_LABELS[key]) newRow[MARATHI_LABELS[key]] = row[key]; }); return newRow; }); const worksheet = XLSX.utils.json_to_sheet(mappedData); const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Data"); XLSX.writeFile(workbook, `${filename.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`); } catch (error) { console.error("Excel Export Error:", error); alert("एक्सेल फाइल तयार करताना त्रुटी आली."); } }
         
-        function printReport(data) {
-            if (!data) {
-                console.error("Print Error: No data provided for report.");
-                return;
-            }
-            generatePrintHTML(data);
-        }
-
+        function printReport(data) { if (!data) { console.error("Print Error: No data provided."); return; } generatePrintHTML(data); }
         function formatDateTimeForPrint(d) { const D = parseDate(d); if (!D) return 'N/A'; return `${D.toLocaleDateString('en-GB').replace(/\//g,'-')} ${D.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`; }
+        function formatCurrency(num) { return `रु ${parseInt(num || 0).toLocaleString('en-IN')}`; }
         
-        function generatePrintHTML(data) { 
-            const logoUrl = "https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png"; 
-            const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLatitude},pm2rdl` : ''; 
-            const gmapLink = (data.gpsLatitude && data.gpsLongitude) ? `https://www.google.com/maps?q=${data.gpsLatitude},${data.gpsLongitude}` : ''; 
-            const BASIC_KEYS = ['customerName', 'applicantAge', 'applicantGender', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber', 'villageName', 'taluka', 'district', 'loanProductType', 'loanAmountRequested', 'ApprovedLoanAmount', 'VerificationStatus', 'actualTime']; 
-            let detailsHTML = `<div class="print-page"><style> .print-page{padding:10mm; font-family: 'Noto Sans Devanagari', sans-serif;} .print-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0056b3;padding-bottom:10px;margin-bottom:15px} .print-header img{height:30px} .print-header h1{margin:0;font-size:16pt;color:#0056b3} .section-title{font-size:12pt;color:#555;padding:5px 0;margin-top:15px;border-bottom:1px dotted #ccc} .print-table{width:100%;border-collapse:collapse;margin-bottom:15px} .print-table td{padding:5px 10px;border:1px solid #ddd; font-size: 10pt;} .print-table tr td:first-child{width:35%;font-weight:bold;background-color:#f8f8fa} .photo-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px} .print-photo-container{width:calc(50% - 5px);border:1px solid #eee;padding:8px;box-sizing:border-box;page-break-inside:avoid} .print-photo-container p{margin:0;font-size:9pt} .print-photo-container a{word-break:break-all;font-size:8pt} .map-container img{max-width:100%;height:auto;margin-top:10px;border:1px solid #ddd} .print-footer{text-align:center;margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:8pt;color:#999} @media print { @page { size: A4; margin: 1cm; } body { -webkit-print-color-adjust: exact; } .print-page { margin: 0; } } </style><div class="print-header"><img src="${logoUrl}" alt="Logo"><h1>GPS व्हेरिफिकेशन अहवाल</h1></div><h3 class="section-title">अर्जदाराची मूलभूत माहिती</h3><table class="print-table">`; 
-            BASIC_KEYS.forEach(key => { const value = data[key]; if (value && String(value).trim()) { let displayValue = value; if (key === 'actualTime') displayValue = formatDateTimeForPrint(value); else if (key.includes('Amount') || key.includes('Requested')) displayValue = `रु ${parseInt(value || 0).toLocaleString('en-IN')}`; detailsHTML += `<tr><td>${MARATHI_LABELS[key] || key}</td><td>${displayValue}</td></tr>`; } }); 
-            detailsHTML += `</table>`; 
-            const EXCLUDED_KEYS = [...BASIC_KEYS, 'timestamp', 'row', 'photoLinks', 'supportdoc', 'gpsLatitude', 'gpsLongitude', 'gpsAddress', 'googleMapsLink']; 
-            let remainingInfo = ''; 
-            Object.keys(data).forEach(key => { if (!EXCLUDED_KEYS.includes(key) && data[key] && String(data[key]).trim()) { let displayValue = data[key]; if (key.includes('Income') || key.includes('expense') || key.includes('Amount')) { const numVal = parseInt(String(data[key]).replace(/,/g, '') || 0); if (!isNaN(numVal) && numVal > 0) displayValue = `रु ${numVal.toLocaleString('en-IN')}`; } else if (key === 'VerificationTimestamp') { displayValue = formatDateTimeForPrint(data[key]); } remainingInfo += `<tr><td>${MARATHI_LABELS[key] || key}</td><td>${displayValue}</td></tr>`; } }); 
-            if (remainingInfo) detailsHTML += `<h3 class="section-title">इतर तपशील</h3><table class="print-table">${remainingInfo}</table>`; 
-            if (mapImageUrl) detailsHTML += `<h3 class="section-title">स्थानिक (GPS) पडताळणी</h3><div class="map-container" style="page-break-inside: avoid;"><p><strong>GPS पत्ता:</strong> ${data.gpsAddress || 'N/A'}</p><p><strong>Google Maps Link:</strong> <a href="${gmapLink}" target="_blank">${gmapLink}</a></p><img src="${mapImageUrl}" alt="Map"></div>`; 
-            if (data.photoLinks && typeof data.photoLinks === 'string' && data.photoLinks.trim()) { detailsHTML += `<h3 class="section-title">छायाचित्र (लिंक्स)</h3><div class="photo-grid">`; data.photoLinks.split(/[\s,]+/).forEach((url, i) => { if (url.trim()) detailsHTML += `<div class="print-photo-container"><p>फोटो ${i+1}</p><a href="${url.trim()}" target="_blank">${url.trim()}</a></div>`; }); detailsHTML += `</div>`; } 
-            if (data.supportdoc && typeof data.supportdoc === 'string' && data.supportdoc.trim()) { detailsHTML += `<h3 class="section-title">कागदपत्रे (लिंक्स)</h3><div class="photo-grid">`; data.supportdoc.split(/[\s,]+/).forEach((url, i) => { if (url.trim()) detailsHTML += `<div class="print-photo-container"><p>कागदपत्र ${i+1}</p><a href="${url.trim()}" target="_blank">${url.trim()}</a></div>`; }); detailsHTML += `</div>`; } 
-            detailsHTML += `<div class="print-footer">हा रिपोर्ट ${new Date().toLocaleDateString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे.</div></div>`; 
-            ui.printArea.innerHTML = detailsHTML; 
+        function generatePrintHTML(data) {
+            const logoUrl = "https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png";
+            const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLatitude},pm2rdl` : '';
             
-            const images = ui.printArea.querySelectorAll('img');
-            const promises = [...images].map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => {
-                    img.onload = resolve;
-                    img.onerror = resolve;
-                });
-            });
+            const renderTableRows = (keys) => keys.map(key => {
+                const value = data[key];
+                if (value === undefined || value === null || String(value).trim() === '') return '';
+                let displayValue = value;
+                if (['loanAmountRequested', 'ApprovedLoanAmount', 'familyTotalIncome', 'secondaryIncomeAmount', 'expenseHousehold', 'expenseMedical', 'expenseOther', 'expenseTotal', 'existingEMI'].includes(key)) {
+                    displayValue = formatCurrency(value);
+                } else if (key === 'VerificationTimestamp') {
+                    displayValue = formatDateTimeForPrint(value);
+                }
+                return `<tr><td>${MARATHI_LABELS[key] || key}</td><td>${displayValue}</td></tr>`;
+            }).join('');
 
-            Promise.all(promises).then(() => {
-                window.print();
+            const personalKeys = ['coApplicantName', 'applicantAge', 'applicantGender', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber'];
+            const financialKeys = ['familyTotalMembers', 'familyEarningMembers', 'familyTotalIncome', 'expenseTotal', 'existingEMI', 'primaryIncomeSource', 'secondaryIncomeSource', 'secondaryIncomeAmount'];
+            const assetKeys = ['assetHouseType', 'assetLandAcres', 'assetLandType', 'assetVehicle', 'cows', 'buffaloes', 'goats', 'poultry'];
+            const verificationKeys = ['VerificationStatus', 'VerifierName', 'VerifierRemarks', 'VerificationTimestamp', 'fieldOfficerName', 'remarks'];
+            
+            const photoLinks = (data.photoLinks || '').split(/[\s,]+/).filter(Boolean);
+            const docLinks = (data.supportdoc || '').split(/[\s,]+/).filter(Boolean);
+
+            const html = `
+            <div class="print-container">
+                <style>
+                    .print-container { font-family: 'Noto Sans Devanagari', sans-serif; color: #333; font-size: 10pt; line-height: 1.5; }
+                    .print-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 15px 0; border-bottom: 3px solid #0056b3; }
+                    .print-header img { height: 40px; }
+                    .print-header .title-block { text-align: right; }
+                    .print-header h1 { margin: 0; color: #0056b3; font-size: 18pt; font-weight: 700; }
+                    .print-header p { margin: 0; font-size: 11pt; color: #555; }
+                    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; }
+                    .summary-box h3 { margin-top: 0; font-size: 13pt; color: #0078d4; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+                    .summary-box i { margin-right: 8px; }
+                    .summary-box p { margin: 4px 0; } .summary-box p strong { color: #202020; }
+                    .section-card { margin-top: 25px; border: 1px solid #e0e0e0; border-radius: 8px; page-break-inside: avoid; overflow: hidden; }
+                    .section-title { font-size: 14pt; color: #ffffff; background-color: #0078d4; padding: 10px 15px; margin: 0; font-weight: 600; }
+                    .data-table { width: 100%; border-collapse: collapse; }
+                    .data-table tr:nth-child(even) { background-color: #f8f9fa; }
+                    .data-table td { padding: 8px 15px; border-bottom: 1px solid #e7e7e7; vertical-align: top; }
+                    .data-table td:first-child { font-weight: 600; width: 35%; color: #444; }
+                    .map-container img { max-width: 100%; height: auto; margin-top: 10px; border: 1px solid #ddd; }
+                    .attachments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 15px; }
+                    .photo-item { border: 1px solid #ddd; border-radius: 6px; padding: 5px; text-align: center; }
+                    .photo-item img { width: 100%; height: 110px; object-fit: cover; border-radius: 4px; }
+                    .photo-item p { margin: 5px 0 0 0; font-size: 8pt; }
+                    .doc-list { list-style-type: none; padding: 10px 15px; margin: 0; }
+                    .doc-list li { padding: 8px 0; border-bottom: 1px solid #eee; }
+                    .doc-list li a { text-decoration: none; color: #0056b3; font-size: 9pt; word-break: break-all; }
+                    .print-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #0056b3; font-size: 9pt; color: #888; }
+                    @media print { @page { size: A4; margin: 1cm; } body { -webkit-print-color-adjust: exact; } .print-container { font-size: 9pt; } }
+                </style>
+                <header class="print-header">
+                    <img src="${logoUrl}" alt="Anik Financial Services">
+                    <div class="title-block">
+                        <h1>कर्ज अर्ज पडताळणी अहवाल</h1>
+                        <p>अर्ज दिनांक: ${formatDate(data.actualTime)}</p>
+                    </div>
+                </header>
+
+                <section class="summary-grid">
+                    <div class="summary-box">
+                        <h3><i class="fas fa-user-circle"></i> अर्जदार तपशील</h3>
+                        <p><strong>नाव:</strong> ${data.customerName || 'N/A'}</p>
+                        <p><strong>पत्ता:</strong> ${data.villageName || ''}, ${data.taluka || ''}, ${data.district || ''}</p>
+                        <p><strong>मोबाईल:</strong> ${data.mobileNumber || 'N/A'}</p>
+                    </div>
+                    <div class="summary-box">
+                        <h3><i class="fas fa-file-invoice-dollar"></i> कर्ज तपशील</h3>
+                        <p><strong>मागितलेली रक्कम:</strong> ${formatCurrency(data.loanAmountRequested)}</p>
+                        <p><strong>मंजूर रक्कम:</strong> ${formatCurrency(data.ApprovedLoanAmount)}</p>
+                        <p><strong>कर्जाचा उद्देश:</strong> ${data.loanPurpose || 'N/A'}</p>
+                    </div>
+                </section>
+
+                <section class="section-card"><h3 class="section-title">अर्जदाराची वैयक्तिक माहिती</h3><table class="data-table">${renderTableRows(personalKeys)}</table></section>
+                <section class="section-card"><h3 class="section-title">कौटुंबिक आणि आर्थिक माहिती</h3><table class="data-table">${renderTableRows(financialKeys)}</table></section>
+                <section class="section-card"><h3 class="section-title">मालमत्ता तपशील</h3><table class="data-table">${renderTableRows(assetKeys)}</table></section>
+                <section class="section-card"><h3 class="section-title">पडताळणी तपशील</h3><table class="data-table">${renderTableRows(verificationKeys)}</table></section>
+                
+                ${mapImageUrl ? `<section class="section-card"><h3 class="section-title">GPS स्थान आणि नकाशा</h3><div style="padding:15px;"><p><strong>पत्ता:</strong> ${data.gpsAddress || 'N/A'}</p><div class="map-container"><img src="${mapImageUrl}" alt="Map"></div></div></section>` : ''}
+                
+                ${photoLinks.length > 0 ? `<section class="section-card"><h3 class="section-title">छायाचित्रे</h3><div class="attachments-grid">${photoLinks.map((url, i) => `<div class="photo-item"><img src="${url}" alt="Photo ${i+1}" onerror="this.src='https://via.placeholder.com/150x110.png?text=Image+Error';"><p>फोटो ${i+1}</p></div>`).join('')}</div></section>` : ''}
+                
+                ${docLinks.length > 0 ? `<section class="section-card"><h3 class="section-title">जोडलेली कागदपत्रे</h3><ul class="doc-list">${docLinks.map((url, i) => `<li><a href="${url}" target="_blank">कागदपत्र ${i+1} - लिंक उघडा <i class="fas fa-external-link-alt"></i></a></li>`).join('')}</ul></section>` : ''}
+
+                <footer class="print-footer">
+                    हा रिपोर्ट ${new Date().toLocaleDateString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे. | अनिक फायनान्शियल सर्व्हिसेस
+                </footer>
+            </div>`;
+            
+            ui.printArea.innerHTML = html;
+            const images = ui.printArea.querySelectorAll('img');
+            const promises = [...images].map(img => img.complete ? Promise.resolve() : new Promise(resolve => { img.onload = img.onerror = resolve; }));
+            
+            // === PRINT FIX: Wait for images to load, then use a slightly longer timeout to ensure rendering. ===
+            Promise.all(promises).then(() => { 
+                setTimeout(() => window.print(), 500); 
             });
         }
+
     </script>
 </body>
 </html>
