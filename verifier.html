@@ -137,7 +137,6 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.1rem;
-            transition: background 0.2s;
             place-items: center;
         }
 
@@ -492,6 +491,27 @@
     }
     // =========================================================================================
 
+    const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
+
+    // *** FIX START: नवीन युटिलिटी फंक्शन ***
+    // हे फंक्शन कॉमा, सेमीकोलन किंवा नवीन ओळीने (newline) वेगळ्या केलेल्या URL हाताळू शकते.
+    function parseMultiUrlString(urlString) {
+        if (!urlString || typeof urlString !== 'string') {
+            return [];
+        }
+        // 1. सर्व संभाव्य सेपरेटर (नवीन ओळ, सेमीकोलन) यांना कॉमाने बदला.
+        const normalizedString = urlString.replace(/[\n;]/g, ',');
+        
+        // 2. कॉमावर आधारित स्ट्रिंग विभाजित करा.
+        // 3. प्रत्येक URL मधून अतिरिक्त जागा काढा (trim).
+        // 4. रिकाम्या नोंदी (empty entries) आणि अवैध URL काढून टाका.
+        return normalizedString
+            .split(',')
+            .map(url => url.trim())
+            .filter(url => url && isValidUrl(url));
+    }
+    // *** FIX END ***
+
 
     function generateJitsiUrl(applicantName, rowId) {
         const safeName = (applicantName || 'Applicant').trim().replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
@@ -507,12 +527,8 @@
              return;
         }
         
-        // We copy only the link text itself (the content of the <b> tag)
         const linkText = linkDisplayElement.innerText.trim();
-        
-        // Use temporary textarea hack for cross-browser reliability
         const tempInput = document.createElement('textarea');
-        // Prepend the Marathi text to match the requested format
         tempInput.value = `व्हिडिओ कॉल लिंक: ${linkText}`; 
         
         document.body.appendChild(tempInput);
@@ -644,9 +660,6 @@
         });
     }
 
-    const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
-
-
     function displayApplicantDetails(app) {
         currentApplicant = app;
         ui.welcomeMessage.style.display = 'none';
@@ -715,7 +728,6 @@
                 </div>
             </div>
 
-            <!-- UPDATED: WhatsApp Copy Tool -->
             <div class="whatsapp-copy-tool active">
                 <div class="whatsapp-link-box-container">
                     <h4><i class="fab fa-whatsapp"></i> WhatsApp व्हिडिओ कॉल लिंक</h4>
@@ -725,7 +737,6 @@
                     </button>
                 </div>
             </div>
-            <!-- END UPDATED: WhatsApp Copy Tool -->
             
             <div class="tabs-container">
                 <div class="tabs">
@@ -737,7 +748,6 @@
                 </div>
             </div>
 
-            <!-- TAB 1: उत्पन्न आणि खर्च विश्लेषण (Income and Expense) -->
             <div id="tab-income-expense" class="tab-content active">
                 <h3><i class="fas fa-chart-line"></i> उत्पन्न आणि खर्च विश्लेषण</h3>
                 <div style="display: flex; gap: 30px; margin-bottom: 30px; flex-wrap: wrap;">
@@ -768,10 +778,8 @@
                 </div>
             </div>
 
-            <!-- TAB 2: माहिती (Structured Details) -->
             <div id="tab-details" class="tab-content"></div>
 
-            <!-- TAB 3: पुरावा (Evidence) -->
             <div id="tab-evidence" class="tab-content">
                 <h3><i class="fas fa-images"></i> GPS फोटो</h3>
                 <div class="photo-gallery"></div>
@@ -779,19 +787,16 @@
                 <div class="map-container"></div>
             </div>
             
-            <!-- TAB 4: कागदपत्रे (Documents) -->
             <div id="tab-documents" class="tab-content">
                 <h3><i class="fas fa-folder-open"></i> सहाय्यक कागदपत्रे</h3>
                 <div class="document-gallery"></div>
             </div>
 
-            <!-- TAB 5: व्हेरिफिकेशन (Verification) -->
             <div id="tab-verification" class="tab-content"><form id="verification-form"></form></div>`;
         
         ui.detailsView.style.display = 'block';
         document.getElementById('back-to-list-btn').addEventListener('click', () => ui.mainLayout.classList.remove('mobile-details-active'));
         
-        // 4. माहिती टॅब (tab-details) मध्ये संरचित डेटा पॉप्युलेट करणे (Unchanged logic)
         const detailTabContainer = ui.detailsView.querySelector('#tab-details');
         let detailHtml = '';
 
@@ -839,28 +844,23 @@
         }
         detailTabContainer.innerHTML = detailHtml || '<p style="text-align: center; color: var(--light-text);">या विभागात कोणताही तपशील उपलब्ध नाही.</p>';
         
-        
         // ====================================================================
-        // GPS फोटो (पुरावा) साठी लॉजिक (Unchanged)
+        // *** FIX START: GPS फोटो (पुरावा) साठी सुधारित लॉजिक ***
         // ====================================================================
         const photoGallery = ui.detailsView.querySelector('.photo-gallery');
         photoGallery.innerHTML = '';
         
-        let photoString = (app.photoLinks || '').trim();
-        
-        if (photoString) {
-            photoString = photoString.replace(/;/g, ',').replace(/,\s*$/, '').trim(); 
-            const photoUrls = photoString.split(',').map(url => url.trim()).filter(url => url && isValidUrl(url)); 
+        // नवीन `parseMultiUrlString` फंक्शन वापरले आहे
+        const photoUrls = parseMultiUrlString(app.photoLinks);
 
-            if (photoUrls.length > 0) {
-                photoUrls.forEach((trimmedUrl, index) => {
-                    photoGallery.innerHTML += `<a class="photo-link-item" href="${trimmedUrl}" target="_blank" rel="noopener noreferrer"><div class="photo-placeholder"><i class="fas fa-camera"></i><span>फोटो ${index + 1}</span></div></div></a>`; 
-                });
-            } else {
-                 photoGallery.innerHTML = '<p>या अर्जासाठी फोटो उपलब्ध नाहीत。</p>'; 
-            }
-        } else { photoGallery.innerHTML = '<p>या अर्जासाठी फोटो उपलब्ध नाहीत。</p>'; }
-        
+        if (photoUrls.length > 0) {
+            photoUrls.forEach((trimmedUrl, index) => {
+                photoGallery.innerHTML += `<a class="photo-link-item" href="${trimmedUrl}" target="_blank" rel="noopener noreferrer"><div class="photo-placeholder"><i class="fas fa-camera"></i><span>फोटो ${index + 1}</span></div></div></a>`; 
+            });
+        } else {
+            photoGallery.innerHTML = '<p>या अर्जासाठी फोटो उपलब्ध नाहीत.</p>';
+        }
+        // *** FIX END ***
         // ====================================================================
         
         const mapContainer = ui.detailsView.querySelector('.map-container');
@@ -871,37 +871,26 @@
         } else { mapContainer.innerHTML = '<p>नकाशा किंवा लोकेशन लिंक उपलब्ध नाही.</p>'; }
         
         // ====================================================================
-        // UPDATED: सहाय्यक कागदपत्रे (Documents) साठी लॉजिक
+        // *** FIX START: सहाय्यक कागदपत्रे (Documents) साठी सुधारित लॉजिक ***
         // ====================================================================
         const documentGallery = ui.detailsView.querySelector('.document-gallery');
         documentGallery.innerHTML = '';
         
-        let docString = (app.supportdoc || '').trim();
-        const docUrls = [];
+        // येथेही नवीन `parseMultiUrlString` फंक्शन वापरले आहे
+        const docUrls = parseMultiUrlString(app.supportdoc);
 
-        if (docString) {
-            // Split the string by newline and filter out invalid/empty entries
-            docString.split('\n').forEach(rawUrl => {
-                const cleanUrl = rawUrl.trim();
-                if (cleanUrl && isValidUrl(cleanUrl)) {
-                    docUrls.push(cleanUrl);
-                }
+        if (docUrls.length > 0) {
+             docUrls.forEach((trimmedUrl, index) => {
+                let iconClass = 'fas fa-file-alt';
+                if (trimmedUrl.toLowerCase().endsWith('.pdf')) { iconClass = 'fas fa-file-pdf'; }
+                else if (trimmedUrl.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i)) { iconClass = 'fas fa-file-image'; }
+                
+                documentGallery.innerHTML += `<a class="photo-link-item" href="${trimmedUrl}" target="_blank" rel="noopener noreferrer"><div class="photo-placeholder"><i class="${iconClass}"></i><span>कागदपत्र ${index + 1}</span></div></a>`;
             });
-
-            if (docUrls.length > 0) {
-                 docUrls.forEach((trimmedUrl, index) => {
-                    let iconClass = 'fas fa-file-alt';
-                    if (trimmedUrl.toLowerCase().endsWith('.pdf')) { iconClass = 'fas fa-file-pdf'; }
-                    else if (trimmedUrl.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i)) { iconClass = 'fas fa-file-image'; }
-                    
-                    documentGallery.innerHTML += `<a class="photo-link-item" href="${trimmedUrl}" target="_blank" rel="noopener noreferrer"><div class="photo-placeholder"><i class="${iconClass}"></i><span>कागदपत्र ${index + 1}</span></div></a>`;
-                });
-            } else {
-                documentGallery.innerHTML = '<p>या अर्जासाठी सहाय्यक कागदपत्रे उपलब्ध नाहीत。</p>';
-            }
         } else {
-            documentGallery.innerHTML = '<p>या अर्जासाठी सहाय्यक कागदपत्रे उपलब्ध नाहीत。</p>';
+            documentGallery.innerHTML = '<p>या अर्जासाठी सहाय्यक कागदपत्रे उपलब्ध नाहीत.</p>';
         }
+        // *** FIX END ***
         // ====================================================================
 
         const formContainer = ui.detailsView.querySelector('#verification-form');
