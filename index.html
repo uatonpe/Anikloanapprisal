@@ -164,7 +164,7 @@
 
             {
                 title: "बचत व गुंतवणूक (Savings & Investment)", icon: "fa-piggy-bank",
-                fields: [ { id: "savingsBankAccount", label: "बँक खाते क्रमांक", type: "text" }, { id: "savingsPigmy", label: "पिग्मी खाते", type: "select", options: ["निवडा", "आहे", "नाही"] }, { id: "savingsInsurancePolicy", label: "विमा पॉलिसी", type: "select", options: ["निवडा", "आहे", "नाही"] }, { id: "savingsInsuranceType", label: "विमा प्रकार", type: "select", options: ["लागू नाही", "जीवन", "आरोग्य", "अपघात", "Crop"] }, { id: "savingsOther", label: "इतर बचत/गुंतवणूक", type: "text", fullWidth:true } ]
+                fields: [ { id: "savingsBankAccount", label: "बँक खाते क्रमांक", type: "text",required: true }, { id: "ifsccode", label: "IFSC Code", type: "text",required: true }, { id: "savingsPigmy", label: "पिग्मी खाते", type: "select", options: ["निवडा", "आहे", "नाही"] }, { id: "savingsInsurancePolicy", label: "विमा पॉलिसी", type: "select", options: ["निवडा", "आहे", "नाही"] }, { id: "savingsInsuranceType", label: "विमा प्रकार", type: "select", options: ["लागू नाही", "जीवन", "आरोग्य", "अपघात", "Crop"] }, { id: "savingsOther", label: "इतर बचत/गुंतवणूक", type: "text", fullWidth:true } ]
             },
             {
                 title: "कर्ज संबंधित माहिती (Loan Details)", icon: "fa-file-invoice-dollar",
@@ -613,5 +613,6 @@
 </body>
 
 </html>
+
 
 
