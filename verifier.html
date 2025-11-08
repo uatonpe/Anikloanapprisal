@@ -412,11 +412,12 @@
         gpsLatitude: "GPS अक्षांश", gpsLongitude: "GPS रेखांश", gpsAddress: "GPS पत्ता", photoLinks: "फोटो लिंक्स", supportdoc: "सहाय्यक कागदपत्रे",
         googleMapsLink: "गुगल मॅप्स लिंक", VerificationStatus: "व्हेरिफिकेशन स्थिती", IsInfoCorrect: "माहिती योग्य आहे का?", IsVideoCallDone: "व्हिडिओ कॉल झाला का?",
         ApprovedLoanAmount: "मंजूर केलेली रक्कम", VerifierRemarks: "व्हेरिफायरचे मत", VerifierName: "व्हेरिफायरचे नाव", VerificationTimestamp: "व्हेरिफिकेशन वेळ",
+        cast: "जात प्रवर्ग" // तुमच्या शीटमधील 'cast' कॉलमसाठी लेबल
     }; 
     
     const STRUCTURED_FIELDS = {
         'ऑपरेशन्स आणि संपर्क तपशील': ['actualTime', 'Unit', 'branchName', 'centerName', 'villageName', 'taluka', 'district', 'gpsAddress', 'fieldOfficerName', 'visitDate', 'remarks'],
-        'वैयक्तिक आणि KYC तपशील': ['customerName', 'applicantAge', 'applicantGender', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber', 'isExistingCustomer', 'existingAccountNumber'],
+        'वैयक्तिक आणि KYC तपशील': ['customerName', 'applicantAge', 'applicantGender', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber', 'isExistingCustomer', 'existingAccountNumber', 'cast'],
         'सह-अर्जदार माहिती': ['coApplicantName', 'coApplicantAadhaar', 'coApplicantPan'],
         'कुटुंब, उत्पन्न आणि खर्च तपशील': ['familyTotalMembers', 'familyEarningMembers', 'familyTotalIncome', 'primaryIncomeSource', 'primaryIncomeTypeDetails', 'secondaryIncomeSource', 'secondaryIncomeAmount', 'Milkincome', 'expenseHousehold', 'expenseEducation', 'expenseMedical', 'expenseExistingEMI', 'expenseOther', 'expenseTotal'],
         'कर्ज मागणी व परतफेड': ['loanAmountRequested', 'loanProductType', 'loanCycle', 'loanPurpose', 'repaymentPeriod', 'existingEMI', 'previousLoanSource', 'previousLoanDetails', 'guarantorDetails'],
@@ -426,7 +427,7 @@
     };
 
     const FIELD_ICONS_MAP = {
-        customerName: "fas fa-user", mobileNumber: "fas fa-phone-alt", aadhaarNumber: "fas fa-id-card", panNumber: "fas fa-address-card", applicantAge: "fas fa-birthday-cake", applicantGender: "fas fa-venus-mars", maritalStatus: "fas fa-ring", educationLevel: "fas fa-book", familyTotalMembers: "fas fa-users", familyEarningMembers: "fas fa-user-check", familyTotalIncome: "fas fa-money-bill-wave", expenseHousehold: "fas fa-home", expenseEducation: "fas fa-graduation-cap", expenseMedical: "fas fa-heartbeat", expenseExistingEMI: "fas fa-building-columns", expenseOther: "fas fa-receipt", expenseTotal: "fas fa-calculator", coApplicantName: "fas fa-user-friends", coApplicantAadhaar: "fas fa-id-card-alt", coApplicantPan: "fas fa-address-card", Unit: "fas fa-cubes", branchName: "fas fa-building", taluka: "fas fa-city", district: "fas fa-globe-asia", centerName: "fas fa-map-pin", fieldOfficerName: "fas fa-user-tie", villageName: "fas fa-map-marker-alt", gpsAddress: "fas fa-location-dot", primaryIncomeSource: "fas fa-briefcase", secondaryIncomeSource: "fas fa-sack-dollar", Milkincome: "fas fa-cow", primaryIncomeAmount: "fas fa-money-bill-wave", secondaryIncomeAmount: "fas fa-money-bill-transfer", savingsBankAccount: "fas fa-wallet", savingsPigmy: "fas fa-piggy-bank", savingsInsurancePolicy: "fas fa-shield-alt", savingsInsuranceType: "fas fa-file-contract", savingsOther: "fas fa-layer-group", assetLandAcres: "fas fa-mountain", assetLandType: "fas fa-seedling", assetHouseType: "fas fa-house-chimney", assetPlots: "fas fa-vector-square", assetEquipmentFarm: "fas fa-tractor", assetEquipmentBusiness: "fas fa-shop", assetVehicle: "fas fa-car", cows: "fas fa-cow", buffaloes: "fas fa-paw", goats: "fas fa-paw", 'other livestok': "fas fa-paw", bulls: "fas fa-paw", pigs: "fas fa-paw", poultry: "fas fa-egg", loanAmountRequested: "fas fa-rupee-sign", loanPurpose: "fas fa-hand-holding-dollar", repaymentPeriod: "fas fa-calendar-alt", previousLoanSource: "fas fa-landmark", existingEMI: "fas fa-bank", guarantorDetails: "fas fa-handshake", loanProductType: "fas fa-tags", loanCycle: "fas fa-circle-notch", visitDate: "fas fa-calendar-check", actualTime: "fas fa-clock", remarks: "fas fa-comment-dots", default: "fas fa-info-circle"
+        customerName: "fas fa-user", mobileNumber: "fas fa-phone-alt", aadhaarNumber: "fas fa-id-card", panNumber: "fas fa-address-card", applicantAge: "fas fa-birthday-cake", applicantGender: "fas fa-venus-mars", maritalStatus: "fas fa-ring", educationLevel: "fas fa-book", familyTotalMembers: "fas fa-users", familyEarningMembers: "fas fa-user-check", familyTotalIncome: "fas fa-money-bill-wave", expenseHousehold: "fas fa-home", expenseEducation: "fas fa-graduation-cap", expenseMedical: "fas fa-heartbeat", expenseExistingEMI: "fas fa-building-columns", expenseOther: "fas fa-receipt", expenseTotal: "fas fa-calculator", coApplicantName: "fas fa-user-friends", coApplicantAadhaar: "fas fa-id-card-alt", coApplicantPan: "fas fa-address-card", Unit: "fas fa-cubes", branchName: "fas fa-building", taluka: "fas fa-city", district: "fas fa-globe-asia", centerName: "fas fa-map-pin", fieldOfficerName: "fas fa-user-tie", villageName: "fas fa-map-marker-alt", gpsAddress: "fas fa-location-dot", primaryIncomeSource: "fas fa-briefcase", secondaryIncomeSource: "fas fa-sack-dollar", Milkincome: "fas fa-cow", primaryIncomeAmount: "fas fa-money-bill-wave", secondaryIncomeAmount: "fas fa-money-bill-transfer", savingsBankAccount: "fas fa-wallet", savingsPigmy: "fas fa-piggy-bank", savingsInsurancePolicy: "fas fa-shield-alt", savingsInsuranceType: "fas fa-file-contract", savingsOther: "fas fa-layer-group", assetLandAcres: "fas fa-mountain", assetLandType: "fas fa-seedling", assetHouseType: "fas fa-house-chimney", assetPlots: "fas fa-vector-square", assetEquipmentFarm: "fas fa-tractor", assetEquipmentBusiness: "fas fa-shop", assetVehicle: "fas fa-car", cows: "fas fa-cow", buffaloes: "fas fa-paw", goats: "fas fa-paw", 'other livestok': "fas fa-paw", bulls: "fas fa-paw", pigs: "fas fa-paw", poultry: "fas fa-egg", loanAmountRequested: "fas fa-rupee-sign", loanPurpose: "fas fa-hand-holding-dollar", repaymentPeriod: "fas fa-calendar-alt", previousLoanSource: "fas fa-landmark", existingEMI: "fas fa-bank", guarantorDetails: "fas fa-handshake", loanProductType: "fas fa-tags", loanCycle: "fas fa-circle-notch", visitDate: "fas fa-calendar-check", actualTime: "fas fa-clock", remarks: "fas fa-comment-dots", cast: "fas fa-users-cog", default: "fas fa-info-circle"
     };
 
     function formatHeader(key) { return MARATHI_LABELS[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim(); }
@@ -894,12 +895,85 @@
         // ====================================================================
 
         const formContainer = ui.detailsView.querySelector('#verification-form');
-        formContainer.innerHTML = `<div class="verification-section"><h4><i class="fas fa-tasks"></i> मूलभूत तपासणी</h4><div class="verification-grid"><div class="form-group"><label for="isInfoCorrect">माहिती योग्य आहे का?</label><select id="isInfoCorrect" name="isInfoCorrect" required><option value="">निवडा</option><option value="Yes">✅ होय</option><option value="No">❌ नाही</option></select></div><div class="form-group"><label for="isVideoCallDone">व्हिडिओ कॉल झाला का?</label><select id="isVideoCallDone" name="isVideoCallDone" required><option value="">निवडा</option><option value="Yes">✅ होय</option><option value="No">❌ नाही</option></select></div></div></div><div class="verification-section"><h4><i class="fas fa-hand-holding-usd"></i> कर्ज मंजुरी</h4><div class="verification-grid"><div class="form-group"><label for="approvedLoanAmount">मंजूर रक्कम (रु)</label><input type="number" id="approvedLoanAmount" name="approvedLoanAmount" placeholder="उदा. 50000" required></div><div class="form-group"><label for="verificationStatus">अंतिम मंजुरी</label><select id="verificationStatus" name="verificationStatus" required><option value="Pending">⏳ Pending</option><option value="Approved">✅ Approved</option><option value="Rejected">❌ Rejected</option></select></div></div></div><div class="verification-section"><h4><i class="fas fa-user-edit"></i> तुमचा अभिप्राय</h4><div class="verification-grid"><div class="form-group full-width"><label for="verifierName">तुमचे नाव</label><select id="verifierName" name="verifierName" required><option value="">नाव निवडा</option><option value="Vilas Godge">विलास गोडगे</option><option value="Tejshri Todkar">तेजश्री तोडकर</option></select></div><div class="form-group full-width"><label for="verifierRemarks">तुमचे मत</label><textarea id="verifierRemarks" name="verifierRemarks" rows="4" placeholder="तुमचा अभिप्राय येथे लिहा..."></textarea></div></div></div><div class="form-actions"><button type="submit" id="update-btn"><i class="fas fa-save"></i> माहिती अपडेट करा</button></div><p id="update-status"></p>`;
+        // <!-- NEW FIELD START: 'जात प्रवर्ग' (Caste) साठी ड्रॉपडाऊन मेनू जोडला आहे -->
+        formContainer.innerHTML = `
+            <div class="verification-section">
+                <h4><i class="fas fa-tasks"></i> मूलभूत तपासणी</h4>
+                <div class="verification-grid">
+                    <div class="form-group">
+                        <label for="isInfoCorrect">माहिती योग्य आहे का?</label>
+                        <select id="isInfoCorrect" name="isInfoCorrect" required>
+                            <option value="">निवडा</option><option value="Yes">✅ होय</option><option value="No">❌ नाही</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="isVideoCallDone">व्हिडिओ कॉल झाला का?</label>
+                        <select id="isVideoCallDone" name="isVideoCallDone" required>
+                            <option value="">निवडा</option><option value="Yes">✅ होय</option><option value="No">❌ नाही</option>
+                        </select>
+                    </div>
+                    <!-- NEW FIELD: 'जात प्रवर्ग' (Caste) साठी ड्रॉपडाऊन मेनू -->
+                    <div class="form-group">
+                        <label for="casteCategory">जात प्रवर्ग (Caste)</label>
+                        <select id="casteCategory" name="cast" required>
+                            <option value="">निवडा</option>
+                            <option value="Open">ओपन (Open)</option>
+                            <option value="OBC">ओबीसी (OBC)</option>
+                            <option value="SC">एससी (SC)</option>
+                            <option value="NT">एनटी (NT)</option>
+                            <option value="ST">एसटी (ST)</option>
+                        </select>
+                    </div>
+                    <!-- NEW FIELD END -->
+                </div>
+            </div>
+            <div class="verification-section">
+                <h4><i class="fas fa-hand-holding-usd"></i> कर्ज मंजुरी</h4>
+                <div class="verification-grid">
+                    <div class="form-group">
+                        <label for="approvedLoanAmount">मंजूर रक्कम (रु)</label>
+                        <input type="number" id="approvedLoanAmount" name="approvedLoanAmount" placeholder="उदा. 50000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="verificationStatus">अंतिम मंजुरी</label>
+                        <select id="verificationStatus" name="verificationStatus" required>
+                            <option value="Pending">⏳ Pending</option><option value="Approved">✅ Approved</option><option value="Rejected">❌ Rejected</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="verification-section">
+                <h4><i class="fas fa-user-edit"></i> तुमचा अभिप्राय</h4>
+                <div class="verification-grid">
+                    <div class="form-group full-width">
+                        <label for="verifierName">तुमचे नाव</label>
+                        <select id="verifierName" name="verifierName" required>
+                            <option value="">नाव निवडा</option><option value="Vilas Godge">विलास गोडगे</option><option value="Tejshri Todkar">तेजश्री तोडकर</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="verifierRemarks">तुमचे मत</label>
+                        <textarea id="verifierRemarks" name="verifierRemarks" rows="4" placeholder="तुमचा अभिप्राय येथे लिहा..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="update-btn"><i class="fas fa-save"></i> माहिती अपडेट करा</button>
+            </div>
+            <p id="update-status"></p>`;
         
         const form = ui.detailsView.querySelector('#verification-form');
-        form.elements.isInfoCorrect.value = app.IsInfoCorrect || ''; form.elements.isVideoCallDone.value = app.IsVideoCallDone || '';
-        form.elements.verificationStatus.value = app.VerificationStatus || 'Pending'; form.elements.verifierRemarks.value = app.VerifierRemarks || '';
-        form.elements.verifierName.value = app.VerifierName || ''; form.elements.approvedLoanAmount.value = app.ApprovedLoanAmount || app.loanAmountRequested || '';
+        form.elements.isInfoCorrect.value = app.IsInfoCorrect || ''; 
+        form.elements.isVideoCallDone.value = app.IsVideoCallDone || '';
+        form.elements.verificationStatus.value = app.VerificationStatus || 'Pending'; 
+        form.elements.verifierRemarks.value = app.VerifierRemarks || '';
+        form.elements.verifierName.value = app.VerifierName || ''; 
+        form.elements.approvedLoanAmount.value = app.ApprovedLoanAmount || app.loanAmountRequested || '';
+        
+        // <!-- NEW FIELD START: 'जात प्रवर्ग' (Caste) फील्डमध्ये आधीपासून सेव्ह असलेला डेटा लोड करणे -->
+        form.elements.cast.value = app.cast || ''; // 'cast' हे तुमच्या शीटमधील कॉलमचे नाव आहे
+        // <!-- NEW FIELD END -->
+        
         form.addEventListener('submit', handleUpdate);
     }
 
@@ -939,4 +1013,3 @@
 </script>
 </body>
 </html>
-
