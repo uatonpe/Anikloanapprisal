@@ -45,13 +45,9 @@
         .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .status-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         #print-area { display: none; }
-        
-        /* Initial Selection Styles */
         #initial-selection { text-align: center; padding: 50px 20px; }
         #initial-selection button { width: 80%; max-width: 300px; margin: 15px; padding: 20px; font-size: 1.1rem; }
         #update-form-fields { background-color: #e6f0ff; padding: 20px; border-radius: var(--card-radius); margin-top: 20px; border: 1px solid var(--primary-color); display: none; }
-
-        /* Print Styles */
         @media print {
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body > *:not(#print-area) { display: none; }
@@ -81,7 +77,6 @@
     <div class="main-container">
         <div class="app-header"><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Company Logo"><h1>कर्ज मूल्यांकन फॉर्म</h1></div>
 
-        <!-- Initial Selection Screen -->
         <div class="card" id="initial-selection">
             <h2>कृपया तुमचा पर्याय निवडा</h2>
             <button type="button" onclick="setMode('new')" style="background-color: var(--primary-color);">
@@ -90,7 +85,6 @@
             <button type="button" onclick="setMode('update')" style="background-color: #ff9900;">
                 <i class="fas fa-edit"></i> जुना फॉर्म अपडेट करा
             </button>
-            
             <div id="update-form-fields">
                 <div class="form-section">
                     <div class="input-group">
@@ -104,20 +98,20 @@
                 </div>
             </div>
         </div>
-        <!-- End Initial Selection Screen -->
 
-        <!-- Main Form Area -->
         <form id="loanAppraisalForm" style="display: none;">
             <div id="dynamic-form-container"></div>
             <div class="card">
                 <h3 class="card-header"><i class="fas fa-camera-retro"></i>GPS फोटो आणि लोकेशन</h3>
+                <div id="gps-status" style="text-align: center; padding: 10px; margin-bottom: 15px; border-radius: 8px; font-weight: 500;">
+                    GPS लोकेशन मिळवले जात आहे...
+                </div>
                 <div id="camera-container"><video id="video" autoplay playsinline></video></div>
                 <div class="controls"><button type="button" id="capture-button"><i class="fas fa-camera"></i>फोटो ॲड करा</button></div>
                 <div id="photo-gallery-card" style="display: none;"><h4 style="margin-top:20px;border-bottom:1px solid var(--border-color);padding-bottom:10px;">काढलेले फोटो</h4><div id="photo-gallery"></div></div>
             </div>
             <div class="card"><button type="submit" id="submit-form"><i class="fas fa-paper-plane"></i>फॉर्म सबमिट करा</button></div>
         </form>
-        <!-- End Main Form Area -->
 
         <div id="status-message"></div>
     </div>
@@ -129,24 +123,18 @@
         // ***** येथे तुमची Apps Script URL टाका *****
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrCZKKUyxTVGOFGXzK755pFnlAjjK4WFbTNwfx0ubm8myqIuYdcTNoQh0XX4OUgg/exec'; // REPLACE ME
 
-        // ########## FORM CONFIGURATION ##########
         const formConfig = [
             {
                 title: "मूलभूत माहिती (Basic KYC Details)", icon: "fa-user-check",
-                fields: [
-                    { id: "customerName", label: "नाव", type: "text", required: true }, { id: "applicantAge", label: "वय", type: "number",required: true }, { id: "applicantGender", label: "लिंग", type: "select", options: ["निवडा", "पुरुष", "स्त्री", "इतर"] }, { id: "villageName", label: "गावाचे नांव", type: "text", required: true }, { id: "taluka", label: "तालुका", type: "select", options: ["निवडा", "कळंब", "भुम", "वाशी", "परांडा"] }, { id: "district", label: "जिल्हा", type: "text", value: "धाराशिव", disabled: true }, { id: "coApplicantName", label: "सहकर्जदार/पती/पत्नीचे नाव", type: "text",required: true }, { id: "coApplicantAadhaar", label: "सहकर्जदार आधार नंबर", type: "number",required: true }, { id: "coApplicantPan", label: "सहकर्जदार पॅन नंबर", type: "text",required: true }, { id: "mobileNumber", label: "मोबाईल क्रमांक", type: "tel", required: true }, { id: "aadhaarNumber", label: "आधार क्रमांक", type: "number",required: true }, { id: "panNumber", label: "पॅन क्रमांक", type: "text" }, { id: "isExistingCustomer", label: "सध्या अनिकचे ग्राहक आहात?", type: "select", options: ["निवडा", "होय", "नाही"] }, { id: "existingAccountNumber", label: "सध्याचा खाते क्रमांक", type: "text" }, { id: "branchName", label: "शाखेचे नाव", type: "select", options: ["निवडा", "कळंब", "भुम", "वाशी"] }, { id: "maritalStatus", label: "वैवाहिक स्थिती", type: "select", options: ["निवडा", "विवाहित", "अविवाहित", "विधवा/विधुर"] }, { id: "educationLevel", label: "शिक्षण", type: "select", options: ["निवडा", "शिक्षण नाही", "प्राथमिक", "माध्यमिक", "पदवीधर"] }, { id: "centerName", label: "केंद्राचे नाव/कोड", type: "text" },
-                ]
+                fields: [ { id: "customerName", label: "नाव", type: "text", required: true }, { id: "applicantAge", label: "वय", type: "number",required: true }, { id: "applicantGender", label: "लिंग", type: "select", options: ["निवडा", "पुरुष", "स्त्री", "इतर"] }, { id: "villageName", label: "गावाचे नांव", type: "text", required: true }, { id: "taluka", label: "तालुका", type: "select", options: ["निवडा", "कळंब", "भुम", "वाशी", "परांडा"] }, { id: "district", label: "जिल्हा", type: "text", value: "धाराशिव", disabled: true }, { id: "coApplicantName", label: "सहकर्जदार/पती/पत्नीचे नाव", type: "text",required: true }, { id: "coApplicantAadhaar", label: "सहकर्जदार आधार नंबर", type: "number",required: true }, { id: "coApplicantPan", label: "सहकर्जदार पॅन नंबर", type: "text",required: true }, { id: "mobileNumber", label: "मोबाईल क्रमांक", type: "tel", required: true }, { id: "aadhaarNumber", label: "आधार क्रमांक", type: "number",required: true }, { id: "panNumber", label: "पॅन क्रमांक", type: "text" }, { id: "isExistingCustomer", label: "सध्या अनिकचे ग्राहक आहात?", type: "select", options: ["निवडा", "होय", "नाही"] }, { id: "existingAccountNumber", label: "सध्याचा खाते क्रमांक", type: "text" }, { id: "branchName", label: "शाखेचे नाव", type: "select", options: ["निवडा", "कळंब", "भुम", "वाशी"] }, { id: "maritalStatus", label: "वैवाहिक स्थिती", type: "select", options: ["निवडा", "विवाहित", "अविवाहित", "विधवा/विधुर"] }, { id: "educationLevel", label: "शिक्षण", type: "select", options: ["निवडा", "शिक्षण नाही", "प्राथमिक", "माध्यमिक", "पदवीधर"] }, { id: "centerName", label: "केंद्राचे नाव/कोड", type: "text" }, ]
             },
             {
                 title: "कुटुंबाची माहिती (Family Details)", icon: "fa-users",
-                fields: [
-                    { id: "familyTotalMembers", label: "घरातील एकूण सदस्य", type: "number",required: true }, { id: "familyEarningMembers", label: "कमावणारे सदस्य", type: "number",required: true }, { id: "familyTotalIncome", label: "एकूण मासिक उत्पन्न (रु)", type: "number",required: true }, { id: "expenseHousehold", label: "घरखर्च (रु)", type: "number",required: true }, { id: "expenseEducation", label: "शिक्षण खर्च (रु)", type: "number",required: true }, { id: "expenseMedical", label: "वैद्यकीय खर्च (रु)", type: "number",required: true }, { id: "expenseOther", label: "इतर खर्च (रु)", type: "number",required: true }, { id: "expenseTotal", label: "एकूण मासिक खर्च (रु)", type: "number", disabled: true }
-                ]
+                fields: [ { id: "familyTotalMembers", label: "घरातील एकूण सदस्य", type: "number",required: true }, { id: "familyEarningMembers", label: "कमावणारे सदस्य", type: "number",required: true }, { id: "familyTotalIncome", label: "एकूण मासिक उत्पन्न (रु)", type: "number",required: true }, { id: "expenseHousehold", label: "घरखर्च (रु)", type: "number",required: true }, { id: "expenseEducation", label: "शिक्षण खर्च (रु)", type: "number",required: true }, { id: "expenseMedical", label: "वैद्यकीय खर्च (रु)", type: "number",required: true }, { id: "expenseOther", label: "इतर खर्च (रु)", type: "number",required: true }, { id: "expenseTotal", label: "एकूण मासिक खर्च (रु)", type: "number", disabled: true } ]
             },
             {
                 title: "उत्पन्न स्रोत (Income Source)", icon: "fa-hand-holding-dollar",
-                fields: [ { id: "primaryIncomeSource", label: "प्राथमिक उत्पन्न स्रोत", type: "select", options: ["निवडा", "शेती", "पशुधन", "छोटा व्यवसाय", "मजुरी", "सेवा क्षेत्र", "इतर"] }, { id: "primaryIncomeAmount", label: "मासिक उत्पन्न (रु)", type: "number" }
-, { id: "secondaryIncomeSource", label: "दुय्यम उत्पन्न स्रोत", type: "select", options: ["निवडा", "शेती", "पशुधन", "छोटा व्यवसाय", "मजुरी", "सेवा क्षेत्र", "इतर"] }, { id: "secondaryIncomeAmount", label: "दुय्यम मासिक उत्पन्न (रु)", type: "number" } ]
+                fields: [ { id: "primaryIncomeSource", label: "प्राथमिक उत्पन्न स्रोत", type: "select", options: ["निवडा", "शेती", "पशुधन", "छोटा व्यवसाय", "मजुरी", "सेवा क्षेत्र", "इतर"] }, { id: "primaryIncomeAmount", label: "मासिक उत्पन्न (रु)", type: "number" } , { id: "secondaryIncomeSource", label: "दुय्यम उत्पन्न स्रोत", type: "select", options: ["निवडा", "शेती", "पशुधन", "छोटा व्यवसाय", "मजुरी", "सेवा क्षेत्र", "इतर"] }, { id: "secondaryIncomeAmount", label: "दुय्यम मासिक उत्पन्न (रु)", type: "number" } ]
             },
             {
                 title: "मालमत्ता माहिती (Assets Details)", icon: "fa-house-chimney",
@@ -156,12 +144,10 @@
                 title: "पशुधन माहिती (Livestock Details)", icon: "fa-cow",
                 fields: [ { id: "cows", label: "गायी", type: "number",required: true }, { id: "buffaloes", label: "म्हशी", type: "number",required: true}, { id: "goats", label: "बकऱ्या/मेंढ्या", type: "number",required: true }, { id: "poultry", label: "कोंबड्या", type: "number",required: true }, { id: "pigs", label: "वराह पालन", type: "number" }, { id: "bulls", label: "बैलजोडी", type: "number" }, { id: "otherLivestock", label: "इतर", type: "number" }, ]
             },
-
             {
                 title: "दुग्धउत्पादन ", icon: "fa-cow",
                 fields: [ { id: "milkincome", label: "दुग्धउत्पादन किती होते (लिटर मध्ये उल्लेख करा)", type: "number",required: true }, ]
             },
-
             {
                 title: "बचत व गुंतवणूक (Savings & Investment)", icon: "fa-piggy-bank",
                 fields: [ { id: "savingsBankAccount", label: "बँक खाते क्रमांक", type: "text",required: true }, { id: "ifsccode", label: "IFSC Code", type: "text",required: true }, { id: "savingsPigmy", label: "पिग्मी खाते", type: "select", options: ["निवडा", "आहे", "नाही"] }, { id: "savingsInsurancePolicy", label: "विमा पॉलिसी", type: "select", options: ["निवडा", "आहे", "नाही"] }, { id: "savingsInsuranceType", label: "विमा प्रकार", type: "select", options: ["लागू नाही", "जीवन", "आरोग्य", "अपघात", "Crop"] }, { id: "savingsOther", label: "इतर बचत/गुंतवणूक", type: "text", fullWidth:true } ]
@@ -172,16 +158,7 @@
             },
             {
                 title: "सहायक कागदपत्रे अपलोड (Supporting Documents)", icon: "fa-upload",
-                fields: [ 
-                    { 
-                        id: "supportingDocuments", 
-                        label: "कागदपत्रे निवडा (फक्त पि डी एफ फाईल्स अपलोड करावे येथुन फोटो घेवु नये )", 
-                        type: "file", 
-                        multiple: true, 
-                        accept: "image/*,application/pdf", 
-                        fullWidth: true 
-                    } 
-                ]
+                fields: [ { id: "supportingDocuments", label: "कागदपत्रे निवडा (फक्त पि डी एफ फाईल्स अपलोड करावे येथुन फोटो घेवु नये )", type: "file", multiple: true, accept: "image/*,application/pdf", fullWidth: true } ]
             },
             {
                 title: "अधिकारी निरीक्षण", icon: "fa-circle-info",
@@ -189,19 +166,17 @@
             }
         ];
 
-
-        // ########## SCRIPT LOGIC ##########
         let lastSubmittedData = null;
-        let formMode = 'new'; // 'new' or 'update'
-        let currentUpdateRow = null; // Stores the row index to update
-        let existingPhotoLinks = []; // Stores existing photo links when updating
-        let existingDocLinks = []; // Stores existing doc links when updating
+        let formMode = 'new';
+        let currentUpdateRow = null;
+        let existingPhotoLinks = [];
+        let existingDocLinks = [];
 
         const formContainer = document.getElementById('dynamic-form-container');
         const elements = { video: document.getElementById('video'), captureButton: document.getElementById('capture-button'), photoGallery: document.getElementById('photo-gallery'), watermarkOverlay: document.getElementById('watermark-overlay'), hiddenCanvas: document.getElementById('hidden-canvas'), photoGalleryCard: document.getElementById('photo-gallery-card'), form: document.getElementById('loanAppraisalForm'), submitButton: document.getElementById('submit-form'), statusMessage: document.getElementById('status-message'), printArea: document.getElementById('print-area'), initialSelection: document.getElementById('initial-selection'), updateFieldsContainer: document.getElementById('update-form-fields'), updateOfficerSelect: document.getElementById('updateFieldOfficerName'), updateCustomerSelect: document.getElementById('updateCustomerName') };
         
         let currentLocationData = null;
-        let capturedPhotos = []; // New photos taken in the current session
+        let capturedPhotos = [];
 
         function setMode(mode) {
             formMode = mode;
@@ -213,7 +188,6 @@
                 elements.updateFieldsContainer.style.display = 'block';
                 elements.form.style.display = 'none';
                 elements.submitButton.innerHTML = `<i class="fas fa-save"></i> जुना फॉर्म अपडेट करा`;
-                // Load officer list into the update selector as well
                 fetchStaffNames(elements.updateOfficerSelect.id); 
             } else {
                 elements.form.reset();
@@ -232,7 +206,6 @@
                 section.fields.forEach(field => { 
                     const requiredAttr = field.required ? 'required' : ''; 
                     let fieldHTML = `<div class="input-group ${field.fullWidth ? 'full-width' : ''}"><label for="${field.id}">${field.label} ${field.required ? '<span style="color:red;">*</span>' : ''}</label>`; 
-                    
                     if (field.type === 'select') { 
                         fieldHTML += `<select id="${field.id}" name="${field.id}" ${requiredAttr}>`; 
                         field.options.forEach(opt => fieldHTML += `<option value="${(opt === 'निवडा' || opt === 'लागू नाही') ? '' : opt}">${opt}</option>`); 
@@ -263,9 +236,7 @@
                 const response = await fetch(`${SCRIPT_URL}?action=getStaff`); 
                 if (!response.ok) throw new Error("Network response error."); 
                 const result = await response.json(); 
-                
                 const staffSelects = document.querySelectorAll(`#${selectId}, #fieldOfficerName`);
-                
                 if (result.status === 'success' && result.data.length > 0) { 
                     staffSelects.forEach(staffSelect => {
                         const currentVal = staffSelect.value;
@@ -286,21 +257,17 @@
         async function fetchCustomerList(officerName) {
             elements.updateCustomerSelect.innerHTML = '<option value="">लोड होत आहे...</option>';
             elements.updateCustomerSelect.disabled = true;
-
             if (!officerName) {
                 elements.updateCustomerSelect.innerHTML = '<option value="">क्षेत्र अधिकारी निवडा</option>';
                 return;
             }
-
             try {
                 const url = `${SCRIPT_URL}?action=getCustomersByOfficer&officer=${encodeURIComponent(officerName)}`;
                 const response = await fetch(url);
                 const result = await response.json();
-
                 elements.updateCustomerSelect.innerHTML = '<option value="">ग्राहकाचे नांव निवडा</option>';
                 if (result.status === 'success' && result.data.length > 0) {
                     result.data.forEach(customer => {
-                        // value is the row number, text is the customer name
                         elements.updateCustomerSelect.innerHTML += `<option value="${customer.rowId}">${customer.customerName} (${customer.rowId})</option>`;
                     });
                 } else {
@@ -320,299 +287,147 @@
                 currentUpdateRow = null;
                 return;
             }
-
             elements.initialSelection.style.display = 'none';
             elements.form.style.display = 'block';
             currentUpdateRow = rowId;
-            capturedPhotos = []; // Clear current session photos
-            existingPhotoLinks = []; // Reset existing links
-            existingDocLinks = []; // Reset existing doc links
+            capturedPhotos = [];
+            existingPhotoLinks = [];
+            existingDocLinks = [];
             elements.form.reset();
             updatePhotoGallery();
-
             elements.submitButton.innerHTML = '<div class="spinner"></div> डेटा लोड करत आहे...';
             elements.submitButton.disabled = true;
-
             try {
                 const url = `${SCRIPT_URL}?action=loadRow&row=${rowId}`;
                 const response = await fetch(url);
                 const result = await response.json();
-
                 if (result.status === 'success' && result.data) {
                     const data = result.data;
-                    
-                    // 1. Populate standard fields
                     for (const key in data) {
                         const input = document.getElementById(key);
                         if (input) {
                             if (input.type === 'date' && data[key]) {
-                                // For date inputs, set value directly
                                 input.value = data[key]; 
                             } else {
                                 input.value = data[key];
                             }
                         }
                     }
-
-                    // 2. Handle existing GPS Photo Links
                     if (data.photoLinks) {
                         existingPhotoLinks = data.photoLinks.split('\n').filter(link => link.trim() !== '');
-                        // We don't display existing photos, but save the links to be re-submitted.
                     }
-                    
-                    // 3. Handle existing Supporting Document Links
                     if (data.supportdoc) {
                         existingDocLinks = data.supportdoc.split('\n').filter(link => link.trim() !== '');
                         alert(`टीप: या अर्जात पूर्वीच ${existingDocLinks.length} सहायक कागदपत्रे जोडलेली आहेत. तुम्ही नवीन फाईल्स जोडल्यास, त्या जुन्या फाईल्ससोबत सबमिट होतील.`);
                     }
-
                     alert(`फॉर्म #${rowId} (ग्राहक: ${data.customerName}) लोड झाला आहे. तुम्ही बदल करू शकता आणि सबमिट करू शकता.`);
-
                 } else {
                     throw new Error(result.message || 'डेटा लोड होऊ शकला नाही.');
                 }
             } catch (error) {
                 console.error("Load Error:", error);
                 alert(`डेटा लोड करताना त्रुटी आली: ${error.message}`);
-                setMode('update'); // Go back to selection mode
+                setMode('update');
             } finally {
                 elements.submitButton.innerHTML = `<i class="fas fa-save"></i> जुना फॉर्म अपडेट करा`;
                 elements.submitButton.disabled = false;
             }
         }
 
+        // ===== NEW, ROBUST GEOLOCATION FUNCTION =====
+        function initializeGeolocation() {
+            const gpsStatusDiv = document.getElementById('gps-status');
+            const captureButton = document.getElementById('capture-button');
+            let isLocationFound = false;
 
-        function initializeGeolocation() { 
-            if (navigator.geolocation) { 
-                navigator.geolocation.watchPosition( (position) => { 
-                    const { latitude, longitude } = position.coords; 
-                    if (currentLocationData && Math.abs(currentLocationData.lat - latitude) < 0.0001 && Math.abs(currentLocationData.lon - longitude) < 0.0001) return; 
-                    currentLocationData = { lat: latitude, lon: longitude, address: "पत्ता लोड होत आहे..." }; 
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`).then(res => res.json()).then(data => { currentLocationData.address = data.display_name || "पत्ता उपलब्ध नाही"; }).catch(() => { currentLocationData.address = "पत्ता मिळवता आला नाही"; }); 
-                }, (error) => { 
-                    console.error("GPS Error:", error); 
-                    // alert("GPS सिग्नल मिळत नाहीये. कृपया लोकेशन सेटिंग तपासा."); 
-                }, { enableHighAccuracy: true }); 
-            } else { 
-                alert("तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही."); 
-            } 
+            captureButton.disabled = true;
+
+            if (!navigator.geolocation) {
+                gpsStatusDiv.textContent = "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही.";
+                gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
+                gpsStatusDiv.style.color = 'white';
+                return;
+            }
+
+            const handleSuccess = (position, accuracyLevel) => {
+                if (isLocationFound) return;
+                isLocationFound = true;
+
+                const { latitude, longitude, accuracy } = position.coords;
+                currentLocationData = { lat: latitude, lon: longitude, address: "पत्ता लोड होत आहे..." };
+
+                gpsStatusDiv.innerHTML = `✅ लोकेशन मिळाले! (${accuracyLevel})<br><small>अचूकता: ${accuracy.toFixed(0)} मीटर</small>`;
+                gpsStatusDiv.style.backgroundColor = 'var(--success-color)';
+                gpsStatusDiv.style.color = 'white';
+                captureButton.disabled = false;
+
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        currentLocationData.address = data.display_name || "पत्ता उपलब्ध नाही";
+                    }).catch(() => {
+                        currentLocationData.address = "पत्ता मिळवता आला नाही";
+                    });
+            };
+
+            const tryLowAccuracy = () => {
+                gpsStatusDiv.textContent = "सिग्नल कमकुवत आहे, कमी अचूकतेवर प्रयत्न करत आहे...";
+                gpsStatusDiv.style.backgroundColor = '#ff9800'; // Orange
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => handleSuccess(position, 'कमी'),
+                    (error) => {
+                        gpsStatusDiv.textContent = "त्रुटी: लोकेशन मिळवणे शक्य झाले नाही. नेटवर्क आणि GPS सेटिंग तपासा.";
+                        gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
+                        gpsStatusDiv.style.color = 'white';
+                        captureButton.disabled = true;
+                    },
+                    { enableHighAccuracy: false, timeout: 25000, maximumAge: 60000 }
+                );
+            };
+            
+            const tryHighAccuracy = () => {
+                gpsStatusDiv.textContent = "उच्च अचूकतेचे (High Accuracy) लोकेशन शोधत आहे...";
+                gpsStatusDiv.style.backgroundColor = '#ffc107'; // Yellow
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => handleSuccess(position, 'उच्च'),
+                    (error) => {
+                        if ((error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE) && !isLocationFound) {
+                            tryLowAccuracy();
+                        } else if (!isLocationFound) {
+                           tryLowAccuracy();
+                        }
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                );
+            };
+
+            tryHighAccuracy();
         }
+        
         function updatePhotoGallery() { elements.photoGalleryCard.style.display = capturedPhotos.length > 0 ? 'block' : 'none'; elements.photoGallery.innerHTML = ''; capturedPhotos.forEach((photo, index) => { const container = document.createElement('div'); container.className = 'thumbnail-container'; const img = document.createElement('img'); img.src = photo; img.className = 'thumbnail'; const deleteBtn = document.createElement('button'); deleteBtn.type = 'button'; deleteBtn.innerHTML = '&times;'; deleteBtn.className = 'delete-btn'; deleteBtn.onclick = () => { capturedPhotos.splice(index, 1); updatePhotoGallery(); }; container.append(img, deleteBtn); elements.photoGallery.appendChild(container); }); }
         async function createWatermarkedImage(canvas) { const now = new Date(); const dateTime = `${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US', { hour12: true })}`; elements.watermarkOverlay.innerHTML = `<p style="margin: 4px 0; font-size: 10px; font-weight: 300;">${currentLocationData.address}</p><p style="margin: 4px 0; font-size: 10px;"><b>Coords:</b> ${currentLocationData.lat.toFixed(6)}, ${currentLocationData.lon.toFixed(6)}</p><p style="margin: 4px 0; font-size: 10px;"><b>वेळ:</b> ${dateTime}</p>`; elements.watermarkOverlay.style.cssText = `position: absolute; left: -9999px; width: 500px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 12px; font-family: 'Poppins', Arial, sans-serif; border-radius: 6px; text-shadow: 2px 2px 4px #000;`; const watermarkCanvas = await html2canvas(elements.watermarkOverlay, { backgroundColor: null, scale: 3 }); const context = canvas.getContext('2d'); const margin = canvas.width * 0.02, drawWidth = canvas.width * 0.96; const drawHeight = watermarkCanvas.height * (drawWidth / watermarkCanvas.width); context.drawImage(watermarkCanvas, margin, canvas.height - drawHeight - margin, drawWidth, drawHeight); return canvas.toDataURL('image/jpeg', 0.8); }
         async function handleCaptureClick() { if (!currentLocationData || !currentLocationData.lat) { alert("लोकेशनची माहिती मिळत आहे, कृपया थांबा."); return; } const button = elements.captureButton; const originalHTML = button.innerHTML; button.innerHTML = '<div class="spinner"></div> कॅप्चर करत आहे...'; button.disabled = true; try { const canvas = elements.hiddenCanvas; canvas.width = elements.video.videoWidth; canvas.height = elements.video.videoHeight; canvas.getContext('2d').drawImage(elements.video, 0, 0, canvas.width, canvas.height); const watermarkedImageDataUrl = await createWatermarkedImage(canvas); capturedPhotos.push(watermarkedImageDataUrl); updatePhotoGallery(); } catch (error) { console.error("Error capturing:", error); alert("फोटो काढताना त्रुटी आली."); } finally { button.innerHTML = originalHTML; button.disabled = false; } }
+        function readAllFiles(files) { const promises = []; for (let i = 0; i < files.length; i++) { promises.push(new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = (event) => { resolve({ fileName: files[i].name, dataUrl: event.target.result }); }; reader.onerror = reject; reader.readAsDataURL(files[i]); })); } return Promise.all(promises); }
+        async function handleSubmit(e) { e.preventDefault(); if (!elements.form.checkValidity()) { alert('कृपया सर्व आवश्यक (*) फील्ड भरा.'); return; } const originalButtonHTML = elements.submitButton.innerHTML; elements.submitButton.innerHTML = '<div class="spinner"></div> डेटा अनिक मुख्यालयाकडे जमा होतो आहे कृपया थांबा...'; elements.submitButton.disabled = true; elements.statusMessage.style.display = 'none'; const fileInput = document.getElementById('supportingDocuments'); let fileDataUrls = []; if (fileInput.files.length > 0) { try { fileDataUrls = await readAllFiles(fileInput.files); } catch (error) { console.error("Error reading supporting files:", error); alert("कागदपत्रे वाचताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."); elements.submitButton.innerHTML = originalButtonHTML; elements.submitButton.disabled = false; return; } } const formData = new FormData(elements.form); const data = Object.fromEntries(formData.entries()); if (formMode === 'update' && currentUpdateRow) { data.action = 'updateRow'; data.row = currentUpdateRow; } else { data.action = 'newSubmission'; } const now = new Date(); const day = String(now.getDate()).padStart(2, '0'); const month = String(now.getMonth() + 1).padStart(2, '0'); const year = now.getFullYear(); data.actualTime = `${day}/${month}/${year}`; data.photos = existingPhotoLinks.concat(capturedPhotos); data.supportdoc = existingDocLinks.concat(fileDataUrls); data.gpsLatitude = currentLocationData?.lat || ''; data.gpsLongitude = currentLocationData?.lon || ''; data.gpsAddress = currentLocationData?.address || ''; lastSubmittedData = data; try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) }); if (!response.ok) throw new Error(`Server error: ${response.statusText}`); const result = await response.json(); if (result.status === 'success') { elements.statusMessage.className = 'status-success'; elements.statusMessage.innerHTML = `${formMode === 'update' ? 'फॉर्म यशस्वीरित्या अपडेट झाला' : 'फॉर्म यशस्वीरित्या सबमिट झाला'}! <br><br> <button type="button" onclick="printReport()">रिपोर्ट प्रिंट करा</button>`; elements.form.reset(); capturedPhotos = []; existingPhotoLinks = []; existingDocLinks = []; currentUpdateRow = null; updatePhotoGallery(); document.getElementById('visitDate').valueAsDate = new Date(); document.querySelector('[name="district"]').value = "धाराशिव"; elements.form.style.display = 'none'; elements.initialSelection.style.display = 'block'; } else { throw new Error(result.message); } } catch (error) { elements.statusMessage.className = 'status-error'; elements.statusMessage.innerHTML = `एक त्रुटी आली: ${error.message}. सबमिशन अयशस्वी.`; lastSubmittedData = null; } finally { elements.statusMessage.style.display = 'block'; elements.submitButton.innerHTML = originalButtonHTML; elements.submitButton.disabled = false; window.scrollTo(0, document.body.scrollHeight); } }
+        function generatePrintHTML(data) { const logoUrl = "https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png"; const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLongitude},pm2rdl` : ''; const gmapLink = (data.gpsLatitude && data.gpsLongitude) ? `https://www.google.com/maps?q=${data.gpsLatitude},${data.gpsLongitude}` : ''; let detailsHTML = `<div class="print-page"><div class="print-watermark">अनिक फायनान्स</div><div class="print-content"><div class="print-header"><img src="${logoUrl}" alt="Company Logo"><h1>GPS व्हेरिफिकेशन<br>अहवाल</h1></div>`; detailsHTML += `<h3 class="section-title">मूलभूत माहिती</h3><table class="print-table"><tr><td>ग्राहकाचे नाव</td><td>${data.customerName||''}</td></tr><tr><td>गाव</td><td>${data.villageName||''}</td></tr><tr><td>कर्जाची रक्कम</td><td>रु ${data.loanAmountRequested||''}</td></tr><tr><td>क्षेत्र अधिकारी</td><td>${data.fieldOfficerName||''}</td></tr></table>`; formConfig.forEach(section => { if (section.title.includes('अपलोड')) return; let sectionHasData = section.fields.some(field => data[field.id] && data[field.id].toString().trim() !== ''); if(sectionHasData){ detailsHTML += `<h3 class="section-title">${section.title}</h3><table class="print-table">`; section.fields.forEach(field => { if (field.id !== 'supportingDocuments' && data[field.id] && data[field.id].toString().trim() !== '' && (!field.value || data[field.id] !== field.value)) { detailsHTML += `<tr><td>${field.label}</td><td>${data[field.id]}</td></tr>`; } }); detailsHTML += `</table>`; } }); const allPhotoLinks = Array.isArray(data.photos) ? data.photos.filter(link => link.startsWith('data:')) : data.photoLinks ? data.photoLinks.split('\n').filter(link => link.trim() !== '') : []; if (allPhotoLinks && allPhotoLinks.length > 0) { detailsHTML += `<h3 class="section-title">काढलेले छायाचित्र</h3><div class="photo-grid">`; allPhotoLinks.forEach(photoDataUrl => { detailsHTML += `<div class="print-photo-container"><img src="${photoDataUrl}"></div>`; }); detailsHTML += `</div>`; } if (mapImageUrl) { detailsHTML += `<div class="map-container"><h3 class="section-title">GPS लोकेशन नकाशा</h3><img src="${mapImageUrl}" class="print-map"><p style="font-size:10pt; margin-top:8px;"><strong>Google Maps Link:</strong> <a href="${gmapLink}" target="_blank">${gmapLink}</a></p></div>`; } detailsHTML += `<div class="print-footer">हा रिपोर्ट ${new Date().toLocaleString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे.</div></div></div>`; return detailsHTML; }
+        function printReport() { if (lastSubmittedData) { elements.printArea.innerHTML = generatePrintHTML(lastSubmittedData); const images = elements.printArea.querySelectorAll('img'); const promises = []; images.forEach(img => { promises.push(new Promise((resolve) => { if (img.complete) { resolve(); } else { img.onload = resolve; img.onerror = resolve; } })); }); Promise.all(promises).then(() => { window.print(); }); } else { alert("प्रिंट करण्यासाठी डेटा उपलब्ध नाही."); } }
         
-        function readAllFiles(files) {
-            const promises = [];
-            for (let i = 0; i < files.length; i++) {
-                promises.push(new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        resolve({
-                            fileName: files[i].name,
-                            dataUrl: event.target.result
-                        });
-                    };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(files[i]);
-                }));
-            }
-            return Promise.all(promises);
-        }
-
-        async function handleSubmit(e) { 
-            e.preventDefault(); 
-            if (!elements.form.checkValidity()) { 
-                alert('कृपया सर्व आवश्यक (*) फील्ड भरा.'); 
-                return; 
-            } 
-            
-            const originalButtonHTML = elements.submitButton.innerHTML; 
-            elements.submitButton.innerHTML = '<div class="spinner"></div> डेटा अनिक मुख्यालयाकडे जमा होतो आहे कृपया थांबा याकरीता 1 मिनीटांपर्यंत वेळ लागु शकतो...'; 
-            elements.submitButton.disabled = true; 
-            elements.statusMessage.style.display = 'none'; 
-
-            // 1. फाईल इनपुटमधून डेटा वाचा
-            const fileInput = document.getElementById('supportingDocuments');
-            let fileDataUrls = [];
-            
-            if (fileInput.files.length > 0) {
-                try {
-                    fileDataUrls = await readAllFiles(fileInput.files);
-                } catch (error) {
-                    console.error("Error reading supporting files:", error);
-                    alert("कागदपत्रे वाचताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.");
-                    elements.submitButton.innerHTML = originalButtonHTML;
-                    elements.submitButton.disabled = false;
-                    return;
-                }
-            }
-
-
-            // 2. इतर फॉर्म डेटा गोळा करा
-            const formData = new FormData(elements.form);
-            const data = Object.fromEntries(formData.entries());
-            
-            // Set action and row index for update mode
-            if (formMode === 'update' && currentUpdateRow) {
-                data.action = 'updateRow';
-                data.row = currentUpdateRow;
-            } else {
-                data.action = 'newSubmission';
-            }
-
-            // ***** नवीन लॉजिक: dd/mm/yyyy स्वरूपनात तारीख जोडणे *****
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            data.actualTime = `${day}/${month}/${year}`; 
-            // *******************************************************
-
-            // 3. फोटो आणि सपोर्टिंग डॉक्युमेंट डेटा जोडा
-            // capturedPhotos = new photos taken now
-            // existingPhotoLinks = photos already linked to this record (in update mode)
-            data.photos = existingPhotoLinks.concat(capturedPhotos);
-            data.supportdoc = existingDocLinks.concat(fileDataUrls);
-
-            data.gpsLatitude = currentLocationData?.lat || ''; 
-            data.gpsLongitude = currentLocationData?.lon || ''; 
-            data.gpsAddress = currentLocationData?.address || ''; 
-            lastSubmittedData = data; 
-
-            try { 
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) }); 
-                if (!response.ok) throw new Error(`Server error: ${response.statusText}`); 
-                const result = await response.json(); 
-                
-                if (result.status === 'success') { 
-                    elements.statusMessage.className = 'status-success'; 
-                    elements.statusMessage.innerHTML = `${formMode === 'update' ? 'फॉर्म यशस्वीरित्या अपडेट झाला' : 'फॉर्म यशस्वीरित्या सबमिट झाला'}! <br><br> <button type="button" onclick="printReport()">रिपोर्ट प्रिंट करा</button>`; 
-                    
-                    // Reset or prepare for next action
-                    elements.form.reset(); 
-                    capturedPhotos = []; 
-                    existingPhotoLinks = [];
-                    existingDocLinks = [];
-                    currentUpdateRow = null;
-                    updatePhotoGallery(); 
-                    document.getElementById('visitDate').valueAsDate = new Date(); 
-                    document.querySelector('[name="district"]').value = "धाराशिव"; 
-
-                    // Show selection screen again after successful operation
-                    elements.form.style.display = 'none';
-                    elements.initialSelection.style.display = 'block';
-
-                } else { 
-                    throw new Error(result.message); 
-                } 
-            } catch (error) { 
-                elements.statusMessage.className = 'status-error'; 
-                elements.statusMessage.innerHTML = `एक त्रुटी आली: ${error.message}. सबमिशन अयशस्वी.`; 
-                lastSubmittedData = null; 
-            } finally { 
-                elements.statusMessage.style.display = 'block'; 
-                elements.submitButton.innerHTML = originalButtonHTML; 
-                elements.submitButton.disabled = false; 
-                window.scrollTo(0, document.body.scrollHeight); 
-            } 
-        }
-        
-        // ===================================
-        // ===== PRINT FUNCTION STARTS =====
-        // ===================================
-        function generatePrintHTML(data) {
-            // ... (Same as previous print function logic) ...
-            const logoUrl = "https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png";
-            const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLongitude},pm2rdl` : '';
-            const gmapLink = (data.gpsLatitude && data.gpsLongitude) ? `https://www.google.com/maps?q=${data.gpsLatitude},${data.gpsLongitude}` : '';
-            
-            let detailsHTML = `<div class="print-page"><div class="print-watermark">अनिक फायनान्स</div><div class="print-content"><div class="print-header"><img src="${logoUrl}" alt="Company Logo"><h1>GPS व्हेरिफिकेशन<br>अहवाल</h1></div>`;
-            detailsHTML += `<h3 class="section-title">मूलभूत माहिती</h3><table class="print-table"><tr><td>ग्राहकाचे नाव</td><td>${data.customerName||''}</td></tr><tr><td>गाव</td><td>${data.villageName||''}</td></tr><tr><td>कर्जाची रक्कम</td><td>रु ${data.loanAmountRequested||''}</td></tr><tr><td>क्षेत्र अधिकारी</td><td>${data.fieldOfficerName||''}</td></tr></table>`;
-            
-            formConfig.forEach(section => {
-                if (section.title.includes('अपलोड')) return; 
-
-                let sectionHasData = section.fields.some(field => data[field.id] && data[field.id].toString().trim() !== '');
-                if(sectionHasData){
-                    detailsHTML += `<h3 class="section-title">${section.title}</h3><table class="print-table">`;
-                    section.fields.forEach(field => { 
-                        if (field.id !== 'supportingDocuments' && data[field.id] && data[field.id].toString().trim() !== '' && (!field.value || data[field.id] !== field.value)) { 
-                            detailsHTML += `<tr><td>${field.label}</td><td>${data[field.id]}</td></tr>`; 
-                        } 
-                    });
-                    detailsHTML += `</table>`;
-                }
-            });
-
-            // Handle combined photo links (existing + new captured) for printing
-            const allPhotoLinks = Array.isArray(data.photos) ? data.photos.filter(link => link.startsWith('data:')) : data.photoLinks ? data.photoLinks.split('\n').filter(link => link.trim() !== '') : [];
-
-
-            if (allPhotoLinks && allPhotoLinks.length > 0) {
-                detailsHTML += `<h3 class="section-title">काढलेले छायाचित्र</h3><div class="photo-grid">`;
-                allPhotoLinks.forEach(photoDataUrl => {
-                    detailsHTML += `<div class="print-photo-container"><img src="${photoDataUrl}"></div>`;
-                });
-                detailsHTML += `</div>`;
-            }
-
-            if (mapImageUrl) { 
-                detailsHTML += `<div class="map-container"><h3 class="section-title">GPS लोकेशन नकाशा</h3><img src="${mapImageUrl}" class="print-map"><p style="font-size:10pt; margin-top:8px;"><strong>Google Maps Link:</strong> <a href="${gmapLink}" target="_blank">${gmapLink}</a></p></div>`; 
-            }
-            
-            detailsHTML += `<div class="print-footer">हा रिपोर्ट ${new Date().toLocaleString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे.</div></div></div>`;
-            return detailsHTML;
-        }
-
-        function printReport() {
-            if (lastSubmittedData) {
-                elements.printArea.innerHTML = generatePrintHTML(lastSubmittedData);
-
-                const images = elements.printArea.querySelectorAll('img');
-                const promises = [];
-
-                images.forEach(img => {
-                    promises.push(new Promise((resolve) => {
-                        if (img.complete) {
-                            resolve();
-                        } else {
-                            img.onload = resolve;
-                            img.onerror = resolve; 
-                        }
-                    }));
-                });
-
-                Promise.all(promises).then(() => {
-                    window.print();
-                });
-
-            } else {
-                alert("प्रिंट करण्यासाठी डेटा उपलब्ध नाही.");
-            }
-        }
-        // ===================================
-        // =====  PRINT FUNCTION ENDS  =====
-        // ===================================
-
         window.addEventListener('load', async () => { 
             generateForm(); 
-            // Only load officer list into the update selection initially
             fetchStaffNames('updateFieldOfficerName'); 
-
             try { 
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); 
                 elements.video.srcObject = stream; 
-                initializeGeolocation(); 
+                initializeGeolocation(); // Call the new robust function
                 elements.captureButton.addEventListener('click', handleCaptureClick); 
                 elements.form.addEventListener('submit', handleSubmit); 
             } catch (err) { 
-                alert("ॲप वापरण्यासाठी कॅमेरा आणि लोकेशनची परवानगी आवश्यक आहे. पेज रिफ्रेश करा."); 
+                console.error(err);
+                alert("ॲप वापरण्यासाठी कॅमेरा आणि लोकेशनची परवानगी आवश्यक आहे. कृपया पेज रिफ्रेश करा आणि परवानगी द्या."); 
             } 
         });
     </script>
 </body>
-
 </html>
-
-
-
