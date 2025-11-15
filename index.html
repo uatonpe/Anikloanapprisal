@@ -173,9 +173,11 @@
         let existingDocLinks = [];
 
         const formContainer = document.getElementById('dynamic-form-container');
-        const elements = { video: document.getElementById('video'), captureButton: document.getElementById('capture-button'), photoGallery: document.getElementById('photo-gallery'), watermarkOverlay: document.getElementById('watermark-overlay'), hiddenCanvas: document.getElementById('hidden-canvas'), photoGalleryCard: document.getElementById('photo-gallery-card'), form: document.getElementById('loanAppraisalForm'), submitButton: document.getElementById('submit-form'), statusMessage: document.getElementById('status-message'), printArea: document.getElementById('print-area'), initialSelection: document.getElementById('initial-selection'), updateFieldsContainer: document.getElementById('update-form-fields'), updateOfficerSelect: document.getElementById('updateFieldOfficerName'), updateCustomerSelect: document.getElementById('updateCustomerName') };
+        const elements = { video: document.getElementById('video'), captureButton: document.getElementById('capture-button'), photoGallery: document.getElementById('photo-gallery'), watermarkOverlay: document.getElementById('watermark-overlay'), hiddenCanvas: document.getElementById('hidden-canvas'), photoGalleryCard: document.getElementById('photo-gallery-card'), form: document.getElementById('loanAppraisalForm'), submitButton: document.getElementById('submit-form'), statusMessage: document.getElementById('status-message'), printArea: document.getElementById('print-area'), initialSelection: document.getElementById('initial-selection'), updateFieldsContainer: document.getElementById('update-form-fields'), updateOfficerSelect: document.getElementById('updateFieldOfficerName'), updateCustomerSelect: document.getElementById('updateCustomerName'), gpsStatusDiv: document.getElementById('gps-status') };
         
-        let currentLocationData = null;
+        // MODIFIED: Separated location data for new vs existing forms
+        let currentLocationData = null; // For new forms
+        let originalLocationData = null; // For updated forms
         let capturedPhotos = [];
 
         function setMode(mode) {
@@ -188,14 +190,21 @@
                 elements.updateFieldsContainer.style.display = 'block';
                 elements.form.style.display = 'none';
                 elements.submitButton.innerHTML = `<i class="fas fa-save"></i> जुना फॉर्म अपडेट करा`;
+                elements.gpsStatusDiv.textContent = "जुना फॉर्म लोड करा...";
+                elements.captureButton.disabled = true; // Disable until form is loaded
                 fetchStaffNames(elements.updateOfficerSelect.id); 
             } else {
+                // NEW: Reset everything for a new form
+                formMode = 'new';
+                currentLocationData = null;
+                originalLocationData = null;
                 elements.form.reset();
                 capturedPhotos = [];
                 currentUpdateRow = null;
                 updatePhotoGallery();
                 document.getElementById('visitDate').valueAsDate = new Date();
                 elements.submitButton.innerHTML = `<i class="fas fa-paper-plane"></i>फॉर्म सबमिट करा`;
+                initializeGeolocation(); // Start getting location only for new forms
             }
             window.scrollTo(0, 0);
         }
@@ -293,6 +302,7 @@
             capturedPhotos = [];
             existingPhotoLinks = [];
             existingDocLinks = [];
+            originalLocationData = null; // Reset
             elements.form.reset();
             updatePhotoGallery();
             elements.submitButton.innerHTML = '<div class="spinner"></div> डेटा लोड करत आहे...';
@@ -305,14 +315,28 @@
                     const data = result.data;
                     for (const key in data) {
                         const input = document.getElementById(key);
-                        if (input) {
-                            if (input.type === 'date' && data[key]) {
-                                input.value = data[key]; 
-                            } else {
-                                input.value = data[key];
-                            }
-                        }
+                        if (input) { input.value = data[key]; }
                     }
+                    
+                    // MODIFIED: Load and store original location data
+                    originalLocationData = { 
+                        lat: data.gpsLatitude || null, 
+                        lon: data.gpsLongitude || null, 
+                        address: data.gpsAddress || "पत्ता उपलब्ध नाही"
+                    };
+
+                    if (originalLocationData.lat) {
+                        elements.gpsStatusDiv.innerHTML = `✅ मूळ लोकेशन लोड झाले.<br><small>${originalLocationData.address}</small>`;
+                        elements.gpsStatusDiv.style.backgroundColor = 'var(--primary-color)';
+                        elements.gpsStatusDiv.style.color = 'white';
+                        elements.captureButton.disabled = false;
+                    } else {
+                        elements.gpsStatusDiv.textContent = "या रेकॉर्डसाठी मूळ लोकेशन उपलब्ध नाही.";
+                        elements.gpsStatusDiv.style.backgroundColor = 'var(--light-text)';
+                        elements.gpsStatusDiv.style.color = 'white';
+                        elements.captureButton.disabled = true;
+                    }
+
                     if (data.photoLinks) {
                         existingPhotoLinks = data.photoLinks.split('\n').filter(link => link.trim() !== '');
                     }
@@ -334,84 +358,178 @@
             }
         }
 
-        // ===== NEW, ROBUST GEOLOCATION FUNCTION =====
         function initializeGeolocation() {
-            const gpsStatusDiv = document.getElementById('gps-status');
-            const captureButton = document.getElementById('capture-button');
-            let isLocationFound = false;
-
-            captureButton.disabled = true;
-
+            elements.captureButton.disabled = true;
             if (!navigator.geolocation) {
-                gpsStatusDiv.textContent = "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही.";
-                gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
-                gpsStatusDiv.style.color = 'white';
+                elements.gpsStatusDiv.textContent = "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही.";
+                elements.gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
+                elements.gpsStatusDiv.style.color = 'white';
                 return;
             }
 
-            const handleSuccess = (position, accuracyLevel) => {
-                if (isLocationFound) return;
-                isLocationFound = true;
+            elements.gpsStatusDiv.textContent = "GPS लोकेशन मिळवले जात आहे...";
+            elements.gpsStatusDiv.style.backgroundColor = '#ffc107';
 
+            const handleSuccess = (position) => {
                 const { latitude, longitude, accuracy } = position.coords;
                 currentLocationData = { lat: latitude, lon: longitude, address: "पत्ता लोड होत आहे..." };
 
-                gpsStatusDiv.innerHTML = `✅ लोकेशन मिळाले! (${accuracyLevel})<br><small>अचूकता: ${accuracy.toFixed(0)} मीटर</small>`;
-                gpsStatusDiv.style.backgroundColor = 'var(--success-color)';
-                gpsStatusDiv.style.color = 'white';
-                captureButton.disabled = false;
+                elements.gpsStatusDiv.innerHTML = `✅ लोकेशन मिळाले!<br><small>अचूकता: ${accuracy.toFixed(0)} मीटर</small>`;
+                elements.gpsStatusDiv.style.backgroundColor = 'var(--success-color)';
+                elements.gpsStatusDiv.style.color = 'white';
+                elements.captureButton.disabled = false;
 
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
                     .then(res => res.json())
-                    .then(data => {
-                        currentLocationData.address = data.display_name || "पत्ता उपलब्ध नाही";
-                    }).catch(() => {
-                        currentLocationData.address = "पत्ता मिळवता आला नाही";
-                    });
+                    .then(data => { currentLocationData.address = data.display_name || "पत्ता उपलब्ध नाही"; })
+                    .catch(() => { currentLocationData.address = "पत्ता मिळवता आला नाही"; });
             };
 
-            const tryLowAccuracy = () => {
-                gpsStatusDiv.textContent = "सिग्नल कमकुवत आहे, कमी अचूकतेवर प्रयत्न करत आहे...";
-                gpsStatusDiv.style.backgroundColor = '#ff9800'; // Orange
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => handleSuccess(position, 'कमी'),
-                    (error) => {
-                        gpsStatusDiv.textContent = "त्रुटी: लोकेशन मिळवणे शक्य झाले नाही. नेटवर्क आणि GPS सेटिंग तपासा.";
-                        gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
-                        gpsStatusDiv.style.color = 'white';
-                        captureButton.disabled = true;
-                    },
-                    { enableHighAccuracy: false, timeout: 25000, maximumAge: 60000 }
-                );
+            const handleError = () => {
+                elements.gpsStatusDiv.textContent = "त्रुटी: लोकेशन मिळवणे शक्य झाले नाही. नेटवर्क आणि GPS सेटिंग तपासा.";
+                elements.gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
+                elements.gpsStatusDiv.style.color = 'white';
             };
             
-            const tryHighAccuracy = () => {
-                gpsStatusDiv.textContent = "उच्च अचूकतेचे (High Accuracy) लोकेशन शोधत आहे...";
-                gpsStatusDiv.style.backgroundColor = '#ffc107'; // Yellow
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => handleSuccess(position, 'उच्च'),
-                    (error) => {
-                        if ((error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE) && !isLocationFound) {
-                            tryLowAccuracy();
-                        } else if (!isLocationFound) {
-                           tryLowAccuracy();
-                        }
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-                );
-            };
-
-            tryHighAccuracy();
+            navigator.geolocation.getCurrentPosition(handleSuccess, handleError, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
         }
         
         function updatePhotoGallery() { elements.photoGalleryCard.style.display = capturedPhotos.length > 0 ? 'block' : 'none'; elements.photoGallery.innerHTML = ''; capturedPhotos.forEach((photo, index) => { const container = document.createElement('div'); container.className = 'thumbnail-container'; const img = document.createElement('img'); img.src = photo; img.className = 'thumbnail'; const deleteBtn = document.createElement('button'); deleteBtn.type = 'button'; deleteBtn.innerHTML = '&times;'; deleteBtn.className = 'delete-btn'; deleteBtn.onclick = () => { capturedPhotos.splice(index, 1); updatePhotoGallery(); }; container.append(img, deleteBtn); elements.photoGallery.appendChild(container); }); }
-        async function createWatermarkedImage(canvas) { const now = new Date(); const dateTime = `${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US', { hour12: true })}`; elements.watermarkOverlay.innerHTML = `<p style="margin: 4px 0; font-size: 10px; font-weight: 300;">${currentLocationData.address}</p><p style="margin: 4px 0; font-size: 10px;"><b>Coords:</b> ${currentLocationData.lat.toFixed(6)}, ${currentLocationData.lon.toFixed(6)}</p><p style="margin: 4px 0; font-size: 10px;"><b>वेळ:</b> ${dateTime}</p>`; elements.watermarkOverlay.style.cssText = `position: absolute; left: -9999px; width: 500px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 12px; font-family: 'Poppins', Arial, sans-serif; border-radius: 6px; text-shadow: 2px 2px 4px #000;`; const watermarkCanvas = await html2canvas(elements.watermarkOverlay, { backgroundColor: null, scale: 3 }); const context = canvas.getContext('2d'); const margin = canvas.width * 0.02, drawWidth = canvas.width * 0.96; const drawHeight = watermarkCanvas.height * (drawWidth / watermarkCanvas.width); context.drawImage(watermarkCanvas, margin, canvas.height - drawHeight - margin, drawWidth, drawHeight); return canvas.toDataURL('image/jpeg', 0.8); }
-        async function handleCaptureClick() { if (!currentLocationData || !currentLocationData.lat) { alert("लोकेशनची माहिती मिळत आहे, कृपया थांबा."); return; } const button = elements.captureButton; const originalHTML = button.innerHTML; button.innerHTML = '<div class="spinner"></div> कॅप्चर करत आहे...'; button.disabled = true; try { const canvas = elements.hiddenCanvas; canvas.width = elements.video.videoWidth; canvas.height = elements.video.videoHeight; canvas.getContext('2d').drawImage(elements.video, 0, 0, canvas.width, canvas.height); const watermarkedImageDataUrl = await createWatermarkedImage(canvas); capturedPhotos.push(watermarkedImageDataUrl); updatePhotoGallery(); } catch (error) { console.error("Error capturing:", error); alert("फोटो काढताना त्रुटी आली."); } finally { button.innerHTML = originalHTML; button.disabled = false; } }
+        
+        async function createWatermarkedImage(canvas) { 
+            // MODIFIED: Use the correct location data based on the form mode
+            const locationForWatermark = formMode === 'update' ? originalLocationData : currentLocationData;
+            
+            if (!locationForWatermark || !locationForWatermark.lat) {
+                throw new Error("वॉटरमार्कसाठी लोकेशन डेटा उपलब्ध नाही.");
+            }
+
+            const now = new Date(); 
+            const dateTime = `${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US', { hour12: true })}`; 
+            elements.watermarkOverlay.innerHTML = `<p style="margin: 4px 0; font-size: 10px; font-weight: 300;">${locationForWatermark.address}</p><p style="margin: 4px 0; font-size: 10px;"><b>Coords:</b> ${locationForWatermark.lat.toFixed(6)}, ${locationForWatermark.lon.toFixed(6)}</p><p style="margin: 4px 0; font-size: 10px;"><b>वेळ:</b> ${dateTime}</p>`; 
+            elements.watermarkOverlay.style.cssText = `position: absolute; left: -9999px; width: 500px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 12px; font-family: 'Poppins', Arial, sans-serif; border-radius: 6px; text-shadow: 2px 2px 4px #000;`; 
+            const watermarkCanvas = await html2canvas(elements.watermarkOverlay, { backgroundColor: null, scale: 3 }); 
+            const context = canvas.getContext('2d'); 
+            const margin = canvas.width * 0.02, drawWidth = canvas.width * 0.96; 
+            const drawHeight = watermarkCanvas.height * (drawWidth / watermarkCanvas.width); 
+            context.drawImage(watermarkCanvas, margin, canvas.height - drawHeight - margin, drawWidth, drawHeight); 
+            return canvas.toDataURL('image/jpeg', 0.8); 
+        }
+
+        async function handleCaptureClick() { 
+            const locationCheck = formMode === 'update' ? originalLocationData : currentLocationData;
+            if (!locationCheck || !locationCheck.lat) { 
+                alert("लोकेशनची माहिती उपलब्ध नाही, कृपया थांबा."); return; 
+            } 
+            const button = elements.captureButton; 
+            const originalHTML = button.innerHTML; 
+            button.innerHTML = '<div class="spinner"></div> कॅप्चर करत आहे...'; 
+            button.disabled = true; 
+            try { 
+                const canvas = elements.hiddenCanvas; 
+                canvas.width = elements.video.videoWidth; 
+                canvas.height = elements.video.videoHeight; 
+                canvas.getContext('2d').drawImage(elements.video, 0, 0, canvas.width, canvas.height); 
+                const watermarkedImageDataUrl = await createWatermarkedImage(canvas); 
+                capturedPhotos.push(watermarkedImageDataUrl); 
+                updatePhotoGallery(); 
+            } catch (error) { 
+                console.error("Error capturing:", error); 
+                alert(`फोटो काढताना त्रुटी आली: ${error.message}`); 
+            } finally { 
+                button.innerHTML = originalHTML; 
+                button.disabled = false; 
+            } 
+        }
+
         function readAllFiles(files) { const promises = []; for (let i = 0; i < files.length; i++) { promises.push(new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = (event) => { resolve({ fileName: files[i].name, dataUrl: event.target.result }); }; reader.onerror = reject; reader.readAsDataURL(files[i]); })); } return Promise.all(promises); }
-        async function handleSubmit(e) { e.preventDefault(); if (!elements.form.checkValidity()) { alert('कृपया सर्व आवश्यक (*) फील्ड भरा.'); return; } const originalButtonHTML = elements.submitButton.innerHTML; elements.submitButton.innerHTML = '<div class="spinner"></div> डेटा अनिक मुख्यालयाकडे जमा होतो आहे कृपया थांबा...'; elements.submitButton.disabled = true; elements.statusMessage.style.display = 'none'; const fileInput = document.getElementById('supportingDocuments'); let fileDataUrls = []; if (fileInput.files.length > 0) { try { fileDataUrls = await readAllFiles(fileInput.files); } catch (error) { console.error("Error reading supporting files:", error); alert("कागदपत्रे वाचताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."); elements.submitButton.innerHTML = originalButtonHTML; elements.submitButton.disabled = false; return; } } const formData = new FormData(elements.form); const data = Object.fromEntries(formData.entries()); if (formMode === 'update' && currentUpdateRow) { data.action = 'updateRow'; data.row = currentUpdateRow; } else { data.action = 'newSubmission'; } const now = new Date(); const day = String(now.getDate()).padStart(2, '0'); const month = String(now.getMonth() + 1).padStart(2, '0'); const year = now.getFullYear(); data.actualTime = `${day}/${month}/${year}`; data.photos = existingPhotoLinks.concat(capturedPhotos); data.supportdoc = existingDocLinks.concat(fileDataUrls); data.gpsLatitude = currentLocationData?.lat || ''; data.gpsLongitude = currentLocationData?.lon || ''; data.gpsAddress = currentLocationData?.address || ''; lastSubmittedData = data; try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) }); if (!response.ok) throw new Error(`Server error: ${response.statusText}`); const result = await response.json(); if (result.status === 'success') { elements.statusMessage.className = 'status-success'; elements.statusMessage.innerHTML = `${formMode === 'update' ? 'फॉर्म यशस्वीरित्या अपडेट झाला' : 'फॉर्म यशस्वीरित्या सबमिट झाला'}! <br><br> <button type="button" onclick="printReport()">रिपोर्ट प्रिंट करा</button>`; elements.form.reset(); capturedPhotos = []; existingPhotoLinks = []; existingDocLinks = []; currentUpdateRow = null; updatePhotoGallery(); document.getElementById('visitDate').valueAsDate = new Date(); document.querySelector('[name="district"]').value = "धाराशिव"; elements.form.style.display = 'none'; elements.initialSelection.style.display = 'block'; } else { throw new Error(result.message); } } catch (error) { elements.statusMessage.className = 'status-error'; elements.statusMessage.innerHTML = `एक त्रुटी आली: ${error.message}. सबमिशन अयशस्वी.`; lastSubmittedData = null; } finally { elements.statusMessage.style.display = 'block'; elements.submitButton.innerHTML = originalButtonHTML; elements.submitButton.disabled = false; window.scrollTo(0, document.body.scrollHeight); } }
-        function generatePrintHTML(data) { const logoUrl = "https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png"; const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLongitude},pm2rdl` : ''; const gmapLink = (data.gpsLatitude && data.gpsLongitude) ? `https://www.google.com/maps?q=${data.gpsLatitude},${data.gpsLongitude}` : ''; let detailsHTML = `<div class="print-page"><div class="print-watermark">अनिक फायनान्स</div><div class="print-content"><div class="print-header"><img src="${logoUrl}" alt="Company Logo"><h1>GPS व्हेरिफिकेशन<br>अहवाल</h1></div>`; detailsHTML += `<h3 class="section-title">मूलभूत माहिती</h3><table class="print-table"><tr><td>ग्राहकाचे नाव</td><td>${data.customerName||''}</td></tr><tr><td>गाव</td><td>${data.villageName||''}</td></tr><tr><td>कर्जाची रक्कम</td><td>रु ${data.loanAmountRequested||''}</td></tr><tr><td>क्षेत्र अधिकारी</td><td>${data.fieldOfficerName||''}</td></tr></table>`; formConfig.forEach(section => { if (section.title.includes('अपलोड')) return; let sectionHasData = section.fields.some(field => data[field.id] && data[field.id].toString().trim() !== ''); if(sectionHasData){ detailsHTML += `<h3 class="section-title">${section.title}</h3><table class="print-table">`; section.fields.forEach(field => { if (field.id !== 'supportingDocuments' && data[field.id] && data[field.id].toString().trim() !== '' && (!field.value || data[field.id] !== field.value)) { detailsHTML += `<tr><td>${field.label}</td><td>${data[field.id]}</td></tr>`; } }); detailsHTML += `</table>`; } }); const allPhotoLinks = Array.isArray(data.photos) ? data.photos.filter(link => link.startsWith('data:')) : data.photoLinks ? data.photoLinks.split('\n').filter(link => link.trim() !== '') : []; if (allPhotoLinks && allPhotoLinks.length > 0) { detailsHTML += `<h3 class="section-title">काढलेले छायाचित्र</h3><div class="photo-grid">`; allPhotoLinks.forEach(photoDataUrl => { detailsHTML += `<div class="print-photo-container"><img src="${photoDataUrl}"></div>`; }); detailsHTML += `</div>`; } if (mapImageUrl) { detailsHTML += `<div class="map-container"><h3 class="section-title">GPS लोकेशन नकाशा</h3><img src="${mapImageUrl}" class="print-map"><p style="font-size:10pt; margin-top:8px;"><strong>Google Maps Link:</strong> <a href="${gmapLink}" target="_blank">${gmapLink}</a></p></div>`; } detailsHTML += `<div class="print-footer">हा रिपोर्ट ${new Date().toLocaleString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे.</div></div></div>`; return detailsHTML; }
+        
+        async function handleSubmit(e) { 
+            e.preventDefault(); 
+            if (!elements.form.checkValidity()) { 
+                alert('कृपया सर्व आवश्यक (*) फील्ड भरा.'); return; 
+            } 
+            const originalButtonHTML = elements.submitButton.innerHTML; 
+            elements.submitButton.innerHTML = '<div class="spinner"></div> डेटा अनिक मुख्यालयाकडे जमा होतो आहे कृपया थांबा...'; 
+            elements.submitButton.disabled = true; 
+            elements.statusMessage.style.display = 'none'; 
+            const fileInput = document.getElementById('supportingDocuments'); 
+            let fileDataUrls = []; 
+            if (fileInput.files.length > 0) { 
+                try { 
+                    fileDataUrls = await readAllFiles(fileInput.files); 
+                } catch (error) { 
+                    console.error("Error reading supporting files:", error); 
+                    alert("कागदपत्रे वाचताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."); 
+                    elements.submitButton.innerHTML = originalButtonHTML; 
+                    elements.submitButton.disabled = false; 
+                    return; 
+                } 
+            } 
+            const formData = new FormData(elements.form); 
+            const data = Object.fromEntries(formData.entries()); 
+            if (formMode === 'update' && currentUpdateRow) { 
+                data.action = 'updateRow'; 
+                data.row = currentUpdateRow; 
+            } else { 
+                data.action = 'newSubmission'; 
+            } 
+            const now = new Date(); 
+            const day = String(now.getDate()).padStart(2, '0'); 
+            const month = String(now.getMonth() + 1).padStart(2, '0'); 
+            const year = now.getFullYear(); 
+            data.actualTime = `${day}/${month}/${year}`; 
+            data.photos = existingPhotoLinks.concat(capturedPhotos); 
+            data.supportdoc = existingDocLinks.concat(fileDataUrls); 
+            
+            // MODIFIED: Use correct location data based on form mode
+            if (formMode === 'update') {
+                data.gpsLatitude = originalLocationData?.lat || '';
+                data.gpsLongitude = originalLocationData?.lon || '';
+                data.gpsAddress = originalLocationData?.address || '';
+            } else {
+                data.gpsLatitude = currentLocationData?.lat || '';
+                data.gpsLongitude = currentLocationData?.lon || '';
+                data.gpsAddress = currentLocationData?.address || '';
+            }
+            
+            lastSubmittedData = data; 
+            try { 
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) }); 
+                if (!response.ok) throw new Error(`Server error: ${response.statusText}`); 
+                const result = await response.json(); 
+                if (result.status === 'success') { 
+                    elements.statusMessage.className = 'status-success'; 
+                    elements.statusMessage.innerHTML = `${formMode === 'update' ? 'फॉर्म यशस्वीरित्या अपडेट झाला' : 'फॉर्म यशस्वीरित्या सबमिट झाला'}! <br><br> <button type="button" onclick="printReport()">रिपोर्ट प्रिंट करा</button>`; 
+                    elements.form.reset(); 
+                    capturedPhotos = []; 
+                    existingPhotoLinks = []; 
+                    existingDocLinks = []; 
+                    currentUpdateRow = null; 
+                    updatePhotoGallery(); 
+                    document.getElementById('visitDate').valueAsDate = new Date(); 
+                    document.querySelector('[name="district"]').value = "धाराशिव"; 
+                    elements.form.style.display = 'none'; 
+                    elements.initialSelection.style.display = 'block'; 
+                    elements.updateFieldsContainer.style.display = 'none';
+                    elements.updateCustomerSelect.innerHTML = '<option value="">क्षेत्र अधिकारी निवडा</option>';
+                    elements.updateOfficerSelect.value = '';
+                } else { 
+                    throw new Error(result.message); 
+                } 
+            } catch (error) { 
+                elements.statusMessage.className = 'status-error'; 
+                elements.statusMessage.innerHTML = `एक त्रुटी आली: ${error.message}. सबमिशन अयशस्वी.`; 
+                lastSubmittedData = null; 
+            } finally { 
+                elements.statusMessage.style.display = 'block'; 
+                elements.submitButton.innerHTML = originalButtonHTML; 
+                elements.submitButton.disabled = false; 
+                window.scrollTo(0, document.body.scrollHeight); 
+            } 
+        }
+        
+        function generatePrintHTML(data) { const logoUrl = "https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png"; const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLatitude},pm2rdl` : ''; const gmapLink = (data.gpsLatitude && data.gpsLongitude) ? `https://www.google.com/maps?q=${data.gpsLatitude},${data.gpsLongitude}` : ''; let detailsHTML = `<div class="print-page"><div class="print-watermark">अनिक फायनान्स</div><div class="print-content"><div class="print-header"><img src="${logoUrl}" alt="Company Logo"><h1>GPS व्हेरिफिकेशन<br>अहवाल</h1></div>`; detailsHTML += `<h3 class="section-title">मूलभूत माहिती</h3><table class="print-table"><tr><td>ग्राहकाचे नाव</td><td>${data.customerName||''}</td></tr><tr><td>गाव</td><td>${data.villageName||''}</td></tr><tr><td>कर्जाची रक्कम</td><td>रु ${data.loanAmountRequested||''}</td></tr><tr><td>क्षेत्र अधिकारी</td><td>${data.fieldOfficerName||''}</td></tr></table>`; formConfig.forEach(section => { if (section.title.includes('अपलोड')) return; let sectionHasData = section.fields.some(field => data[field.id] && data[field.id].toString().trim() !== ''); if(sectionHasData){ detailsHTML += `<h3 class="section-title">${section.title}</h3><table class="print-table">`; section.fields.forEach(field => { if (field.id !== 'supportingDocuments' && data[field.id] && data[field.id].toString().trim() !== '' && (!field.value || data[field.id] !== field.value)) { detailsHTML += `<tr><td>${field.label}</td><td>${data[field.id]}</td></tr>`; } }); detailsHTML += `</table>`; } }); const allPhotoLinks = Array.isArray(data.photos) ? data.photos.filter(link => typeof link === 'string' && link.startsWith('data:')) : []; if (allPhotoLinks && allPhotoLinks.length > 0) { detailsHTML += `<h3 class="section-title">काढलेले छायाचित्र</h3><div class="photo-grid">`; allPhotoLinks.forEach(photoDataUrl => { detailsHTML += `<div class="print-photo-container"><img src="${photoDataUrl}"></div>`; }); detailsHTML += `</div>`; } if (mapImageUrl) { detailsHTML += `<div class="map-container"><h3 class="section-title">GPS लोकेशन नकाशा</h3><img src="${mapImageUrl}" class="print-map"><p style="font-size:10pt; margin-top:8px;"><strong>Google Maps Link:</strong> <a href="${gmapLink}" target="_blank">${gmapLink}</a></p></div>`; } detailsHTML += `<div class="print-footer">हा रिपोर्ट ${new Date().toLocaleString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे.</div></div></div>`; return detailsHTML; }
         function printReport() { if (lastSubmittedData) { elements.printArea.innerHTML = generatePrintHTML(lastSubmittedData); const images = elements.printArea.querySelectorAll('img'); const promises = []; images.forEach(img => { promises.push(new Promise((resolve) => { if (img.complete) { resolve(); } else { img.onload = resolve; img.onerror = resolve; } })); }); Promise.all(promises).then(() => { window.print(); }); } else { alert("प्रिंट करण्यासाठी डेटा उपलब्ध नाही."); } }
         
         window.addEventListener('load', async () => { 
@@ -420,7 +538,6 @@
             try { 
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); 
                 elements.video.srcObject = stream; 
-                initializeGeolocation(); // Call the new robust function
                 elements.captureButton.addEventListener('click', handleCaptureClick); 
                 elements.form.addEventListener('submit', handleSubmit); 
             } catch (err) { 
