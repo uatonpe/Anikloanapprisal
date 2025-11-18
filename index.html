@@ -175,9 +175,8 @@
         const formContainer = document.getElementById('dynamic-form-container');
         const elements = { video: document.getElementById('video'), captureButton: document.getElementById('capture-button'), photoGallery: document.getElementById('photo-gallery'), watermarkOverlay: document.getElementById('watermark-overlay'), hiddenCanvas: document.getElementById('hidden-canvas'), photoGalleryCard: document.getElementById('photo-gallery-card'), form: document.getElementById('loanAppraisalForm'), submitButton: document.getElementById('submit-form'), statusMessage: document.getElementById('status-message'), printArea: document.getElementById('print-area'), initialSelection: document.getElementById('initial-selection'), updateFieldsContainer: document.getElementById('update-form-fields'), updateOfficerSelect: document.getElementById('updateFieldOfficerName'), updateCustomerSelect: document.getElementById('updateCustomerName'), gpsStatusDiv: document.getElementById('gps-status') };
         
-        // MODIFIED: Separated location data for new vs existing forms
-        let currentLocationData = null; // For new forms
-        let originalLocationData = null; // For updated forms
+        let currentLocationData = null;
+        let originalLocationData = null;
         let capturedPhotos = [];
 
         function setMode(mode) {
@@ -191,10 +190,9 @@
                 elements.form.style.display = 'none';
                 elements.submitButton.innerHTML = `<i class="fas fa-save"></i> जुना फॉर्म अपडेट करा`;
                 elements.gpsStatusDiv.textContent = "जुना फॉर्म लोड करा...";
-                elements.captureButton.disabled = true; // Disable until form is loaded
+                elements.captureButton.disabled = true;
                 fetchStaffNames(elements.updateOfficerSelect.id); 
             } else {
-                // NEW: Reset everything for a new form
                 formMode = 'new';
                 currentLocationData = null;
                 originalLocationData = null;
@@ -204,7 +202,7 @@
                 updatePhotoGallery();
                 document.getElementById('visitDate').valueAsDate = new Date();
                 elements.submitButton.innerHTML = `<i class="fas fa-paper-plane"></i>फॉर्म सबमिट करा`;
-                initializeGeolocation(); // Start getting location only for new forms
+                initializeGeolocation();
             }
             window.scrollTo(0, 0);
         }
@@ -302,7 +300,7 @@
             capturedPhotos = [];
             existingPhotoLinks = [];
             existingDocLinks = [];
-            originalLocationData = null; // Reset
+            originalLocationData = null;
             elements.form.reset();
             updatePhotoGallery();
             elements.submitButton.innerHTML = '<div class="spinner"></div> डेटा लोड करत आहे...';
@@ -318,7 +316,6 @@
                         if (input) { input.value = data[key]; }
                     }
                     
-                    // MODIFIED: Load and store original location data
                     originalLocationData = { 
                         lat: data.gpsLatitude || null, 
                         lon: data.gpsLongitude || null, 
@@ -357,18 +354,17 @@
                 elements.submitButton.disabled = false;
             }
         }
-
+        
+        // *** START: IMPROVED GEOLOCATION LOGIC ***
         function initializeGeolocation() {
             elements.captureButton.disabled = true;
+
             if (!navigator.geolocation) {
                 elements.gpsStatusDiv.textContent = "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही.";
                 elements.gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
                 elements.gpsStatusDiv.style.color = 'white';
                 return;
             }
-
-            elements.gpsStatusDiv.textContent = "GPS लोकेशन मिळवले जात आहे...";
-            elements.gpsStatusDiv.style.backgroundColor = '#ffc107';
 
             const handleSuccess = (position) => {
                 const { latitude, longitude, accuracy } = position.coords;
@@ -385,19 +381,45 @@
                     .catch(() => { currentLocationData.address = "पत्ता मिळवता आला नाही"; });
             };
 
-            const handleError = () => {
-                elements.gpsStatusDiv.textContent = "त्रुटी: लोकेशन मिळवणे शक्य झाले नाही. नेटवर्क आणि GPS सेटिंग तपासा.";
+            const finalErrorHandler = (error) => {
+                let message = "त्रुटी: लोकेशन मिळवणे शक्य झाले नाही. नेटवर्क आणि GPS सेटिंग तपासा.";
+                if (error.code === 1) { // PERMISSION_DENIED
+                    message = "त्रुटी: लोकेशनसाठी परवानगी नाकारली आहे. कृपया ब्राउझर सेटिंग्जमध्ये परवानगी द्या.";
+                } else if (error.code === 2) { // POSITION_UNAVAILABLE
+                    message = "त्रुटी: सध्या लोकेशन उपलब्ध नाही. कृपया मोकळ्या जागेत प्रयत्न करा.";
+                }
+                elements.gpsStatusDiv.textContent = message;
                 elements.gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
                 elements.gpsStatusDiv.style.color = 'white';
             };
             
-            navigator.geolocation.getCurrentPosition(handleSuccess, handleError, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+            const tryLowAccuracy = () => {
+                elements.gpsStatusDiv.textContent = "GPS सिग्नल कमजोर आहे. नेटवर्क लोकेशन वापरून प्रयत्न करत आहे...";
+                elements.gpsStatusDiv.style.backgroundColor = '#ff9800'; // Orange color for trying again
+                navigator.geolocation.getCurrentPosition(handleSuccess, finalErrorHandler, {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 300000
+                });
+            };
+
+            elements.gpsStatusDiv.textContent = "GPS लोकेशन मिळवले जात आहे...";
+            elements.gpsStatusDiv.style.backgroundColor = '#ffc107';
+            navigator.geolocation.getCurrentPosition(
+                handleSuccess,
+                tryLowAccuracy,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                }
+            );
         }
+        // *** END: IMPROVED GEOLOCATION LOGIC ***
         
         function updatePhotoGallery() { elements.photoGalleryCard.style.display = capturedPhotos.length > 0 ? 'block' : 'none'; elements.photoGallery.innerHTML = ''; capturedPhotos.forEach((photo, index) => { const container = document.createElement('div'); container.className = 'thumbnail-container'; const img = document.createElement('img'); img.src = photo; img.className = 'thumbnail'; const deleteBtn = document.createElement('button'); deleteBtn.type = 'button'; deleteBtn.innerHTML = '&times;'; deleteBtn.className = 'delete-btn'; deleteBtn.onclick = () => { capturedPhotos.splice(index, 1); updatePhotoGallery(); }; container.append(img, deleteBtn); elements.photoGallery.appendChild(container); }); }
         
         async function createWatermarkedImage(canvas) { 
-            // MODIFIED: Use the correct location data based on the form mode
             const locationForWatermark = formMode === 'update' ? originalLocationData : currentLocationData;
             
             if (!locationForWatermark || !locationForWatermark.lat) {
@@ -482,7 +504,6 @@
             data.photos = existingPhotoLinks.concat(capturedPhotos); 
             data.supportdoc = existingDocLinks.concat(fileDataUrls); 
             
-            // MODIFIED: Use correct location data based on form mode
             if (formMode === 'update') {
                 data.gpsLatitude = originalLocationData?.lat || '';
                 data.gpsLongitude = originalLocationData?.lon || '';
