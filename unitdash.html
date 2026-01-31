@@ -200,8 +200,8 @@
             { key: 'bagayatiLand', label: 'बागायती जमीन असलेले ग्राहक', icon: 'fas fa-seedling', filter: (d) => d.assetLandType && d.assetLandType.includes('बागायती') },
             { key: 'milkingCows', label: 'गाई असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseInt(d.cows || 0) > 0 },
              { key: 'buffaloes', label: 'म्हशी असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseInt(d.buffaloes || 0) > 0 },
-              { key: 'buffaloes', label: 'बकरी असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseInt(d.goats || 0) > 0 },
-               { key: 'buffaloes', label: 'कोंबडया असलेले ग्राहक', icon: 'fas fa-bird', filter: (d) => parseInt(d.poultry || 0) > 0 },
+              { key: 'goats', label: 'बकरी असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseInt(d.goats || 0) > 0 },
+               { key: 'poultry', label: 'कोंबडया असलेले ग्राहक', icon: 'fas fa-bird', filter: (d) => parseInt(d.poultry || 0) > 0 },
             { key: 'pigmyAccount', label: 'पिग्मी खाते असलेले ग्राहक', icon: 'fas fa-piggy-bank', filter: (d) => d.savingsPigmy === 'होय' },
             { key: 'businessLoan', label: 'व्यवसायासाठी कर्ज मागणारे', icon: 'fas fa-store', filter: (d) => d.loanPurpose && d.loanPurpose.includes('व्यवसाय') },
             { key: 'highLoanCycle', label: 'पुनरावृत्ती (Repeat) कर्जदार (>= 3 सायकल)', icon: 'fas fa-redo-alt', filter: (d) => parseInt(d.loanCycle || 0) >= 3 },
@@ -470,6 +470,7 @@
     </script>
 </body>
 </html>
+
 
 
 
