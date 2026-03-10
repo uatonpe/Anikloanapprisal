@@ -553,7 +553,7 @@
     async function fetchData() {
         try {
             ui.pageLoader.classList.remove('hidden');
-            const response = await fetch(`${SCRIPT_URL}?action=getData`);
+            const response = await fetch(`${SCRIPT_URL}?action=getData&role=verifier`);
             if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
             const result = await response.json();
             if (result.status === 'success') {
@@ -1013,6 +1013,7 @@
 </script>
 </body>
 </html>
+
 
 
 
