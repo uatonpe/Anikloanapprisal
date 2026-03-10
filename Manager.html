@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ब्रांच मॅनेजर डॅशबोर्ड - अनिक फायनान्शियल</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff; --primary-dark: #0056b3;
+            --success-color: #28a745; --danger-color: #dc3545; --warning-color: #ffc107;
+            --light-bg: #f5f7fa; --white-color: #ffffff;
+            --dark-text: #2c3e50; --light-text: #7f8c8d; --border-color: #dfe6e9;
+            --border-radius-md: 10px; --border-radius-lg: 15px;
+            --transition-speed: 0.3s;
+        }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', 'Noto Sans Devanagari', sans-serif; 
+            background-color: var(--light-bg); margin: 0; color: var(--dark-text);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 123, 255, 0.5); border-radius: 10px; }
+
+        /* Full Page Loader */
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        .spinner { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #loader.hidden { display: none; }
+
+        /* Layout */
+        .top-bar { background-color: var(--white-color); padding: 15px 30px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .top-bar h1 { margin: 0; font-size: 1.6rem; font-weight: 700; color: #1e2a38; }
+        .main-layout { display: flex; height: calc(100vh - 65px); overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 350px; background-color: var(--white-color); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .filter-section { padding: 20px; background-color: #fcfdff; border-bottom: 1px solid var(--border-color); }
+        .filter-section label { font-size: 0.85rem; font-weight: 600; color: var(--dark-text); margin-bottom: 5px; display: block; }
+        .filter-section select, .filter-section input { width: 100%; padding: 10px 12px; margin-bottom: 15px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); font-size: 0.95rem; }
+        .filter-section select:focus, .filter-section input:focus { border-color: var(--primary-color); outline: none; }
+        
+        /* List */
+        .list-container { flex: 1; overflow-y: auto; }
+        .list-item { padding: 15px 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background var(--transition-speed); }
+        .list-item:hover { background-color: #f8f9fa; }
+        .list-item.active { background-color: rgba(0, 123, 255, 0.08); border-right: 4px solid var(--primary-color); }
+        .item-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 4px; }
+        .item-subtitle { font-size: 0.85rem; color: var(--light-text); margin-bottom: 8px; }
+        .status-pill { padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .status-Pending { background: rgba(255, 193, 7, 0.2); color: #b07d03; }
+        .status-Approved { background: rgba(40, 167, 69, 0.2); color: var(--success-color); }
+        .status-Rejected { background: rgba(220, 53, 69, 0.2); color: var(--danger-color); }
+
+        /* Details Panel */
+        .details-panel { flex: 1; padding: 30px; overflow-y: auto; }
+        .welcome-msg { text-align: center; color: var(--light-text); margin-top: 20%; opacity: 0.8; }
+        .card { background: var(--white-color); border-radius: var(--border-radius-lg); padding: 25px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .card h3 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; color: var(--primary-dark); font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        
+        /* Grid Info */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .info-item label { display: block; font-size: 0.85rem; color: var(--light-text); margin-bottom: 5px; font-weight: 600; }
+        .info-item p { margin: 0; font-size: 1rem; font-weight: 500; color: var(--dark-text); }
+        .amount { color: var(--success-color); font-weight: 700 !important; font-size: 1.1rem !important; }
+
+        /* Form */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); font-family: inherit; font-size: 1rem; }
+        .btn-submit { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; font-weight: 600; width: 100%; transition: transform 0.2s; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+        .btn-submit:hover { transform: translateY(-2px); }
+        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; font-weight: 600; color: #2c3e50;">डेटा लोड होत आहे...</p>
+</div>
+
+<div class="top-bar">
+    <h1><i class="fas fa-user-tie"></i> ब्रांच मॅनेजर डॅशबोर्ड</h1>
+</div>
+
+<div class="main-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="filter-section">
+            <label for="unit-filter">तुमची शाखा (Unit) निवडा:</label>
+            <select id="unit-filter">
+                <option value="">-- शाखा निवडा --</option>
+                <option value="Bhoom">Bhoom</option>
+                <option value="Washi">Washi</option>
+                <option value="Anala">Anala</option>
+                <option value="Kallam">Kallam</option>
+                <option value="NA">NA</option>
+            </select>
+            
+            <label for="search-box">नाव किंवा गाव शोधा:</label>
+            <input type="text" id="search-box" placeholder="उदा. रमेश...">
+            
+            <label for="status-filter">अर्जाची स्थिती:</label>
+            <select id="status-filter">
+                <option value="">सर्व स्टेटस</option>
+                <option value="Pending">पेंडिंग (तपासायचे बाकी)</option>
+                <option value="Approved">पास केलेले (Approved)</option>
+                <option value="Rejected">नामंजूर केलेले (Rejected)</option>
+            </select>
+        </div>
+        <div class="list-container" id="list-container">
+            <!-- List will populate here -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="details-panel" id="details-panel">
+        <div id="welcome-msg" class="welcome-msg">
+            <i class="fas fa-hand-pointer fa-3x" style="margin-bottom: 15px;"></i>
+            <h2>मॅनेजर डॅशबोर्ड मध्ये आपले स्वागत आहे</h2>
+            <p>डावीकडील शाखेचे नाव निवडून अर्जांची यादी पाहा आणि त्यावर क्लिक करा.</p>
+        </div>
+
+        <div id="content-view" style="display: none;">
+            <!-- Customer Summary Card -->
+            <div class="card">
+                <h3><i class="fas fa-info-circle"></i> ग्राहकाची माहिती</h3>
+                <div class="info-grid">
+                    <div class="info-item"><label>ग्राहकाचे नाव</label><p id="c-name">-</p></div>
+                    <div class="info-item"><label>गाव आणि तालुका</label><p id="c-address">-</p></div>
+                    <div class="info-item"><label>मोबाईल क्रमांक</label><p id="c-mobile">-</p></div>
+                    <div class="info-item"><label>फिल्ड ऑफिसर</label><p id="c-officer">-</p></div>
+                </div>
+            </div>
+
+            <!-- Loan & Income Summary Card -->
+            <div class="card">
+                <h3><i class="fas fa-chart-pie"></i> कर्ज आणि उत्पन्न सारांश</h3>
+                <div class="info-grid">
+                    <div class="info-item"><label>मागितलेली कर्ज रक्कम</label><p class="amount" id="c-loan">-</p></div>
+                    <div class="info-item"><label>कर्जाचा उद्देश</label><p id="c-purpose">-</p></div>
+                    <div class="info-item"><label>कौटुंबिक एकूण उत्पन्न</label><p id="c-income" style="color:var(--success-color); font-weight:600;">-</p></div>
+                    <div class="info-item"><label>एकूण मासिक खर्च</label><p id="c-expense" style="color:var(--danger-color); font-weight:600;">-</p></div>
+                </div>
+            </div>
+
+            <!-- Manager Action Form -->
+            <div class="card">
+                <h3><i class="fas fa-check-double"></i> मॅनेजर अप्रूव्हल (Manager Approval)</h3>
+                <form id="manager-form">
+                    <div class="form-group">
+                        <label for="managerStatus">फॉर्मची स्थिती (Status):</label>
+                        <select id="managerStatus" name="managerStatus" required>
+                            <option value="">-- निवडा --</option>
+                            <option value="Pending">⏳ Pending (पेंडिंग ठेवा)</option>
+                            <option value="Approved">✅ Approve (पास करा - व्हेरिफायरकडे जाईल)</option>
+                            <option value="Rejected">❌ Reject (नामंजूर करा)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="managerName">मॅनेजरचे नाव:</label>
+                        <input type="text" id="managerName" name="managerName" placeholder="उदा. रमेश पाटील" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="managerRemarks">अभिप्राय / सूचना (Remarks):</label>
+                        <textarea id="managerRemarks" name="managerRemarks" rows="3" placeholder="काही त्रुटी असल्यास किंवा विशेष बाब असल्यास येथे नोंदवा..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit" id="submit-btn"><i class="fas fa-save"></i> सेव्ह करा आणि पुढे पाठवा</button>
+                    <p id="form-msg" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // येथे तुमची Google Apps Script (Web App) URL टाका
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPIRgfPCaxX0DEBLX6hvF6BxtWBljurV5kYFU4tpRlBogI5YQzzAO6OkCcpE1CjcE/exec'; 
+    // ==========================================
+
+    let allApplicants = [];
+    let currentApplicant = null;
+
+    // Elements
+    const loader = document.getElementById('loader');
+    const listContainer = document.getElementById('list-container');
+    const unitFilter = document.getElementById('unit-filter');
+    const searchBox = document.getElementById('search-box');
+    const statusFilter = document.getElementById('status-filter');
+    
+    // Load Data on Startup
+    window.addEventListener('load', async () => {
+        try {
+            // Role 'manager' पाठवत आहोत जेणेकरून सर्व डेटा मिळेल
+            const response = await fetch(`${SCRIPT_URL}?action=getData&role=manager`);
+            const result = await response.json();
+            if (result.status === 'success') {
+                allApplicants = result.data.sort((a, b) => b.row - a.row); // Latest first
+                renderList();
+            } else {
+                alert('डेटा लोड करताना त्रुटी: ' + result.message);
+            }
+        } catch (error) {
+            alert('नेटवर्क त्रुटी: ' + error.message);
+        } finally {
+            loader.classList.add('hidden');
+        }
+    });
+
+    // Event Listeners for Filters
+    unitFilter.addEventListener('change', renderList);
+    searchBox.addEventListener('input', renderList);
+    statusFilter.addEventListener('change', renderList);
+
+    function renderList() {
+        listContainer.innerHTML = '';
+        const unit = unitFilter.value;
+        const search = searchBox.value.toLowerCase();
+        const status = statusFilter.value;
+
+        if (!unit) {
+            listContainer.innerHTML = `<div style="padding:20px; text-align:center; color:var(--light-text);">कृपया वरील यादीतून तुमची शाखा (Unit) निवडा.</div>`;
+            hideDetails();
+            return;
+        }
+
+        const filteredData = allApplicants.filter(app => {
+            const mStatus = app.ManagerApprovalStatus || 'Pending';
+            const nameMatch = (app.customerName || '').toLowerCase().includes(search) || (app.villageName || '').toLowerCase().includes(search);
+            return app.Unit === unit && nameMatch && (!status || mStatus === status);
+        });
+
+        if (filteredData.length === 0) {
+            listContainer.innerHTML = `<div style="padding:20px; text-align:center; color:var(--light-text);">या शाखेसाठी कोणताही अर्ज सापडला नाही.</div>`;
+            return;
+        }
+
+        filteredData.forEach(app => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            const mStatus = app.ManagerApprovalStatus || 'Pending';
+            let statusText = mStatus === 'Approved' ? '✅ पास' : (mStatus === 'Rejected' ? '❌ नामंजूर' : '⏳ पेंडिंग');
+
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div class="item-title">${app.customerName || 'नाव उपलब्ध नाही'}</div>
+                    <span class="status-pill status-${mStatus}">${statusText}</span>
+                </div>
+                <div class="item-subtitle"><i class="fas fa-map-marker-alt"></i> ${app.villageName || 'N/A'} | <i class="fas fa-user-tie"></i> ${app.fieldOfficerName || 'N/A'}</div>
+            `;
+            
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.list-item').forEach(el => el.classList.remove('active'));
+                div.classList.add('active');
+                showDetails(app);
+            });
+            listContainer.appendChild(div);
+        });
+    }
+
+    function showDetails(app) {
+        currentApplicant = app;
+        document.getElementById('welcome-msg').style.display = 'none';
+        document.getElementById('content-view').style.display = 'block';
+
+        // Populate Summary
+        document.getElementById('c-name').innerText = app.customerName || 'N/A';
+        document.getElementById('c-address').innerText = `${app.villageName || ''}, ${app.taluka || ''}`;
+        document.getElementById('c-mobile').innerText = app.mobileNumber || 'N/A';
+        document.getElementById('c-officer').innerText = app.fieldOfficerName || 'N/A';
+        
+        const reqAmt = parseInt(app.loanAmountRequested) || 0;
+        const income = parseInt(app.familyTotalIncome) || 0;
+        const expense = parseInt(app.expenseTotal) || 0;
+
+        document.getElementById('c-loan').innerText = reqAmt > 0 ? `₹${reqAmt.toLocaleString('en-IN')}` : 'N/A';
+        document.getElementById('c-purpose').innerText = app.loanPurpose || 'N/A';
+        document.getElementById('c-income').innerText = income > 0 ? `₹${income.toLocaleString('en-IN')}` : 'N/A';
+        document.getElementById('c-expense').innerText = expense > 0 ? `₹${expense.toLocaleString('en-IN')}` : 'N/A';
+
+        // Populate Form
+        const form = document.getElementById('manager-form');
+        form.elements.managerStatus.value = app.ManagerApprovalStatus || 'Pending';
+        form.elements.managerName.value = app.ManagerName || '';
+        form.elements.managerRemarks.value = app.ManagerRemarks || '';
+        document.getElementById('form-msg').innerText = '';
+    }
+
+    function hideDetails() {
+        document.getElementById('welcome-msg').style.display = 'block';
+        document.getElementById('content-view').style.display = 'none';
+    }
+
+    // Handle Form Submission
+    document.getElementById('manager-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentApplicant) return;
+
+        const btn = document.getElementById('submit-btn');
+        const msg = document.getElementById('form-msg');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> सेव्ह करत आहे...';
+        btn.disabled = true;
+        msg.innerText = '';
+
+        const formData = new FormData(e.target);
+        const payload = { action: 'updateManagerApproval', row: currentApplicant.row };
+        for (let [key, value] of formData.entries()) {
+            payload[key] = value;
+        }
+
+        try {
+            const res = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            const out = await res.json();
+            
+            if (out.status === 'success') {
+                msg.style.color = 'green';
+                msg.innerText = "माहिती यशस्वीरित्या सेव्ह झाली!";
+                
+                // Update local array so UI refreshes without network reload
+                currentApplicant.ManagerApprovalStatus = payload.managerStatus;
+                currentApplicant.ManagerName = payload.managerName;
+                currentApplicant.ManagerRemarks = payload.managerRemarks;
+                
+                setTimeout(() => {
+                    renderList();
+                    btn.innerHTML = '<i class="fas fa-save"></i> सेव्ह करा आणि पुढे पाठवा';
+                    btn.disabled = false;
+                }, 1500);
+            } else {
+                throw new Error(out.message);
+            }
+        } catch (err) {
+            msg.style.color = 'red';
+            msg.innerText = "त्रुटी: " + err.message;
+            btn.innerHTML = '<i class="fas fa-save"></i> सेव्ह करा आणि पुढे पाठवा';
+            btn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
