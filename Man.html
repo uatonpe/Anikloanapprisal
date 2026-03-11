@@ -2,8 +2,8 @@
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ब्रांच मॅनेजर डॅशबोर्ड - अनिक फायनान्शियल</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>व्हेरिफिकेशन डॅशबोर्ड - अनिक फायनान्शियल सर्व्हिसेस</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14,174 +14,203 @@
             --success-color: #28a745; --success-rgb: 40, 167, 69;
             --danger-color: #dc3545; --danger-rgb: 220, 53, 69;
             --warning-color: #ffc107; --warning-rgb: 255, 193, 7;
+            --info-color: #17a2b8;
             
-            --light-bg: #f5f7fa; --white-color: #ffffff;
-            --dark-text: #2c3e50; --light-text: #7f8c8d; --border-color: #dfe6e9;
+            --light-bg: #f4f7f6; --white-color: #ffffff;
+            --dark-text: #2c3e50; --light-text: #6c757d; --border-color: #e0e6ed;
             
-            --card-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            --card-shadow-hover: 0 10px 25px rgba(0,0,0,0.1);
-            --border-radius-md: 10px; --border-radius-lg: 15px;
-            --transition-speed: 0.2s ease-in-out;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --card-shadow-hover: 0 8px 20px rgba(0,0,0,0.08);
+            --border-radius-md: 8px; --border-radius-lg: 12px;
+            --transition-speed: 0.25s ease-in-out;
         }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html { scroll-behavior: smooth; }
         body { 
             font-family: 'Poppins', 'Noto Sans Devanagari', sans-serif; 
             background-color: var(--light-bg); margin: 0; color: var(--dark-text);
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-            overflow: hidden; /* Prevent body scroll */
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(var(--primary-rgb), 0.4); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(var(--primary-rgb), 0.7); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(var(--primary-rgb), 0.6); }
 
-        #full-page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.3s ease, visibility 0.3s; backdrop-filter: blur(5px); }
-        .loader-spinner { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        /* Full Page Loader */
+        #full-page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.4s ease; backdrop-filter: blur(5px); }
+        .loader-spinner { border: 4px solid rgba(var(--primary-rgb), 0.1); border-top: 4px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 0.8s linear infinite; }
         #full-page-loader p { font-weight: 600; margin-top: 20px; font-size: 1.1rem; color: var(--dark-text); }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #full-page-loader.hidden { opacity: 0; visibility: hidden; }
+        #full-page-loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        .dashboard-container { display: flex; flex-direction: column; height: 100vh; }
+        .dashboard-container { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
     
-        .top-bar { background-color: var(--white-color); padding: 15px 30px; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.03); z-index: 100; }
-        .top-bar-header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 15px; font-weight: 700; color: #1e2a38; }
-        .top-bar-header img { height: 35px; }
-        .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-        
-        .kpi-card { background-color: var(--white-color); border-radius: var(--border-radius-lg); padding: 15px 20px; transition: all var(--transition-speed); cursor: pointer; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); position: relative; overflow: hidden; }
-        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background-color: var(--color); transition: width 0.3s; }
-        .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow-hover); }
-        
-        /* Active KPI Style */
-        .kpi-card.active-filter { border-color: var(--color); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); transform: translateY(-3px); }
-        .kpi-card.active-filter::before { width: 10px; }
-
-        .kpi-icon { font-size: 1.5rem; width: 45px; height: 45px; border-radius: 50%; display: grid; place-items: center; color: var(--white-color); flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* Top Bar & KPI Cards */
+        .top-bar { background-color: var(--white-color); padding: 12px 20px; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.02); z-index: 100;}
+        .top-bar-header h1 { margin: 0; font-size: 1.4rem; display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e2a38; }
+        .top-bar-header img { height: 32px; }
+        .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
+        .kpi-card { 
+            background-color: var(--white-color); border-radius: var(--border-radius-lg); 
+            padding: 12px 15px; 
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed); 
+            cursor: pointer; display: flex; align-items: center; gap: 15px; 
+            border: 1px solid var(--border-color); position: relative; overflow: hidden; 
+        }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background-color: var(--color); }
+        .kpi-card:active { transform: scale(0.98); }
+        .kpi-icon { 
+            font-size: 1.3rem; width: 40px; height: 40px; border-radius: 50%; 
+            display: grid; place-items: center; color: var(--white-color); flex-shrink: 0; 
+        }
         #kpi-total { --color: var(--primary-color); } #kpi-pending { --color: var(--warning-color); } #kpi-approved { --color: var(--success-color); } #kpi-rejected { --color: var(--danger-color); }
         #kpi-total .kpi-icon { background: linear-gradient(135deg, #007bff, #0056b3); } #kpi-pending .kpi-icon { background: linear-gradient(135deg, #ffc107, #e0a800); } #kpi-approved .kpi-icon { background: linear-gradient(135deg, #28a745, #1e7e34); } #kpi-rejected .kpi-icon { background: linear-gradient(135deg, #dc3545, #b02a37); }
-        .kpi-content h3 { margin: 0 0 3px 0; font-size: 2.2rem; font-weight: 700; line-height: 1; }
-        .kpi-content p { margin: 0; color: var(--light-text); font-weight: 600; font-size: 0.9rem; }
-        #kpi-total h3 { color: var(--primary-dark); } #kpi-pending h3 { color: #d39e00; } #kpi-approved h3 { color: var(--success-color); } #kpi-rejected h3 { color: var(--danger-color); }
+        .kpi-content h3 { margin: 0; font-size: 1.5rem; font-weight: 700; }
+        .kpi-content p { margin: 0; color: var(--light-text); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; }
+        #kpi-total h3 { color: var(--primary-dark); } #kpi-pending h3 { color: #e0a800; } #kpi-approved h3 { color: var(--success-color); } #kpi-rejected h3 { color: var(--danger-color); }
 
+        /* Main Layout & Sidebar */
         .main-layout { display: flex; flex: 1; overflow: hidden; position: relative; }
-        .applicant-sidebar { width: 400px; background-color: var(--white-color); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 50; }
+        .applicant-sidebar { width: 350px; background-color: var(--white-color); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 10; }
         
-        .sidebar-filters { padding: 15px; border-bottom: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background-color: #fcfdff; flex-shrink: 0; }
+        /* Sidebar Filters */
+        .sidebar-filters { padding: 15px; border-bottom: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background-color: #fcfdff; overflow-y: auto; max-height: 40%;}
         .filter-group.full-width { grid-column: 1 / -1; }
-        .sidebar-filters input, .sidebar-filters select { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.95rem; transition: border-color var(--transition-speed); }
+        .sidebar-filters input, .sidebar-filters select { width: 100%; padding: 10px 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); font-size: 0.9rem; transition: border-color var(--transition-speed); }
         .sidebar-filters input:focus, .sidebar-filters select:focus { border-color: var(--primary-color); outline: none; }
-        .date-filter-label { font-size: 0.8rem; font-weight: 600; color: var(--dark-text); margin-bottom: 3px; display: block; }
+        .date-filter-label { font-size: 0.8rem; font-weight: 600; color: var(--dark-text); margin-bottom: 4px; display: block; }
 
-        .applicant-list-container { flex: 1; overflow-y: auto; background-color: #fff; }
-        .applicant-item { display: flex; flex-direction: column; gap: 6px; padding: 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color var(--transition-speed); position: relative; }
-        .applicant-item:hover { background-color: #f8f9fa; }
+        .applicant-list-container { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .applicant-item { display: flex; flex-direction: column; gap: 6px; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s; position: relative; }
+        .applicant-item:hover { background-color: #f8faff; }
         .applicant-item.active { background-color: rgba(var(--primary-rgb), 0.05); }
         .applicant-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); }
-        .applicant-info h4 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--dark-text); }
-        .applicant-info p { margin: 4px 0 0; font-size: 0.85rem; color: var(--light-text); }
-        .status-pill { padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; }
+        .applicant-info h4 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--dark-text); }
+        .applicant-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--light-text); }
+        .status-pill { padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
         .status-pill.Approved { background-color: rgba(var(--success-rgb), 0.1); color: var(--success-color); border: 1px solid rgba(var(--success-rgb), 0.2); } .status-pill.Rejected { background-color: rgba(var(--danger-rgb), 0.1); color: var(--danger-color); border: 1px solid rgba(var(--danger-rgb), 0.2); } .status-pill.Pending { background-color: rgba(var(--warning-rgb), 0.15); color: #b07d03; border: 1px solid rgba(var(--warning-rgb), 0.2); }
+        .verification-summary { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 0.75rem; color: var(--light-text); margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e0e0e0; }
+        .summary-item { display: flex; align-items: center; gap: 4px; font-weight: 500; }
+        .summary-item .fa-check-circle { color: var(--success-color); } .summary-item .fa-times-circle { color: var(--danger-color); }
+
+        /* Details Panel */
+        .details-panel { flex: 1; padding: 20px; overflow-y: auto; background-color: var(--light-bg); -webkit-overflow-scrolling: touch; }
+        #welcome-message { text-align: center; padding-top: 20vh; color: var(--light-text); opacity: 0.7; }
+        .details-view-card { background-color: var(--white-color); border-radius: var(--border-radius-lg); box-shadow: var(--card-shadow); overflow: hidden; margin-bottom: 20px;}
         
-        .details-panel { flex: 1; padding: 25px; overflow-y: auto; background-color: var(--light-bg); scroll-behavior: smooth; }
-        #welcome-message { text-align: center; padding-top: 15vh; color: var(--light-text); opacity: 0.8; }
-        #welcome-message i { animation: pulse 2s infinite ease-in-out; margin-bottom: 15px; color: var(--primary-color); }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .details-view-card { background-color: var(--white-color); border-radius: var(--border-radius-lg); box-shadow: var(--card-shadow); overflow: hidden; margin-bottom: 30px; }
+        .details-header { 
+            padding: 20px; display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--border-color); background: linear-gradient(to right, #ffffff, #f8faff); 
+            flex-wrap: wrap; gap: 15px;
+        }
+        .details-header .header-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 250px;}
         
-        .details-header { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background: #fff; flex-wrap: wrap; gap: 15px; }
-        .details-header .header-left { display: flex; align-items: center; gap: 15px; flex: 1; }
+        #back-to-list-btn {
+            display: none; background: #f0f2f5; border: 1px solid var(--border-color); color: var(--dark-text); 
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; place-items: center;
+        }
 
-        #back-to-list-btn { display: none; margin-right: 10px; background: #f0f2f5; border: 1px solid var(--border-color); color: var(--dark-text); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; place-items: center; }
+        /* WhatsApp Copy Box Styling */
+        .whatsapp-copy-tool { padding: 15px 20px; background-color: #f0fdf4; border-bottom: 1px solid var(--border-color); }
+        .whatsapp-link-box-container { border: 1px solid #bbf7d0; border-radius: var(--border-radius-md); background-color: var(--white-color); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .whatsapp-link-box-container h4 { margin: 0; font-size: 1rem; color: #166534; font-weight: 600; }
+        #jitsi-link-display { padding: 8px 12px; border: 1px dashed #ccc; border-radius: 6px; font-size: 0.85rem; background-color: #f8fafc; overflow-x: auto; white-space: nowrap; }
+        #copy-whatsapp-btn { background-color: #25d366; color: white; padding: 8px 15px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; }
 
-        .whatsapp-copy-tool { padding: 15px 25px; background-color: #f1fff7; border-bottom: 1px solid var(--border-color); }
-        .whatsapp-link-box-container { border: 1px solid #c7e5d2; border-radius: 8px; background-color: var(--white-color); padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .whatsapp-link-box-container h4 { margin: 0; font-size: 1rem; color: #075e54; font-weight: 600; }
-        #jitsi-link-display { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; background-color: #f8fafc; overflow-x: auto; white-space: nowrap; }
-        #jitsi-link-display b { font-family: monospace; color: var(--primary-dark); font-size: 0.95rem; }
-        #copy-whatsapp-btn { background-color: #25d366; color: white; padding: 8px 15px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; transition: background 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; align-self: flex-start; }
-        #copy-whatsapp-btn:hover { background-color: #128c7e; }
-
-        .header-actions { display: flex; align-items: center; gap: 10px; order: 3; }
-        .action-button { padding: 10px 18px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all var(--transition-speed); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;}
+        .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .action-button { padding: 8px 16px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: transform 0.2s; white-space: nowrap; }
         .call-button { background-color: var(--success-color); color: white; box-shadow: 0 4px 10px rgba(var(--success-rgb), 0.2); }
-        .call-button:hover { background-color: #1e7e34; transform: translateY(-2px); }
         
-        .details-header .loan-amounts { text-align: right; order: 2; }
-        .details-header .loan-amount { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); margin: 0; }
+        .details-header .loan-amount { font-size: 1.1rem; font-weight: 600; color: var(--light-text); }
+        .details-header .loan-amounts { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+        .details-header .loan-amount-requested { font-size: 0.85rem; color: var(--light-text); font-weight: 500; }
+        .details-header .loan-amount-approved { font-size: 1.2rem; font-weight: 700;}
 
-        .tabs-container { overflow-x: auto; white-space: nowrap; background-color: #fff; border-bottom: 1px solid var(--border-color); padding: 0 20px; }
-        .tabs { display: flex; border-bottom: 2px solid transparent; }
-        .tab-button { padding: 15px 20px; border: none; background: transparent; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--light-text); transition: color var(--transition-speed); display: inline-flex; align-items: center; gap: 8px; border-bottom: 3px solid transparent; }
+        /* Tabs */
+        .tabs-container { overflow-x: auto; white-space: nowrap; background-color: var(--white-color); border-bottom: 1px solid var(--border-color); -webkit-overflow-scrolling: touch; }
+        .tabs { display: flex; padding: 0 10px; }
+        .tab-button { padding: 12px 18px; border: none; background: transparent; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--light-text); border-bottom: 3px solid transparent; display: inline-flex; align-items: center; gap: 6px; }
         .tab-button.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        .tab-button:hover { color: var(--primary-color); }
         
-        .tab-content { display: none; padding: 25px; animation: fadeIn 0.3s ease; }
+        .tab-content { display: none; padding: 20px; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .tab-content.active { display: block; }
-        .tab-content h3 { font-size: 1.2rem; margin: 0 0 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; align-items: center; gap: 10px; color: var(--primary-dark); }
+        .tab-content h3 { font-size: 1.2rem; margin: 0 0 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; color: var(--primary-dark); }
         
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .info-group { display: flex; align-items: flex-start; gap: 12px; background: #fcfdff; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); border-left: 4px solid var(--primary-color); }
-        .info-group i { color: var(--primary-color); font-size: 1.1rem; margin-top: 4px; }
-        .info-group label { font-weight: 600; color: var(--dark-text); font-size: 0.85rem; margin-bottom: 3px; display: block; }
-        .info-group p { margin: 0; color: var(--light-text); font-weight: 500; font-size: 0.95rem; word-break: break-word; }
+        /* Info Grids */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
+        .info-group { display: flex; align-items: flex-start; gap: 12px; background: #fff; padding: 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); border-left: 4px solid var(--primary-color); }
+        .info-group i { color: var(--primary-color); font-size: 1.1rem; margin-top: 3px; }
+        .info-group label { font-weight: 600; color: var(--light-text); font-size: 0.8rem; margin-bottom: 2px; display: block; }
+        .info-group p { margin: 0; color: var(--dark-text); font-weight: 500; font-size: 0.95rem; word-break: break-word;}
         
-        .map-container img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border-color); }
-        .map-container a.map-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; text-decoration: none; color: var(--primary-color); font-weight: 600; }
-        
-        .photo-gallery, .document-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .photo-link-item { display: block; border-radius: 8px; overflow: hidden; background-color: #f8f9fa; border: 1px solid var(--border-color); transition: transform 0.2s; text-decoration: none; }
-        .photo-link-item:hover { transform: translateY(-3px); box-shadow: 0 5px 10px rgba(0,0,0,0.05); border-color: var(--primary-color); }
-        .photo-link-item .photo-placeholder { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100px; color: var(--dark-text); font-weight: 600; font-size: 0.9rem; }
+        /* Galleries */
+        .map-container img { max-width: 100%; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); }
+        .photo-gallery, .document-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+        .photo-link-item { display: block; border-radius: var(--border-radius-md); overflow: hidden; background-color: #f8fafc; border: 1px solid var(--border-color); text-decoration: none; }
+        .photo-link-item .photo-placeholder { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100px; color: var(--dark-text); font-weight: 600; font-size: 0.85rem;}
         .photo-link-item i { font-size: 2rem; color: var(--primary-color); margin-bottom: 8px; }
         
-        .verification-section { border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: var(--white-color); }
-        .verification-section h4 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--primary-dark); }
+        /* Verification Form Styling */
+        .verification-section { border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 20px; margin-bottom: 20px; background-color: var(--white-color); }
+        .verification-section h4 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--primary-dark); }
+        
+        /* Manager Section Special Styling */
+        .manager-review-section { background: linear-gradient(145deg, #f0f8ff, #f8fcff); border-left: 5px solid var(--info-color); border-radius: var(--border-radius-md); box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .manager-review-section h4 { color: #0c5460; border-bottom-color: #bee5eb; }
+        
         .verification-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .form-group.full-width { grid-column: 1 / -1; }
-        .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; display: block;}
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.95rem; font-family: inherit;}
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-color); outline: none; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; color: var(--dark-text); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border-radius: var(--border-radius-md); border: 1px solid #ced4da; font-size: 0.95rem; background-color: #fff; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1); }
+        
+        /* Select styling matching screenshot */
+        select option { padding: 10px; }
+        
         .form-actions { text-align: right; margin-top: 15px; }
         .form-actions button { background: var(--primary-color); color: white; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.2s; }
         .form-actions button:hover { background: var(--primary-dark); }
 
-        @media (max-width: 1200px) {
+        /* Mobile Responsiveness */
+        @media (max-width: 900px) {
             .details-header { flex-direction: column; align-items: flex-start; }
-            .details-header .loan-amounts { order: 1; align-self: flex-start; text-align: left; margin-top: 10px;}
-            .details-header .header-left { order: 2; width: 100%; }
-            .details-header .header-actions { order: 3; width: 100%; justify-content: flex-start; margin-top: 10px; }
+            .details-header .loan-amounts { text-align: left; }
+            .verification-grid { grid-template-columns: 1fr; } /* Stack form fields on smaller screens */
         }
 
         @media (max-width: 768px) { 
-            body { overflow: auto; }
-            .dashboard-container { height: auto; display: block; }
-            .top-bar { padding: 15px; position: sticky; top: 0; } 
-            .sidebar-filters { grid-template-columns: 1fr; } 
-            .main-layout { display: block; overflow: visible; } 
-            .applicant-sidebar { width: 100%; height: auto; border-right: none; } 
-            .applicant-list-container { max-height: 60vh; border-bottom: 1px solid var(--border-color); }
+            .top-bar { padding: 10px 15px; } 
+            .top-bar-header h1 { font-size: 1.2rem; }
+            .sidebar-filters { grid-template-columns: 1fr; max-height: 150px;} 
+            .main-layout { overflow-x: hidden; } 
+            .applicant-sidebar { position: absolute; width: 100%; height: 100%; transform: translateX(0); z-index: 10; border-right: none;} 
             
-            .details-panel { display: none; padding: 15px; height: auto; } 
-            .main-layout.mobile-details-active .applicant-sidebar { display: none; } 
-            .main-layout.mobile-details-active .details-panel { display: block; } 
+            /* Sliding Panel Logic */
+            .details-panel { position: absolute; width: 100%; height: 100%; padding: 10px; transform: translateX(100%); transition: transform 0.3s ease; z-index: 20; background: var(--light-bg); } 
+            .main-layout.mobile-details-active .applicant-sidebar { transform: translateX(-30%); opacity: 0.5; pointer-events: none;} 
+            .main-layout.mobile-details-active .details-panel { transform: translateX(0); } 
+            
             #back-to-list-btn { display: grid; } 
-            .kpi-container { grid-template-columns: 1fr 1fr; }
+            .tab-button { padding: 10px 12px; font-size: 0.9rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            
+            #welcome-message { display: none !important; } /* Hide welcome on mobile */
         }
     </style>
 </head>
 <body>
 
-<div id="full-page-loader"><div class="loader-spinner"></div><p>डॅशबोर्ड लोड होत आहे, कृपया थांबा...</p></div>
+<div id="full-page-loader"><div class="loader-spinner"></div><p>डॅशबोर्ड लोड होत आहे...</p></div>
 
 <div class="dashboard-container">
     <header class="top-bar">
-        <div class="top-bar-header"><h1><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo"> ब्रांच मॅनेजर डॅशबोर्ड</h1></div>
+        <div class="top-bar-header"><h1><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo"> व्हेरिफिकेशन डॅशबोर्ड</h1></div>
         <div class="kpi-container">
             <div class="kpi-card" id="kpi-total"><div class="kpi-icon"><i class="fas fa-file-invoice"></i></div><div class="kpi-content"><h3 id="total-count">0</h3><p>एकूण अर्ज</p></div></div>
             <div class="kpi-card" id="kpi-pending"><div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div><div class="kpi-content"><h3 id="pending-count">0</h3><p>प्रलंबित</p></div></div>
-            <div class="kpi-card" id="kpi-approved"><div class="kpi-icon"><i class="fas fa-check-double"></i></div><div class="kpi-content"><h3 id="approved-count">0</h3><p>पास केलेले</p></div></div>
+            <div class="kpi-card" id="kpi-approved"><div class="kpi-icon"><i class="fas fa-check-double"></i></div><div class="kpi-content"><h3 id="approved-count">0</h3><p>मंजूर</p></div></div>
             <div class="kpi-card" id="kpi-rejected"><div class="kpi-icon"><i class="fas fa-times-circle"></i></div><div class="kpi-content"><h3 id="rejected-count">0</h3><p>नामंजूर</p></div></div>
         </div>
     </header>
@@ -190,31 +219,16 @@
         <aside class="applicant-sidebar">
             <div class="sidebar-filters">
                 <div class="filter-group full-width"><input type="text" id="search-box" placeholder="नाव किंवा गाव शोधा..."></div>
-                
-                <div class="filter-group">
-                    <label for="fromDateFilter" class="date-filter-label">पासूनची तारीख</label>
-                    <input type="date" id="fromDateFilter">
-                </div>
-                <div class="filter-group">
-                    <label for="toDateFilter" class="date-filter-label">पर्यंतची तारीख</label>
-                    <input type="date" id="toDateFilter">
-                </div>
-                
+                <div class="filter-group"><label class="date-filter-label">पासूनची तारीख</label><input type="date" id="fromDateFilter"></div>
+                <div class="filter-group"><label class="date-filter-label">पर्यंतची तारीख</label><input type="date" id="toDateFilter"></div>
                 <div class="filter-group"><select id="unit-filter"><option value="">सर्व युनिट</option></select></div>
                 <div class="filter-group"><select id="staff-filter"><option value="">सर्व अधिकारी</option></select></div>
-                <div class="filter-group full-width">
-                    <select id="status-filter">
-                        <option value="">सर्व स्टेटस</option>
-                        <option value="Pending">Pending (तपासायचे बाकी)</option>
-                        <option value="Approved">Approved (पास केलेले)</option>
-                        <option value="Rejected">Rejected (नामंजूर)</option>
-                    </select>
-                </div>
+                <div class="filter-group full-width"><select id="status-filter"><option value="">सर्व स्टेटस</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select></div>
             </div>
             <div class="applicant-list-container" id="applicant-list-container"></div>
         </aside>
-        <main class="details-panel" id="details-main-panel">
-            <div id="welcome-message"><h2><i class="fas fa-user-tie fa-4x"></i></h2><h2>मॅनेजर डॅशबोर्डमध्ये आपले स्वागत आहे!</h2><p>माहिती पाहण्यासाठी डावीकडील यादीतून एका नावावर क्लिक करा.</p></div>
+        <main class="details-panel">
+            <div id="welcome-message"><h2><i class="fas fa-hand-pointer fa-2x"></i></h2><p>माहिती पाहण्यासाठी डावीकडील यादीतून एका नावावर क्लिक करा.</p></div>
             <div class="details-view-card" id="details-view" style="display: none;"></div>
         </main>
     </div>
@@ -228,72 +242,61 @@
     const ui = {
         pageLoader: document.getElementById('full-page-loader'), applicantListContainer: document.getElementById('applicant-list-container'),
         detailsView: document.getElementById('details-view'), welcomeMessage: document.getElementById('welcome-message'),
-        searchBox: document.getElementById('search-box'), fromDateFilter: document.getElementById('fromDateFilter'),
-        toDateFilter: document.getElementById('toDateFilter'), unitFilter: document.getElementById('unit-filter'),
-        staffFilter: document.getElementById('staff-filter'), statusFilter: document.getElementById('status-filter'),
-        mainLayout: document.getElementById('main-layout'), detailsMainPanel: document.getElementById('details-main-panel'),
+        searchBox: document.getElementById('search-box'), fromDateFilter: document.getElementById('fromDateFilter'), toDateFilter: document.getElementById('toDateFilter'),
+        unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), statusFilter: document.getElementById('status-filter'),
+        mainLayout: document.getElementById('main-layout'),
         kpi: { totalCount: document.getElementById('total-count'), pendingCount: document.getElementById('pending-count'), approvedCount: document.getElementById('approved-count'), rejectedCount: document.getElementById('rejected-count') }
     };
     
-    // मराठी लेबल्स
     const MARATHI_LABELS = {
         actualTime: "अर्ज केल्याची वेळ", Unit: "युनिट", customerName: "ग्राहक नाव", applicantAge: "वय", applicantGender: "लिंग", castcat: "जात प्रवर्ग",
         villageName: "गाव", taluka: "तालुका", district: "जिल्हा", mobileNumber: "मोबाईल क्रमांक", aadhaarNumber: "आधार क्रमांक", panNumber: "पॅन क्रमांक",
-        maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", coApplicantName: "सह-अर्जदार/पती/पत्नीचे नाव", coApplicantAadhaar: "सह-अर्जदार आधार नंबर",
-        coApplicantPan: "सह-अर्जदार पॅन नंबर", branchName: "शाखेचे नाव", centerName: "केंद्राचे नाव/कोड", loanAmountRequested: "मागितलेली रक्कम (रु)",
-        loanPurpose: "कर्जाचा उद्देश", loanProductType: "कर्ज प्रकार", repaymentPeriod: "परतफेड कालावधी (महिने)", loanCycle: "कर्ज सायकल (कितवे कर्ज?)",
-        isExistingCustomer: "सध्या अनिकचे ग्राहक आहात?", existingAccountNumber: "सध्याचा खाते क्रमांक", familyTotalMembers: "घरातील एकूण सदस्य",
-        familyEarningMembers: "कमावणारे सदस्य", familyTotalIncome: "एकूण मासिक उत्पन्न (रु)", expenseHousehold: "घरखर्च (रु)", expenseEducation: "शिक्षण खर्च (रु)",
-        expenseMedical: "वैद्यकीय खर्च (रु)", expenseExistingEMI: "इतर कर्जाचा चालू EMI", existingEMI: "इतर कर्जाचा चालू EMI", expenseOther: "इतर खर्च (रु)", 
-        expenseTotal: "एकूण मासिक खर्च (रु)", primaryIncomeSource: "प्राथमिक उत्पन्न स्रोत", primaryIncomeTypeDetails: "प्राथमिक उत्पन्नाचा तपशील", 
-        primaryIncomeAmount: "प्राथमिक मासिक उत्पन्न (रु)", secondaryIncomeSource: "दुय्यम उत्पन्न स्रोत", secondaryIncomeAmount: "दुय्यम मासिक उत्पन्न (रु)",
-        Milkincome: "दुग्धउत्पादन (मासिक उत्पन्न/ लिटर)", assetLandAcres: "जमीन (एकर)", assetLandType: "जमीनीचा प्रकार", assetHouseType: "घराचा प्रकार",
-        assetPlots: "प्लॉट्स/शॉप्स", assetEquipmentFarm: "शेतीसाठीची उपकरणे", assetEquipmentBusiness: "व्यवसायासाठीची उपकरणे", assetVehicle: "वाहन (उदा. दुचाकी, ट्रॅक्टर)",
-        cows: "गायी", buffaloes: "म्हशी", goats: "बकऱ्या/मेंढ्या", poultry: "कोंबड्या", pigs: "वराह पालन", bulls: "बैलजोडी", 'other livestok': "इतर पशुधन",
-        savingsBankAccount: "बँक खाते क्रमांक", savingsPigmy: "पिग्मी खाते", savingsInsurancePolicy: "विमा पॉलिसी", savingsInsuranceType: "विमा प्रकार",
-        savingsOther: "इतर बचत/गुंतवणूक", previousLoanSource: "यापूर्वी कुठून कर्ज घेतले?", previousLoanDetails: "मागील कर्ज तपशील (बाकी रक्कम)",
+        maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", coApplicantName: "सह-अर्जदार", coApplicantAadhaar: "सह-अर्जदार आधार", coApplicantPan: "सह-अर्जदार पॅन", 
+        branchName: "शाखेचे नाव", centerName: "केंद्राचे नाव/कोड", loanAmountRequested: "मागितलेली रक्कम", loanPurpose: "कर्जाचा उद्देश", loanProductType: "कर्ज प्रकार", 
+        repaymentPeriod: "परतफेड कालावधी (महिने)", loanCycle: "कर्ज सायकल", isExistingCustomer: "सध्याचे ग्राहक?", existingAccountNumber: "सध्याचा खाते क्र.", 
+        familyTotalMembers: "एकूण सदस्य", familyEarningMembers: "कमावणारे सदस्य", familyTotalIncome: "एकूण मासिक उत्पन्न", expenseHousehold: "घरखर्च", 
+        expenseEducation: "शिक्षण खर्च", expenseMedical: "वैद्यकीय खर्च", expenseExistingEMI: "चालू EMI", existingEMI: "चालू EMI", expenseOther: "इतर खर्च", 
+        expenseTotal: "एकूण खर्च", primaryIncomeSource: "प्राथमिक उत्पन्न स्रोत", primaryIncomeAmount: "प्राथमिक मासिक उत्पन्न", secondaryIncomeSource: "दुय्यम उत्पन्न स्रोत", 
+        secondaryIncomeAmount: "दुय्यम मासिक उत्पन्न", Milkincome: "दुग्धउत्पादन उत्पन्न", assetLandAcres: "जमीन (एकर)", assetLandType: "जमीनीचा प्रकार", 
+        assetHouseType: "घराचा प्रकार", assetVehicle: "वाहन", cows: "गायी", buffaloes: "म्हशी", goats: "बकऱ्या", poultry: "कोंबड्या", 
+        savingsBankAccount: "बँक खाते", savingsPigmy: "पिग्मी खाते", savingsInsurancePolicy: "विमा पॉलिसी", previousLoanSource: "मागील कर्ज स्रोत", 
         guarantorDetails: "हमीदाराची माहिती", remarks: "अधिकारी निरीक्षण", visitDate: "भेटीची तारीख", fieldOfficerName: "क्षेत्र अधिकारी",
-        gpsLatitude: "GPS अक्षांश", gpsLongitude: "GPS रेखांश", gpsAddress: "GPS पत्ता", photoLinks: "फोटो लिंक्स", supportdoc: "सहाय्यक कागदपत्रे",
-        googleMapsLink: "गुगल मॅप्स लिंक", cast: "जात प्रवर्ग"
+        gpsAddress: "GPS पत्ता", VerificationStatus: "व्हेरिफिकेशन स्थिती", ApprovedLoanAmount: "मंजूर केलेली रक्कम", VerifierRemarks: "व्हेरिफायरचे मत", 
+        VerifierName: "व्हेरिफायरचे नाव", cast: "जात प्रवर्ग", ManagerName: "मॅनेजर नांव", ManagerRemarks: "मॅनेजर मत"
     }; 
     
     const STRUCTURED_FIELDS = {
         'ऑपरेशन्स आणि संपर्क तपशील': ['actualTime', 'Unit', 'branchName', 'centerName', 'villageName', 'taluka', 'district', 'gpsAddress', 'fieldOfficerName', 'visitDate', 'remarks'],
         'वैयक्तिक आणि KYC तपशील': ['customerName', 'applicantAge', 'applicantGender', 'castcat', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber', 'isExistingCustomer', 'existingAccountNumber', 'cast'],
         'सह-अर्जदार माहिती': ['coApplicantName', 'coApplicantAadhaar', 'coApplicantPan'],
-        'कुटुंब, उत्पन्न आणि खर्च तपशील': ['familyTotalMembers', 'familyEarningMembers', 'familyTotalIncome', 'primaryIncomeSource', 'primaryIncomeTypeDetails', 'secondaryIncomeSource', 'secondaryIncomeAmount', 'Milkincome', 'expenseHousehold', 'expenseEducation', 'expenseMedical', 'expenseExistingEMI', 'expenseOther', 'expenseTotal'],
-        'कर्ज मागणी व परतफेड': ['loanAmountRequested', 'loanProductType', 'loanCycle', 'loanPurpose', 'repaymentPeriod', 'existingEMI', 'previousLoanSource', 'previousLoanDetails', 'guarantorDetails'],
-        'मालमत्ता तपशील': ['assetLandAcres', 'assetLandType', 'assetHouseType', 'assetPlots', 'assetEquipmentFarm', 'assetEquipmentBusiness'],
-        'पशुधन माहिती': ['cows', 'buffaloes', 'goats', 'poultry', 'pigs', 'bulls', 'other livestok', 'milkincome'],
-        'बचत आणि गुंतवणूक': ['savingsBankAccount', 'savingsPigmy', 'savingsInsurancePolicy', 'savingsInsuranceType', 'savingsOther'],
+        'कुटुंब, उत्पन्न आणि खर्च': ['familyTotalMembers', 'familyEarningMembers', 'familyTotalIncome', 'primaryIncomeSource', 'secondaryIncomeSource', 'Milkincome', 'expenseHousehold', 'expenseTotal'],
+        'कर्ज मागणी व परतफेड': ['loanAmountRequested', 'loanProductType', 'loanCycle', 'loanPurpose', 'repaymentPeriod', 'existingEMI', 'previousLoanSource', 'guarantorDetails'],
+        'मालमत्ता व पशुधन': ['assetLandAcres', 'assetLandType', 'assetHouseType', 'cows', 'buffaloes', 'goats'],
     };
 
     const FIELD_ICONS_MAP = {
-        customerName: "fas fa-user", mobileNumber: "fas fa-phone-alt", aadhaarNumber: "fas fa-id-card", panNumber: "fas fa-address-card", castcat: "fas fa-address-card", applicantAge: "fas fa-birthday-cake", applicantGender: "fas fa-venus-mars", maritalStatus: "fas fa-ring", educationLevel: "fas fa-book", familyTotalMembers: "fas fa-users", familyEarningMembers: "fas fa-user-check", familyTotalIncome: "fas fa-money-bill-wave", expenseHousehold: "fas fa-home", expenseEducation: "fas fa-graduation-cap", expenseMedical: "fas fa-heartbeat", expenseExistingEMI: "fas fa-building-columns", expenseOther: "fas fa-receipt", expenseTotal: "fas fa-calculator", coApplicantName: "fas fa-user-friends", coApplicantAadhaar: "fas fa-id-card-alt", coApplicantPan: "fas fa-address-card", Unit: "fas fa-cubes", branchName: "fas fa-building", taluka: "fas fa-city", district: "fas fa-globe-asia", centerName: "fas fa-map-pin", fieldOfficerName: "fas fa-user-tie", villageName: "fas fa-map-marker-alt", gpsAddress: "fas fa-location-dot", primaryIncomeSource: "fas fa-briefcase", secondaryIncomeSource: "fas fa-sack-dollar", Milkincome: "fas fa-cow", primaryIncomeAmount: "fas fa-money-bill-wave", secondaryIncomeAmount: "fas fa-money-bill-transfer", savingsBankAccount: "fas fa-wallet", savingsPigmy: "fas fa-piggy-bank", savingsInsurancePolicy: "fas fa-shield-alt", savingsInsuranceType: "fas fa-file-contract", savingsOther: "fas fa-layer-group", assetLandAcres: "fas fa-mountain", assetLandType: "fas fa-seedling", assetHouseType: "fas fa-house-chimney", assetPlots: "fas fa-vector-square", assetEquipmentFarm: "fas fa-tractor", assetEquipmentBusiness: "fas fa-shop", assetVehicle: "fas fa-car", cows: "fas fa-cow", buffaloes: "fas fa-paw", goats: "fas fa-paw", 'other livestok': "fas fa-paw", bulls: "fas fa-paw", pigs: "fas fa-paw", poultry: "fas fa-egg", loanAmountRequested: "fas fa-rupee-sign", loanPurpose: "fas fa-hand-holding-dollar", repaymentPeriod: "fas fa-calendar-alt", previousLoanSource: "fas fa-landmark", existingEMI: "fas fa-bank", guarantorDetails: "fas fa-handshake", loanProductType: "fas fa-tags", loanCycle: "fas fa-circle-notch", visitDate: "fas fa-calendar-check", actualTime: "fas fa-clock", remarks: "fas fa-comment-dots", cast: "fas fa-users-cog", default: "fas fa-info-circle"
+        customerName: "fas fa-user", mobileNumber: "fas fa-phone-alt", aadhaarNumber: "fas fa-id-card", panNumber: "fas fa-address-card", applicantAge: "fas fa-birthday-cake", 
+        familyTotalIncome: "fas fa-money-bill-wave", expenseTotal: "fas fa-calculator", villageName: "fas fa-map-marker-alt", loanAmountRequested: "fas fa-rupee-sign", 
+        actualTime: "fas fa-clock", ManagerName: "fas fa-user-tie", ManagerRemarks: "fas fa-comment-dots", default: "fas fa-info-circle"
     };
 
-    function formatHeader(key) { return MARATHI_LABELS[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim(); }
+    function formatHeader(key) { return MARATHI_LABELS[key] || key; }
     
-    // Date parsing logic
     function parseDate(dateStr) {
         if (!dateStr || typeof dateStr !== 'string') return null;
         dateStr = dateStr.trim();
         let date = null;
         if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
-            const parts = dateStr.split(' ');
+            const parts = dateStr.split(' '); 
             const dateParts = parts[0].split('/'); 
             if (dateParts.length === 3) {
-                const day = dateParts[0].padStart(2, '0');    
-                const month = dateParts[1].padStart(2, '0');  
-                const year = dateParts[2];                    
-                const isoDateStr = `${year}-${month}-${day}`; 
-                date = new Date(`${isoDateStr}T${parts[1] || '00:00:00'}`);
-                if (!isNaN(date.getTime())) return date;
+                const day = dateParts[0].padStart(2, '0'); const month = dateParts[1].padStart(2, '0'); const year = dateParts[2];                    
+                date = new Date(`${year}-${month}-${day}T${parts[1] || '00:00:00'}`);
+                if (!isNaN(date.getTime())) return date; 
             }
         }
         if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            const parts = dateStr.split('-');
-            date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+            const parts = dateStr.split('-'); date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
             if (!isNaN(date.getTime())) return date;
         }
         date = new Date(dateStr);
@@ -302,8 +305,7 @@
     }
 
     function formatTimestamp(timestamp, includeTime = false) {
-        if(!timestamp) return 'तपशील उपलब्ध नाही';
-        const date = typeof timestamp === 'object' ? timestamp : parseDate(timestamp);
+        const date = parseDate(timestamp);
         if (!date) return 'तपशील उपलब्ध नाही';
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         if (includeTime) { options.hour = '2-digit'; options.minute = '2-digit'; options.hour12 = true; }
@@ -315,7 +317,7 @@
 
     function parseMultiUrlString(urlString) {
         if (!urlString || typeof urlString !== 'string') return [];
-        return urlString.replace(/[\n;]/g, ',').split(',').map(url => url.trim()).filter(url => url && isValidUrl(url));
+        return urlString.replace(/[\n;]/g, ',').split(',').map(u => u.trim()).filter(u => u && isValidUrl(u));
     }
 
     function generateJitsiUrl(applicantName, rowId) {
@@ -326,17 +328,15 @@
     window.copyJitsiLink = function() {
         const linkDisplayElement = document.getElementById('jitsi-link-content');
         if (!linkDisplayElement) return;
-        const linkText = linkDisplayElement.innerText.trim();
         const tempInput = document.createElement('textarea');
-        tempInput.value = `व्हिडिओ कॉल लिंक: ${linkText}`; 
-        document.body.appendChild(tempInput);
-        tempInput.select(); document.execCommand('copy'); document.body.removeChild(tempInput);
+        tempInput.value = `व्हिडिओ कॉल लिंक: ${linkDisplayElement.innerText.trim()}`; 
+        document.body.appendChild(tempInput); tempInput.select(); document.execCommand('copy'); document.body.removeChild(tempInput);
         alert('✅ व्हिडिओ कॉल लिंक कॉपी केली आहे!');
     }
 
     window.startVideoCall = function(applicantName, rowId) {
         const jitsiUrl = generateJitsiUrl(applicantName, rowId);
-        if (confirm(`तुम्ही ${applicantName} सोबत व्हिडिओ कॉल सुरू करत आहात. तयार आहात का?`)) {
+        if (confirm(`व्हिडिओ कॉल सुरू करत आहात. कॉल रेकॉर्ड करण्यासाठी स्क्रीन रेकॉर्डिंग सुरू ठेवा.\n\nलिंक: ${jitsiUrl}`)) {
             window.open(jitsiUrl, '_blank');
         }
     }
@@ -346,381 +346,300 @@
     async function fetchData() {
         try {
             ui.pageLoader.classList.remove('hidden');
-            const response = await fetch(`${SCRIPT_URL}?action=getData&role=manager`);
-            if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
+            const response = await fetch(`${SCRIPT_URL}?action=getData&role=verifier`);
             const result = await response.json();
-            
             if (result.status === 'success') {
-                // PERFORMANCE BOOST: Parse dates once during load instead of during every filter
-                allApplicants = result.data.map(app => {
-                    app._parsedDate = parseDate(app.actualTime || app.timestamp);
-                    app.ManagerApprovalStatus = app.ManagerApprovalStatus || 'Pending';
-                    return app;
-                }).sort((a, b) => {
-                    const timeA = a._parsedDate ? a._parsedDate.getTime() : 0;
-                    const timeB = b._parsedDate ? b._parsedDate.getTime() : 0;
-                    return timeB - timeA;
+                allApplicants = result.data.sort((a, b) => {
+                    const dateA = parseDate(a.actualTime || a.timestamp); const dateB = parseDate(b.actualTime || b.timestamp);
+                    return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
                 });
-
-                populateUnitFilter(allApplicants); 
-                populateStaffFilter(allApplicants); 
-                updateKpis(allApplicants);
-                filterAndRender();
-                
+                populateUnitFilter(allApplicants); populateStaffFilter(allApplicants); filterAndRender();
                 if (!window.listenersAdded) { addEventListeners(); window.listenersAdded = true; }
             } else { throw new Error(result.message); }
         } catch (error) { 
-            ui.applicantListContainer.innerHTML = `<p style="text-align:center; padding:20px; color: red;">डेटा लोड करताना त्रुटी: ${error.message}</p>`; 
+            ui.applicantListContainer.innerHTML = `<p style="padding:20px; color:red;">डेटा लोड करताना त्रुटी: ${error.message}</p>`; 
         } finally { 
             ui.pageLoader.classList.add('hidden');
         }
     }
 
     function addEventListeners() {
-        // Remove KPI active styles if user manually changes filters
-        const removeKpiActive = () => { document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter')); };
-        
-        [ui.searchBox, ui.unitFilter, ui.staffFilter, ui.fromDateFilter, ui.toDateFilter].forEach(el => {
-            el.addEventListener('input', () => { removeKpiActive(); filterAndRender(); });
-        });
-        
-        ui.statusFilter.addEventListener('change', () => { removeKpiActive(); filterAndRender(); });
-
-        // KPI CLICK FEATURE
+        [ui.searchBox, ui.unitFilter, ui.staffFilter, ui.statusFilter, ui.fromDateFilter, ui.toDateFilter].forEach(el => el.addEventListener('input', filterAndRender));
         document.querySelectorAll('.kpi-card').forEach((card, index) => {
             card.addEventListener('click', () => {
-                // 1. Clear all search & date filters to show EXACTLY what the KPI represents
-                ui.searchBox.value = '';
-                ui.fromDateFilter.value = '';
-                ui.toDateFilter.value = '';
-                ui.unitFilter.value = '';
-                ui.staffFilter.value = '';
-                
-                // 2. Set Status Filter
-                const statuses = ['', 'Pending', 'Approved', 'Rejected'];
-                ui.statusFilter.value = statuses[index]; 
-                
-                // 3. Highlight the clicked KPI card
-                document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter'));
-                card.classList.add('active-filter');
-                
-                // 4. Update the List
-                filterAndRender();
-
-                // On mobile, switch to list view
-                ui.mainLayout.classList.remove('mobile-details-active');
+                const statuses = ['', 'Pending', 'Approved', 'Rejected']; ui.statusFilter.value = statuses[index]; filterAndRender();
             });
         });
     }
 
     function populateUnitFilter(applicants) {
-        const unitNames = [...new Set(applicants.map(app => app.Unit).filter(Boolean))];
-        ui.unitFilter.innerHTML = '<option value="">सर्व युनिट</option>';
-        unitNames.sort().forEach(name => { ui.unitFilter.innerHTML += `<option value="${name}">${name}</option>`; });
+        const unitNames = [...new Set(applicants.map(app => app.Unit).filter(Boolean))].sort();
+        ui.unitFilter.innerHTML = '<option value="">सर्व युनिट</option>' + unitNames.map(name => `<option value="${name}">${name}</option>`).join('');
     }
 
     function populateStaffFilter(applicants) {
-        const staffNames = [...new Set(applicants.map(app => app.fieldOfficerName).filter(Boolean))];
-        ui.staffFilter.innerHTML = '<option value="">सर्व अधिकारी</option>';
-        staffNames.sort().forEach(name => { ui.staffFilter.innerHTML += `<option value="${name}">${name}</option>`; });
+        const staffNames = [...new Set(applicants.map(app => app.fieldOfficerName).filter(Boolean))].sort();
+        ui.staffFilter.innerHTML = '<option value="">सर्व अधिकारी</option>' + staffNames.map(name => `<option value="${name}">${name}</option>`).join('');
     }
 
-    // FAST FILTERING
     function filterAndRender() {
         const searchTerm = ui.searchBox.value.toLowerCase();
         const unit = ui.unitFilter.value; const staffName = ui.staffFilter.value; const status = ui.statusFilter.value;
-        const fromDateStr = ui.fromDateFilter.value; const toDateStr = ui.toDateFilter.value;
-        
-        let fromTime = fromDateStr ? parseDate(fromDateStr).setHours(0,0,0,0) : null;
-        let toTime = toDateStr ? parseDate(toDateStr).setHours(23,59,59,999) : null;
-        
-        const filtered = allApplicants.filter(app => {
-            const passesBasicFilter = 
-                (app.customerName?.toLowerCase().includes(searchTerm) || app.villageName?.toLowerCase().includes(searchTerm) || '') && 
-                (!unit || app.Unit === unit) && 
-                (!staffName || app.fieldOfficerName === staffName) && 
-                (!status || app.ManagerApprovalStatus === status);
+        const fDate = ui.fromDateFilter.value ? parseDate(ui.fromDateFilter.value) : null; if(fDate) fDate.setHours(0,0,0,0);
+        const tDate = ui.toDateFilter.value ? parseDate(ui.toDateFilter.value) : null; if(tDate) tDate.setHours(23,59,59,999);
 
-            if (!passesBasicFilter) return false;
-            
-            if (fromTime || toTime) {
-                if (!app._parsedDate) return false;
-                const appTime = app._parsedDate.getTime();
-                if (fromTime && appTime < fromTime) return false;
-                if (toTime && appTime > toTime) return false;
+        const filtered = allApplicants.filter(app => {
+            const appDate = parseDate(app.actualTime || app.timestamp); 
+            const passesBasic = (app.customerName?.toLowerCase().includes(searchTerm) || app.villageName?.toLowerCase().includes(searchTerm)) && 
+                                (!unit || app.Unit === unit) && (!staffName || app.fieldOfficerName === staffName) && 
+                                (!status || (app.VerificationStatus || 'Pending') === status);
+            if (!passesBasic) return false;
+            if (fDate || tDate) {
+                if (!appDate) return false;
+                if (fDate && appDate.getTime() < fDate.getTime()) return false;
+                if (tDate && appDate.getTime() > tDate.getTime()) return false;
             }
             return true;
         });
         
-        renderApplicantList(filtered);
+        updateKpis(filtered); renderApplicantList(filtered);
     }
 
     function updateKpis(applicants) {
         ui.kpi.totalCount.textContent = applicants.length;
-        ui.kpi.pendingCount.textContent = applicants.filter(a => a.ManagerApprovalStatus === 'Pending').length;
-        ui.kpi.approvedCount.textContent = applicants.filter(a => a.ManagerApprovalStatus === 'Approved').length;
-        ui.kpi.rejectedCount.textContent = applicants.filter(a => a.ManagerApprovalStatus === 'Rejected').length;
+        ui.kpi.pendingCount.textContent = applicants.filter(a => (a.VerificationStatus || 'Pending') === 'Pending').length;
+        ui.kpi.approvedCount.textContent = applicants.filter(a => a.VerificationStatus === 'Approved').length;
+        ui.kpi.rejectedCount.textContent = applicants.filter(a => a.VerificationStatus === 'Rejected').length;
     }
 
-    // FAST RENDERING (Using DocumentFragment)
     function renderApplicantList(applicants) {
-        ui.applicantListContainer.innerHTML = ''; // Clear fast
-        
-        if (applicants.length === 0) {
-            ui.applicantListContainer.innerHTML = '<p style="text-align:center; padding:30px; color:#7f8c8d;">यादीत एकही अर्ज सापडला नाही.</p>';
-            return;
-        }
-
-        const fragment = document.createDocumentFragment();
-        
+        ui.applicantListContainer.innerHTML = applicants.length === 0 ? '<p style="text-align:center; padding:20px;">एकही अर्ज सापडला नाही.</p>' : '';
         applicants.forEach(app => {
-            const item = document.createElement('div'); 
-            item.className = 'applicant-item'; 
-            
-            const status = app.ManagerApprovalStatus;
-            const statusText = status === 'Approved' ? '✅ पास' : status === 'Rejected' ? '❌ नामंजूर' : '⏳ पेंडिंग';
-            const displayDate = formatTimestamp(app._parsedDate); 
-            
-            item.innerHTML = `<div class="applicant-info"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><div><h4>${app.customerName || 'N/A'}</h4><p>${app.villageName || 'N/A'} | ${displayDate}</p></div><span class="status-pill ${status}">${statusText}</span></div></div>`;
-            
+            const item = document.createElement('div'); item.className = 'applicant-item';
+            const status = app.VerificationStatus || 'Pending';
+            const statusText = status === 'Approved' ? '✅ मंजूर' : status === 'Rejected' ? '❌ नामंजूर' : '⏳ प्रलंबित';
+            const displayDate = formatTimestamp(app.actualTime || app.timestamp); 
+
+            let summaryHtml = '';
+            if (status !== 'Pending') {
+                const callIcon = app.IsVideoCallDone === 'Yes' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>';
+                summaryHtml = `<div class="verification-summary"> ${app.ApprovedLoanAmount ? `<div class="summary-item"><i class="fas fa-rupee-sign"></i> ${parseInt(app.ApprovedLoanAmount).toLocaleString('en-IN')}</div>` : ''} <div class="summary-item">${callIcon} व्हिडिओ कॉल</div> </div>`;
+            }
+            item.innerHTML = `<div class="applicant-info"><div style="display:flex; justify-content:space-between;"><div><h4>${app.customerName || 'N/A'}</h4><p>${app.villageName || ''} | ${displayDate}</p></div><span class="status-pill ${status}">${statusText}</span></div></div>${summaryHtml}`;
             item.addEventListener('click', () => { 
-                displayApplicantDetails(app); 
                 document.querySelectorAll('.applicant-item').forEach(el => el.classList.remove('active')); 
-                item.classList.add('active'); 
-                ui.mainLayout.classList.add('mobile-details-active'); 
+                item.classList.add('active'); ui.mainLayout.classList.add('mobile-details-active');
+                setTimeout(() => displayApplicantDetails(app), 50); // slight delay for smooth UI transition
             });
-            
-            fragment.appendChild(item);
+            ui.applicantListContainer.appendChild(item);
         });
-        
-        // Append all 1000+ items at once (Lightning Fast)
-        ui.applicantListContainer.appendChild(fragment);
     }
 
     function displayApplicantDetails(app) {
         currentApplicant = app;
-        ui.welcomeMessage.style.display = 'none';
-        
-        // Scroll details panel to top
-        ui.detailsMainPanel.scrollTop = 0;
+        if(ui.welcomeMessage) ui.welcomeMessage.style.display = 'none';
 
-        const income = parseInt(app.familyTotalIncome || 0);
-        const expenseH = parseInt(app.expenseHousehold || 0); const expenseE = parseInt(app.expenseEducation || 0);
-        const expenseM = parseInt(app.expenseMedical || 0); const expenseEMI = parseInt(app.existingEMI || app.expenseExistingEMI || 0);
-        const expenseO = parseInt(app.expenseOther || 0);
-        const totalExpenses = expenseH + expenseE + expenseM + expenseEMI + expenseO;
-        const netIncome = income - totalExpenses;
-        
-        const netIncomeColor = netIncome >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
-        const netIncomeBorderColor = netIncome >= 0 ? 'var(--primary-color)' : 'var(--danger-color)';
-
+        const income = parseInt(app.familyTotalIncome || 0); const totalExpenses = parseInt(app.expenseTotal || 0); const netIncome = income - totalExpenses;
         const requestedAmount = parseInt(app.loanAmountRequested || 0).toLocaleString('en-IN');
+        const status = app.VerificationStatus || 'Pending';
         
-        const safeCustomerName = (app.customerName || 'ग्राहक').replace(/'/g, "\\'");
-        const jitsiUrl = generateJitsiUrl(safeCustomerName, app.row);
+        let loanAmountDisplay = `<div class="loan-amount">मागणी: ₹${requestedAmount}</div>`;
+        if (status === 'Approved' || status === 'Rejected') {
+            const approvedAmount = parseInt(app.ApprovedLoanAmount || 0).toLocaleString('en-IN');
+            const color = status === 'Approved' ? 'var(--success-color)' : 'var(--danger-color)';
+            loanAmountDisplay = `<div class="loan-amounts"><div class="loan-amount-requested">मागणी: ₹${requestedAmount}</div><div class="loan-amount-approved" style="color: ${color};">${status === 'Approved' ? 'मंजूर' : 'नामंजूर'}: ₹${approvedAmount}</div></div>`;
+        }
+        
+        const safeName = (app.customerName || 'ग्राहक').replace(/'/g, "\\'");
+        const jitsiUrl = generateJitsiUrl(safeName, app.row);
 
         ui.detailsView.innerHTML = `
             <div class="details-header">
                 <div class="header-left">
                     <button id="back-to-list-btn"><i class="fas fa-arrow-left"></i></button>
-                    <div><h2 style="margin:0; font-size:1.4rem; color:var(--primary-dark);">${app.customerName || 'N/A'}</h2><p style="margin:4px 0 0 0; color:var(--light-text); font-size:0.9rem;">${app.villageName || 'N/A'}, ${app.taluka || 'N/A'}</p></div>
+                    <div><h2 style="margin:0; font-size:1.3rem;">${app.customerName || 'N/A'}</h2><p style="margin:2px 0 0; font-size:0.9rem; color:var(--light-text);">${app.villageName || ''}</p></div>
                 </div>
-                <div class="loan-amounts">
-                    <div class="loan-amount">मागणी: ₹${requestedAmount}</div>
-                </div>
+                ${loanAmountDisplay}
                 <div class="header-actions">
-                    <button class="action-button call-button" onclick="startVideoCall('${safeCustomerName}', ${app.row})">
-                        <i class="fas fa-video"></i> व्हिडिओ कॉल
-                    </button>
+                    <button class="action-button call-button" onclick="startVideoCall('${safeName}', ${app.row})"><i class="fas fa-video"></i> कॉल सुरू करा</button>
                 </div>
             </div>
 
-            <div class="whatsapp-copy-tool active">
+            <div class="whatsapp-copy-tool">
                 <div class="whatsapp-link-box-container">
-                    <h4><i class="fab fa-whatsapp"></i> WhatsApp व्हिडिओ कॉल लिंक</h4>
-                    <div id="jitsi-link-display">लिंक: <b id="jitsi-link-content">${jitsiUrl}</b></div>
+                    <h4><i class="fab fa-whatsapp"></i> व्हिडिओ कॉल लिंक</h4>
+                    <div id="jitsi-link-display"><b id="jitsi-link-content">${jitsiUrl}</b></div>
                     <button id="copy-whatsapp-btn" onclick="copyJitsiLink()"><i class="fas fa-copy"></i> लिंक कॉपी करा</button>
                 </div>
             </div>
             
             <div class="tabs-container">
                 <div class="tabs">
-                    <button class="tab-button active" onclick="openTab(event, 'tab-income-expense')"><i class="fas fa-chart-bar"></i> उत्पन्न/खर्च</button>
-                    <button class="tab-button" onclick="openTab(event, 'tab-details')"><i class="fas fa-user-tie"></i> माहिती</button>
-                    <button class="tab-button" onclick="openTab(event, 'tab-evidence')"><i class="fas fa-camera-retro"></i> पुरावा</button>
-                    <button class="tab-button" onclick="openTab(event, 'tab-documents')"><i class="fas fa-file-alt"></i> कागदपत्रे</button> 
-                    <button class="tab-button" onclick="openTab(event, 'tab-verification')"><i class="fas fa-check-double"></i> मॅनेजर अप्रूव्हल</button>
+                    <button class="tab-button active" onclick="openTab(event, 'tab-verification')"><i class="fas fa-user-check"></i> व्हेरिफिकेशन</button>
+                    <button class="tab-button" onclick="openTab(event, 'tab-income')"><i class="fas fa-chart-bar"></i> उत्पन्न</button>
+                    <button class="tab-button" onclick="openTab(event, 'tab-details')"><i class="fas fa-list-ul"></i> माहिती</button>
+                    <button class="tab-button" onclick="openTab(event, 'tab-media')"><i class="fas fa-images"></i> पुरावे व कागदपत्रे</button>
                 </div>
             </div>
 
-            <div id="tab-income-expense" class="tab-content active">
-                <h3><i class="fas fa-chart-line"></i> उत्पन्न आणि खर्च विश्लेषण</h3>
-                <div style="display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap;">
-                    <div class="info-group" style="flex: 1; min-width: 200px; border-left-color: var(--success-color);">
-                        <i class="fas fa-hand-holding-usd" style="color: var(--success-color);"></i>
-                        <div><label>एकूण उत्पन्न</label><p style="font-size: 1.3rem; color: var(--success-color); font-weight: 700;">₹${income.toLocaleString('en-IN')}</p></div>
-                    </div>
-                    <div class="info-group" style="flex: 1; min-width: 200px; border-left-color: ${netIncomeBorderColor};">
-                        <i class="fas fa-money-check-alt" style="color: ${netIncomeBorderColor};"></i>
-                        <div><label>शिल्लक (उत्पन्न - खर्च)</label><p style="font-size: 1.3rem; color: ${netIncomeColor}; font-weight: 700;">₹${netIncome.toLocaleString('en-IN')}</p></div>
+            <div id="tab-verification" class="tab-content active">
+                
+                <!-- NEW MANAGER SECTION ADDED HERE -->
+                <div class="verification-section manager-review-section">
+                    <h4><i class="fas fa-user-tie"></i> मॅनेजर यांचा अभिप्राय</h4>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <i class="fas fa-id-badge" style="color: var(--info-color);"></i>
+                            <div><label>मॅनेजर यांचे नांव</label><p><strong>${app.ManagerName || '<span style="color:#aaa;">माहिती उपलब्ध नाही</span>'}</strong></p></div>
+                        </div>
+                        <div class="info-group full-width">
+                            <i class="fas fa-comment-dots" style="color: var(--info-color);"></i>
+                            <div><label>मॅनेजर यांचे मत / शेरा</label><p>${app.ManagerRemarks || '<span style="color:#aaa;">अभिप्राय दिलेला नाही</span>'}</p></div>
+                        </div>
                     </div>
                 </div>
-                
-                <h4><i class="fas fa-file-invoice-dollar"></i> तपशीलवार खर्च</h4>
-                <div class="info-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
-                    <div class="info-group" style="border-left-color: #3498db;"><i class="fas fa-home" style="color: #3498db;"></i><div><label>घरगुती</label><p>₹${expenseH.toLocaleString('en-IN')}</p></div></div>
-                    <div class="info-group" style="border-left-color: #f39c12;"><i class="fas fa-graduation-cap" style="color: #f39c12;"></i><div><label>शिक्षण</label><p>₹${expenseE.toLocaleString('en-IN')}</p></div></div>
-                    <div class="info-group" style="border-left-color: #e74c3c;"><i class="fas fa-heartbeat" style="color: #e74c3c;"></i><div><label>वैद्यकीय</label><p>₹${expenseM.toLocaleString('en-IN')}</p></div></div>
-                    <div class="info-group" style="border-left-color: #4b77a9;"><i class="fas fa-building-columns" style="color: #4b77a9;"></i><div><label>चालू EMI</label><p>₹${expenseEMI.toLocaleString('en-IN')}</p></div></div>
-                    <div class="info-group" style="border-left-color: #9b59b6;"><i class="fas fa-receipt" style="color: #9b59b6;"></i><div><label>इतर</label><p>₹${expenseO.toLocaleString('en-IN')}</p></div></div>
-                    <div class="info-group" style="border-left-color: var(--danger-color); background: rgba(var(--danger-rgb), 0.05);"><i class="fas fa-calculator" style="color: var(--danger-color);"></i><div><label>एकूण खर्च</label><p style="font-weight: 700;">₹${totalExpenses.toLocaleString('en-IN')}</p></div></div>
+
+                <form id="verification-form">
+                    <div class="verification-section">
+                        <h4><i class="fas fa-tasks"></i> मूलभूत तपासणी</h4>
+                        <div class="verification-grid">
+                            <div class="form-group">
+                                <label>माहिती योग्य आहे का?</label>
+                                <select name="isInfoCorrect" required>
+                                    <option value="">निवडा</option><option value="Yes">✅ होय (Yes)</option><option value="No">❌ नाही (No)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>व्हिडिओ कॉल झाला का?</label>
+                                <select name="isVideoCallDone" required>
+                                    <option value="">निवडा</option><option value="Yes">✅ होय (Yes)</option><option value="No">❌ नाही (No)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>जात प्रवर्ग (Caste)</label>
+                                <select name="cast" required>
+                                    <option value="">निवडा</option>
+                                    <option value="Open">ओपन (Open)</option><option value="OBC">ओबीसी (OBC)</option>
+                                    <option value="SC">एससी (SC)</option><option value="NT">एनटी (NT)</option><option value="ST">एसटी (ST)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="verification-section">
+                        <h4><i class="fas fa-hand-holding-usd"></i> कर्ज मंजुरी व अभिप्राय</h4>
+                        <div class="verification-grid">
+                            <div class="form-group">
+                                <label>मंजूर रक्कम (रु)</label>
+                                <input type="number" name="approvedLoanAmount" placeholder="उदा. 50000" required>
+                            </div>
+                            <div class="form-group">
+                                <label>अंतिम स्थिती</label>
+                                <select name="verificationStatus" required>
+                                    <option value="Pending">⏳ Pending</option><option value="Approved">✅ Approved</option><option value="Rejected">❌ Rejected</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>व्हेरिफायरचे नाव</label>
+                                <select name="verifierName" required>
+                                    <option value="">नाव निवडा</option><option value="Vilas Godge">विलास गोडगे</option><option value="Tejshri Todkar">तेजश्री तोडकर</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>तुमचे मत / शेरा</label>
+                                <textarea name="verifierRemarks" rows="3" placeholder="अभिप्राय येथे लिहा..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="update-btn"><i class="fas fa-save"></i> माहिती सेव्ह करा</button>
+                        </div>
+                        <p id="update-status" style="text-align:right; margin-top:10px; font-weight:600; font-size:0.9rem;"></p>
+                    </div>
+                </form>
+            </div>
+
+            <div id="tab-income" class="tab-content">
+                <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
+                    <div class="info-group" style="flex:1; min-width:200px; border-left-color:var(--success-color);"><i class="fas fa-rupee-sign"></i><div><label>एकूण उत्पन्न</label><p style="color:var(--success-color); font-weight:700; font-size:1.2rem;">₹${income.toLocaleString('en-IN')}</p></div></div>
+                    <div class="info-group" style="flex:1; min-width:200px; border-left-color:var(--danger-color);"><i class="fas fa-calculator"></i><div><label>एकूण खर्च</label><p style="color:var(--danger-color); font-weight:700; font-size:1.2rem;">₹${totalExpenses.toLocaleString('en-IN')}</p></div></div>
+                    <div class="info-group" style="flex:1; min-width:200px; border-left-color:${netIncome>=0?'var(--primary-color)':'var(--danger-color)'};"><i class="fas fa-wallet"></i><div><label>शिल्लक</label><p style="color:${netIncome>=0?'var(--primary-color)':'var(--danger-color)'}; font-weight:700; font-size:1.2rem;">₹${netIncome.toLocaleString('en-IN')}</p></div></div>
                 </div>
             </div>
 
             <div id="tab-details" class="tab-content"></div>
 
-            <div id="tab-evidence" class="tab-content">
-                <h3><i class="fas fa-images"></i> GPS फोटो</h3>
-                <div class="photo-gallery"></div>
-                <h3 style="margin-top: 25px;"><i class="fas fa-map-marked-alt"></i> GPS नकाशा</h3>
-                <div class="map-container"></div>
-            </div>
-            
-            <div id="tab-documents" class="tab-content">
-                <h3><i class="fas fa-folder-open"></i> सहाय्यक कागदपत्रे</h3>
-                <div class="document-gallery"></div>
-            </div>
-
-            <div id="tab-verification" class="tab-content"><form id="verification-form"></form></div>`;
+            <div id="tab-media" class="tab-content">
+                <h4><i class="fas fa-camera"></i> फोटो</h4><div class="photo-gallery" id="media-photos"></div>
+                <h4 style="margin-top:20px;"><i class="fas fa-file-pdf"></i> कागदपत्रे</h4><div class="document-gallery" id="media-docs"></div>
+                <h4 style="margin-top:20px;"><i class="fas fa-map-marker-alt"></i> लोकेशन</h4><div class="map-container" id="media-map"></div>
+            </div>`;
         
         ui.detailsView.style.display = 'block';
         document.getElementById('back-to-list-btn').addEventListener('click', () => ui.mainLayout.classList.remove('mobile-details-active'));
         
-        // Build Details HTML efficiently
+        // Populate Details Tab
         let detailHtml = '';
-        for (const sectionTitle in STRUCTURED_FIELDS) {
-            const fields = STRUCTURED_FIELDS[sectionTitle];
+        for (const section in STRUCTURED_FIELDS) {
             let sectionContent = '';
-            
-            fields.forEach(key => {
-                const value = app[key];
-                if (value !== undefined && value !== null && String(value).trim() !== '') {
-                    let displayValue = value; let hasContent = true;
-                    if (key === 'actualTime' || key === 'visitDate') {
-                        const formattedDate = formatTimestamp(app._parsedDate || value, true);
-                        if (formattedDate === 'तपशील उपलब्ध नाही') { hasContent = false; } else { displayValue = formattedDate; }
-                    } else if (key === 'loanAmountRequested' || key.endsWith('Amount') || key.endsWith('Income') || key.startsWith('expense') || key === 'existingEMI') {
-                        const numValue = parseInt(value) || 0; displayValue = `₹${numValue.toLocaleString('en-IN')}`;
-                    } else if (key === 'isExistingCustomer' || key === 'savingsPigmy' || key === 'savingsInsurancePolicy') {
-                        displayValue = value === 'Yes' ? 'होय' : (value === 'No' ? 'नाही' : value);
-                    }
+            STRUCTURED_FIELDS[section].forEach(key => {
+                const val = app[key];
+                if (val && String(val).trim() !== '') {
+                    let displayVal = val;
+                    if (key.includes('Time') || key.includes('Date')) displayVal = formatTimestamp(val, true);
+                    else if (key.includes('Amount') || key.includes('Income') || key.includes('expense') || key.includes('EMI')) displayVal = `₹${parseInt(val||0).toLocaleString('en-IN')}`;
                     const icon = FIELD_ICONS_MAP[key] || FIELD_ICONS_MAP.default;
-                    const label = formatHeader(key);
-                    if (hasContent) { sectionContent += `<div class="info-group"><i class="${icon}"></i><div><label>${label}</label><p>${displayValue}</p></div></div>`; }
+                    if(displayVal !== 'तपशील उपलब्ध नाही') sectionContent += `<div class="info-group"><i class="${icon}"></i><div><label>${formatHeader(key)}</label><p>${displayVal}</p></div></div>`;
                 }
             });
-            if (sectionContent) { detailHtml += `<div class="verification-section"><h4><i class="${FIELD_ICONS_MAP.default}"></i> ${sectionTitle}</h4><div class="info-grid">${sectionContent}</div></div>`; }
+            if (sectionContent) detailHtml += `<div class="verification-section"><h4>${section}</h4><div class="info-grid">${sectionContent}</div></div>`;
         }
         ui.detailsView.querySelector('#tab-details').innerHTML = detailHtml || '<p>तपशील उपलब्ध नाही.</p>';
+
+        // Populate Media Tab
+        const photos = parseMultiUrlString(app.photoLinks);
+        ui.detailsView.querySelector('#media-photos').innerHTML = photos.length ? photos.map((u,i) => `<a class="photo-link-item" href="${u}" target="_blank"><div class="photo-placeholder"><i class="fas fa-image"></i><span>फोटो ${i+1}</span></div></a>`).join('') : '<p>फोटो नाहीत.</p>';
         
-        // Render Photos
-        const photoGallery = ui.detailsView.querySelector('.photo-gallery');
-        const photoUrls = parseMultiUrlString(app.photoLinks);
-        photoGallery.innerHTML = photoUrls.length > 0 ? 
-            photoUrls.map((url, i) => `<a class="photo-link-item" href="${url}" target="_blank"><div class="photo-placeholder"><i class="fas fa-camera"></i><span>फोटो ${i + 1}</span></div></a>`).join('') : 
-            '<p>फोटो उपलब्ध नाहीत.</p>';
-        
-        // Render Map
-        const mapContainer = ui.detailsView.querySelector('.map-container');
+        const docs = parseMultiUrlString(app.supportdoc);
+        ui.detailsView.querySelector('#media-docs').innerHTML = docs.length ? docs.map((u,i) => `<a class="photo-link-item" href="${u}" target="_blank"><div class="photo-placeholder"><i class="fas fa-file-alt"></i><span>कागदपत्र ${i+1}</span></div></a>`).join('') : '<p>कागदपत्रे नाहीत.</p>';
+
         if (app.gpsLatitude && app.gpsLongitude) {
-            const mapImageUrl = `https://static-maps.yandex.ru/1.x/?ll=${app.gpsLongitude},${app.gpsLatitude}&z=17&l=sat,skl&size=650,300&pt=${app.gpsLongitude},${app.gpsLatitude},pm2rdl`;
-            const gmapLink = `https://www.google.com/maps?q=${app.gpsLatitude},${app.gpsLongitude}`;
-            mapContainer.innerHTML = `<a href="${gmapLink}" target="_blank"><img src="${mapImageUrl}" alt="Map"></a><br><a href="${gmapLink}" target="_blank" class="map-link">Google Maps <i class="fas fa-external-link-alt"></i></a>`;
-        } else { mapContainer.innerHTML = '<p>लोकेशन उपलब्ध नाही.</p>'; }
-        
-        // Render Docs
-        const documentGallery = ui.detailsView.querySelector('.document-gallery');
-        const docUrls = parseMultiUrlString(app.supportdoc);
-        documentGallery.innerHTML = docUrls.length > 0 ? 
-            docUrls.map((url, i) => `<a class="photo-link-item" href="${url}" target="_blank"><div class="photo-placeholder"><i class="fas fa-file-alt"></i><span>कागदपत्र ${i + 1}</span></div></a>`).join('') : 
-            '<p>कागदपत्रे उपलब्ध नाहीत.</p>';
+            ui.detailsView.querySelector('#media-map').innerHTML = `<a href="https://www.google.com/maps?q=${app.gpsLatitude},${app.gpsLongitude}" target="_blank"><img src="https://static-maps.yandex.ru/1.x/?ll=${app.gpsLongitude},${app.gpsLatitude}&z=16&l=sat,skl&size=450,250&pt=${app.gpsLongitude},${app.gpsLatitude},pm2rdl"></a>`;
+        } else { ui.detailsView.querySelector('#media-map').innerHTML = '<p>लोकेशन उपलब्ध नाही.</p>'; }
 
-        // Render Form
-        const formContainer = ui.detailsView.querySelector('#verification-form');
-        formContainer.innerHTML = `
-            <div class="verification-section">
-                <h4><i class="fas fa-check-double"></i> मॅनेजर अप्रूव्हल</h4>
-                <div class="verification-grid">
-                    <div class="form-group">
-                        <label for="managerStatus">फॉर्मची स्थिती (Status)</label>
-                        <select id="managerStatus" name="managerStatus" required>
-                            <option value="Pending">⏳ Pending (पेंडिंग ठेवा)</option>
-                            <option value="Approved">✅ Approve (पास करा)</option>
-                            <option value="Rejected">❌ Reject (नामंजूर करा)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="managerName">मॅनेजरचे नाव</label>
-                        <input type="text" id="managerName" name="managerName" placeholder="तुमचे नाव" required>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="managerRemarks">मॅनेजरचा अभिप्राय / सूचना</label>
-                        <textarea id="managerRemarks" name="managerRemarks" rows="2" placeholder="अभिप्राय येथे लिहा..."></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="form-actions"><button type="submit" id="update-btn"><i class="fas fa-save"></i> सेव्ह करा</button></div>
-            <p id="update-status" style="margin-top:10px; font-weight:600; text-align:right;"></p>`;
+        // Form logic
+        const form = ui.detailsView.querySelector('#verification-form');
+        form.elements.isInfoCorrect.value = app.IsInfoCorrect || ''; 
+        form.elements.isVideoCallDone.value = app.IsVideoCallDone || '';
+        form.elements.cast.value = app.cast || ''; 
+        form.elements.verificationStatus.value = app.VerificationStatus || 'Pending'; 
+        form.elements.verifierRemarks.value = app.VerifierRemarks || '';
+        form.elements.verifierName.value = app.VerifierName || ''; 
+        form.elements.approvedLoanAmount.value = app.ApprovedLoanAmount || app.loanAmountRequested || '';
         
-        const form = formContainer;
-        form.elements.managerStatus.value = app.ManagerApprovalStatus || 'Pending'; 
-        form.elements.managerName.value = app.ManagerName || '';
-        form.elements.managerRemarks.value = app.ManagerRemarks || '';
-        form.addEventListener('submit', handleUpdate);
-    }
-
-    async function handleUpdate(e) {
-        e.preventDefault(); if (!currentApplicant) return;
-        const form = e.target;
-        const updateBtn = form.querySelector('#update-btn');
-        const updateStatus = form.querySelector('#update-status');
-        const originalBtnText = updateBtn.innerHTML;
-        
-        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> सेव्ह करत आहे...'; updateBtn.disabled = true;
-        const formData = new FormData(form);
-        const data = { action: 'updateManagerApproval', row: currentApplicant.row };
-        for (let [key, value] of formData.entries()) { data[key] = value; }
-        
-        try {
-            const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
-            const result = await response.json();
-            if (result.status === 'success') {
-                updateStatus.style.color = 'green'; updateStatus.textContent = 'माहिती सेव्ह झाली! रिफ्रेश होत आहे...';
-                
-                // Update local array so we don't need a full fetch to see the change instantly
-                currentApplicant.ManagerApprovalStatus = data.managerStatus;
-                currentApplicant.ManagerName = data.managerName;
-                currentApplicant.ManagerRemarks = data.managerRemarks;
-                
-                setTimeout(() => { 
-                    updateKpis(allApplicants);
-                    filterAndRender(); 
-                    updateBtn.innerHTML = originalBtnText; 
-                    updateBtn.disabled = false;
-                    updateStatus.textContent = '';
-                }, 1500); 
-            } else { throw new Error(result.message); }
-        } catch (error) {
-            updateStatus.style.color = 'red'; updateStatus.textContent = `त्रुटी: ${error.message}`;
-            updateBtn.innerHTML = originalBtnText; updateBtn.disabled = false;
-        }
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            const btn = form.querySelector('#update-btn'); const statusEl = form.querySelector('#update-status');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> सेव्ह होत आहे...'; btn.disabled = true;
+            try {
+                const formData = new FormData(form);
+                const data = { action: 'updateVerification', row: currentApplicant.row };
+                for (let [k, v] of formData.entries()) data[k] = v;
+                const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    statusEl.style.color = 'green'; statusEl.textContent = '✅ माहिती सेव्ह झाली!';
+                    setTimeout(() => fetchData(), 1500); 
+                } else throw new Error(result.message);
+            } catch (err) {
+                statusEl.style.color = 'red'; statusEl.textContent = `त्रुटी: ${err.message}`;
+                btn.innerHTML = '<i class="fas fa-save"></i> पुन्हा प्रयत्न करा'; btn.disabled = false;
+            }
+        });
     }
 
     function openTab(evt, tabName) {
-        const detailsView = document.getElementById('details-view');
-        detailsView.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        detailsView.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
-        detailsView.querySelector(`#${tabName}`).classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
         evt.currentTarget.classList.add('active');
     }
 </script>
