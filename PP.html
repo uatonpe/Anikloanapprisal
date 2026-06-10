@@ -2,203 +2,57 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Field Officer Performance & PP Eligibility Report</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#f5f7fb; --card:#ffffff; --text:#162033; --muted:#667085;
-      --red:#b42318; --blue:#1849a9; --green:#067647; --orange:#b54708;
-      --line:#e4e7ec; --soft-red:#fff1f0; --soft-blue:#eff4ff; --soft-green:#ecfdf3; --soft-orange:#fff7ed;
-      --shadow:0 12px 30px rgba(16,24,40,.08);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:'Mukta',Arial,sans-serif;background:linear-gradient(135deg,#f8fbff 0%,#f4f6fb 100%);color:var(--text)}
-    .wrap{max-width:1280px;margin:auto;padding:18px}
-    .hero{background:linear-gradient(135deg,#102a66,#b42318);border-radius:24px;color:white;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-    .hero:after{content:"";position:absolute;right:-80px;top:-80px;width:260px;height:260px;background:rgba(255,255,255,.12);border-radius:50%}
-    .hero h1{margin:0;font-size:30px;line-height:1.1;font-weight:800}.hero p{margin:8px 0 0;color:#e9efff;font-size:16px}
-    .toolbar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;margin:16px 0}.control{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 12px;box-shadow:0 4px 14px rgba(16,24,40,.04)}
-    label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:3px}select,input,button{font-family:inherit;font-size:15px}select,input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font-weight:700}
-    button{border:0;border-radius:16px;padding:13px 18px;background:var(--blue);color:white;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(24,73,169,.22)}button.secondary{background:#111827}.status{margin:8px 0;color:var(--muted);font-weight:600}
-    .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:16px 0}.kpi{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(16,24,40,.04)}.kpi .t{color:var(--muted);font-size:13px;font-weight:700}.kpi .v{font-size:28px;font-weight:800;margin-top:4px}.kpi.ok .v{color:var(--green)}.kpi.bad .v{color:var(--red)}
-    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 4px 14px rgba(16,24,40,.04)}.card h2{font-size:19px;margin:0 0 10px;font-weight:800}.small{font-size:13px;color:var(--muted);font-weight:600}
-    .tablebox{overflow:auto;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:980px;background:white}th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:#f9fafb;color:#344054;font-weight:800;position:sticky;top:0;z-index:1}td.num{text-align:right;font-weight:800}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-weight:800;font-size:12px;white-space:nowrap}.pill.ok{background:var(--soft-green);color:var(--green)}.pill.bad{background:var(--soft-red);color:var(--red)}.pill.warn{background:var(--soft-orange);color:var(--orange)}
-    .bar{height:9px;background:#eaecf0;border-radius:99px;overflow:hidden;margin-top:4px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#b42318,#1849a9);border-radius:99px}.remark{font-weight:700;color:#344054;max-width:360px}.weights{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.w{border:1px dashed #cbd5e1;border-radius:16px;padding:10px;background:#fbfdff}.w b{display:block;font-size:18px}.w span{font-size:12px;color:var(--muted);font-weight:700}.chartRow{display:flex;align-items:end;gap:8px;height:210px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);padding:0 8px 8px;overflow:auto}.col{min-width:38px;display:flex;flex-direction:column;align-items:center;gap:6px}.col i{display:block;width:26px;background:linear-gradient(180deg,#1849a9,#b42318);border-radius:8px 8px 0 0}.col em{font-style:normal;font-size:11px;color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg);max-height:60px}.error{background:var(--soft-red);color:var(--red);border:1px solid #fecdca;border-radius:16px;padding:12px;font-weight:700}.hidden{display:none!important}
-    @media(max-width:900px){.toolbar{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.hero h1{font-size:24px}.weights{grid-template-columns:1fr 1fr}.wrap{padding:10px}.kpi .v{font-size:24px}}
-    @media print{.toolbar,button,.status{display:none}.wrap{max-width:none}.hero,.card,.kpi{box-shadow:none}body{background:white}}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Field Officer PP Performance Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#0d2344;--muted:#607089;--line:#dfe7f1;--blue:#173b7a;--red:#c62828;--green:#157347}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Mukta,Arial,sans-serif;font-size:15px}.wrap{max-width:1280px;margin:auto;padding:18px}
+.top{background:linear-gradient(135deg,#0d2344,#173b7a);color:#fff;border-radius:20px;padding:22px;box-shadow:0 14px 35px rgba(13,35,68,.18)}.top h1{margin:0;font-size:28px;font-weight:800}.top p{margin:5px 0 0;color:#dbe7ff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}.kpi,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 25px rgba(15,35,70,.06)}.kpi{padding:15px}.kpi .l{color:var(--muted);font-weight:800;font-size:13px}.kpi .v{font-size:27px;font-weight:800}
+.panel{padding:14px;margin-bottom:14px}.filters{display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:10px;align-items:end}label{display:block;color:var(--muted);font-weight:800;font-size:13px;margin-bottom:4px}
+select,input,button,textarea{font-family:inherit}select,input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:700}button{border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:800;padding:11px 16px;cursor:pointer}
+.status{padding:10px 12px;border-radius:14px;margin-top:12px;background:#eef4ff;border:1px solid #d6e4ff;font-weight:800}.err{background:#fff1f1;border-color:#ffc9c9;color:#9b1c1c}.ok{background:#eefaf2;border-color:#bfe7ce;color:#106b37}.small{color:var(--muted);font-size:13px;font-weight:700}
+.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:1120px;background:#fff}th{background:#f7f9fc;text-align:left;font-size:13px;font-weight:800;padding:11px;border-bottom:1px solid var(--line);position:sticky;top:0}td{padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top;font-weight:650}.badge{display:inline-flex;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;white-space:nowrap}.eligible{background:#e9f8ef;color:var(--green)}.not{background:#fff0f0;color:#c51616}.bar{width:86px;height:8px;background:#e6eaf0;border-radius:99px;overflow:hidden;margin-top:5px}.fill{height:100%;background:linear-gradient(90deg,#c62828,#d97706,#157347)}.scoreText{font-weight:900}.reason{line-height:1.45;max-width:380px}.debug{display:none}.debug textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:14px;padding:12px}.debug pre{white-space:pre-wrap;background:#0b1220;color:#e5edff;padding:12px;border-radius:14px;max-height:240px;overflow:auto}.sectionTitle{font-size:18px;font-weight:900;margin:0 0 10px}
+@media(max-width:850px){.wrap{padding:10px}.grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.top h1{font-size:22px}}
+</style>
 </head>
 <body>
 <div class="wrap">
-  <section class="hero">
-    <h1>Field Officer Performance & PP Eligibility Report</h1>
-    <p>Month-wise live report from Google Sheet · 90% किंवा त्यापेक्षा जास्त score असल्यास PP Eligible</p>
-  </section>
-
-  <div class="toolbar">
-    <div class="control"><label>Month निवडा</label><select id="monthFilter"><option value="all">All Months</option></select></div>
-    <div class="control"><label>Branch / Unit</label><select id="branchFilter"><option value="all">All Branches</option></select></div>
-    <div class="control"><label>Field Officer शोधा</label><input id="searchBox" placeholder="Field Officer name type करा..." /></div>
-    <button onclick="loadData(true)">Refresh Live Data</button>
-  </div>
-  <div id="status" class="status">Loading live data...</div>
-
-  <section class="kpis">
-    <div class="kpi"><div class="t">Total Field Officers</div><div class="v" id="kpiStaff">0</div></div>
-    <div class="kpi"><div class="t">Total Customers / Cases</div><div class="v" id="kpiCases">0</div></div>
-    <div class="kpi ok"><div class="t">PP Eligible</div><div class="v" id="kpiEligible">0</div></div>
-    <div class="kpi bad"><div class="t">Not Eligible</div><div class="v" id="kpiNotEligible">0</div></div>
-    <div class="kpi"><div class="t">Average Score</div><div class="v" id="kpiAvg">0%</div></div>
-  </section>
-
-  <section class="grid">
-    <div class="card">
-      <h2>Score Weightage</h2>
-      <div class="weights">
-        <div class="w"><b>20%</b><span>Manager Verification / Remark</span></div>
-        <div class="w"><b>20%</b><span>Verifier Remark / Status</span></div>
-        <div class="w"><b>25%</b><span>Documents Uploaded</span></div>
-        <div class="w"><b>20%</b><span>Details Complete</span></div>
-        <div class="w"><b>15%</b><span>Rejection Control</span></div>
-      </div>
-      <p class="small">Rule: Staff score ≥ 90% = PP Eligible. Score हा selected month मध्ये त्या staff च्या सर्व cases वर average quality नुसार काढला जातो.</p>
-    </div>
-    <div class="card">
-      <h2>Top Staff Score Chart</h2>
-      <div class="chartRow" id="chart"></div>
-    </div>
-  </section>
-
-  <section class="card" style="margin-top:14px">
-    <h2>Field Officer-wise PP Eligibility</h2>
-    <div class="tablebox">
-      <table id="reportTable">
-        <thead>
-          <tr>
-            <th>Field Officer Name</th><th>Branch</th><th>Customers / Cases</th><th>Manager</th><th>Verifier</th><th>Docs</th><th>Details</th><th>Rejection</th><th>Final Score</th><th>PP Status</th><th>Clear Marathi Remark</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+<div class="top"><h1>Field Officer-wise PP Performance Report</h1><p>Staff Name फक्त exact <b>fieldOfficerName</b> column मधूनच read होईल. Date/Time staff म्हणून येणार नाही.</p></div>
+<div class="grid"><div class="kpi"><div class="l">Total Field Officers</div><div class="v" id="kpiFO">0</div></div><div class="kpi"><div class="l">Total Cases</div><div class="v" id="kpiCases">0</div></div><div class="kpi"><div class="l">PP Eligible</div><div class="v" id="kpiEligible">0</div></div><div class="kpi"><div class="l">Average Score</div><div class="v" id="kpiAvg">0%</div></div></div>
+<div class="panel"><div class="filters"><div><label>Month</label><select id="monthFilter"><option value="all">All Months</option></select></div><div><label>Branch</label><select id="branchFilter"><option value="all">All Branches</option></select></div><div><label>Search Field Officer</label><input id="searchBox" placeholder="Field Officer name शोधा..."></div><div><button onclick="loadData()">Refresh</button></div></div><div id="loadStatus" class="status">Data loading...</div><div class="small" style="margin-top:8px">PP Rule: Final Score <b>90% किंवा जास्त</b> = PP Eligible.</div></div>
+<div class="panel"><h2 class="sectionTitle">Field Officer-wise PP Eligibility</h2><div class="tableWrap"><table><thead><tr><th>Field Officer Name</th><th>Branch</th><th>Customers / Cases</th><th>Manager<br>Score</th><th>Verifier<br>Score</th><th>Docs<br>Score</th><th>Details<br>Score</th><th>Rejection<br>Score</th><th>Final<br>Score</th><th>PP Status</th><th>Clear Marathi Remark</th></tr></thead><tbody id="reportBody"><tr><td colspan="11">Loading...</td></tr></tbody></table></div></div>
+<div class="panel debug" id="debugBox"><h2 class="sectionTitle">Troubleshooting / Manual CSV Paste</h2><p class="small">Live load fail झाल्यास CSV paste करा. Error मध्ये available headers दिसतील.</p><textarea id="manualCsv" placeholder="CSV data इथे paste करा..."></textarea><div style="display:flex;gap:10px;margin-top:10px"><button onclick="loadManualCsv()">Use Pasted CSV</button><button onclick="copyDebug()">Copy Debug</button></div><pre id="debugInfo"></pre></div>
 </div>
-
 <script>
-const PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQj5eV60MIJBSP2-7-ETG-UaIHwE4zqFxefYzjtkZVOvlG3byB8FH84BKemTe7H3dN97AJ_NT2gldgi/pub?output=csv';
-// IMPORTANT: Staff/FO name is read ONLY from exact Google Sheet column: fieldOfficerName
-let rawRows = [];
-
-const norm = v => String(v ?? '').trim();
-const lower = v => norm(v).toLowerCase();
-function cleanHeader(h){ return lower(h).replace(/[^a-z0-9अ-ह]/g,''); }
-function pick(row, names){
-  const keys = Object.keys(row), want = names.map(cleanHeader);
-  for(const k of keys){ if(want.includes(cleanHeader(k))) return row[k]; }
-  for(const k of keys){ const ck = cleanHeader(k); if(want.some(w => ck.includes(w) || w.includes(ck))) return row[k]; }
-  return '';
-}
-function parseCSV(text){
-  const rows=[]; let row=[], cell='', q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i], n=text[i+1];
-    if(c==='"' && q && n==='"'){ cell+='"'; i++; }
-    else if(c==='"'){ q=!q; }
-    else if(c===',' && !q){ row.push(cell); cell=''; }
-    else if((c==='\n' || c==='\r') && !q){ if(c==='\r' && n==='\n') i++; row.push(cell); if(row.some(x=>norm(x))) rows.push(row); row=[]; cell=''; }
-    else cell+=c;
-  }
-  row.push(cell); if(row.some(x=>norm(x))) rows.push(row);
-  const headers = rows.shift().map(h=>norm(h));
-  return rows.map(r => Object.fromEntries(headers.map((h,i)=>[h,norm(r[i])] )));
-}
-function toDate(v){
-  const s = norm(v); if(!s) return null;
-  const dmy = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
-  if(dmy){ let y=+dmy[3]; if(y<100) y+=2000; return new Date(y,+dmy[2]-1,+dmy[1]); }
-  const d = new Date(s); return isNaN(d) ? null : d;
-}
-function monthKey(row){
-  const dateVal = pick(row, ['date','created at','created date','timestamp','time stamp','submitted at','upload date','appraisal date','loan date','दिनांक']);
-  const d = toDate(dateVal); if(!d) return 'No Date';
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-}
-function monthLabel(k){ if(k==='No Date') return k; const [y,m]=k.split('-'); return new Date(+y,+m-1,1).toLocaleString('en-IN',{month:'short',year:'numeric'}); }
-function isGood(v){ const s=lower(v); return !!s && /(ok|yes|done|approved|complete|completed|verified|valid|uploaded|success|accepted|clear|positive|हो|पूर्ण|योग्य|अपलोड|मंजूर|तपासले|बरोबर)/.test(s) && !isBad(s); }
-function isBad(v){ const s=lower(v); return /(no|not|pending|reject|rejected|missing|incomplete|invalid|fail|failed|hold|query|wrong|negative|नाही|प्रलंबित|रिजेक्ट|अपूर्ण|चूक|कमी|राहिले)/.test(s); }
-function scoreField(v, weight){ const s=norm(v); if(!s) return {score:0,bad:1,total:1}; if(isBad(s)) return {score:0,bad:1,total:1}; if(isGood(s)) return {score:weight,bad:0,total:1}; return {score:weight*.6,bad:0,total:1}; }
-function rejectionScore(v){ const s=lower(v); if(!s) return {score:15,bad:0,total:1}; if(isBad(s) || /(reject|rejected|fail|negative|रिजेक्ट|नकार)/.test(s)) return {score:0,bad:1,total:1}; return {score:15,bad:0,total:1}; }
-function caseScore(row){
-  const manager = pick(row, ['managerVerifierRemark','managerRemark','managerVerification','manager remark','manager verification','manager verifier remark','bm remark','manager status','manager','manager_remarks','व्यवस्थापक']);
-  const verifier = pick(row, ['verifierRemark','verificationRemark','verifierStatus','checkerRemark','hoVerifier','verifier remark','verification remark','verifier status','checker remark','ho verifier','verifier','verification','तपासणी']);
-  const docs = pick(row, ['documentsUploaded','documentUploaded','docsUploaded','documentStatus','documents uploaded','document uploaded','docs uploaded','document status','documents','doc upload','kyc uploaded','दस्तऐवज']);
-  const details = pick(row, ['details','detailsComplete','customerDetails','formDetails','loanDetails','allDetails','details complete','customer details','form details','loan details','all details','माहिती']);
-  const rejection = pick(row, ['rejection','rejectionStatus','rejectReason','rejected','rejectionRemark','rejectison','status','rejection status','reject reason','rejection remark']);
-  const m=scoreField(manager,20), v=scoreField(verifier,20), d=scoreField(docs,25), det=scoreField(details,20), r=rejectionScore(rejection);
-  return {manager:m.score, verifier:v.score, docs:d.score, details:det.score, rejection:r.score, total:m.score+v.score+d.score+det.score+r.score,
-          issues:{manager:m.bad, verifier:v.bad, docs:d.bad, details:det.bad, rejection:r.bad}};
-}
-function getStaff(row){
-  // STRICT RULE: staff name must come only from the exact column fieldOfficerName.
-  // It will NOT use customer name / applicant name / generic name column.
-  const exact = row['fieldOfficerName'];
-  return norm(exact) || 'Field Officer Name Blank';
-}
-function getBranch(row){ return pick(row, ['branch','unit','branch name','office','location','ब्रांच','शाखा']) || 'Not Mentioned'; }
-function aggregate(){
-  const mf=document.getElementById('monthFilter').value, bf=document.getElementById('branchFilter').value, q=lower(document.getElementById('searchBox').value);
-  const map = new Map(); let totalCases=0;
-  rawRows.forEach(row=>{
-    const mk=monthKey(row), br=getBranch(row), st=getStaff(row);
-    if(mf!=='all' && mk!==mf) return; if(bf!=='all' && br!==bf) return; if(q && !lower(st).includes(q)) return;
-    const key=st+'||'+br, sc=caseScore(row); totalCases++;
-    if(!map.has(key)) map.set(key,{staff:st, branch:br, cases:0, manager:0, verifier:0, docs:0, details:0, rejection:0, score:0, issues:{manager:0,verifier:0,docs:0,details:0,rejection:0}});
-    const a=map.get(key); a.cases++; ['manager','verifier','docs','details','rejection'].forEach(k=>a[k]+=sc[k]); a.score+=sc.total; Object.keys(a.issues).forEach(k=>a.issues[k]+=sc.issues[k]);
-  });
-  return [...map.values()].map(a=>{ ['manager','verifier','docs','details','rejection','score'].forEach(k=>a[k]=a[k]/a.cases); return a; }).sort((a,b)=>b.score-a.score);
-}
-function remark(a){
-  const bad=[]; if(a.issues.manager) bad.push('manager verification/remark मध्ये त्रुटी आहेत'); if(a.issues.verifier) bad.push('verifier remark/status मध्ये त्रुटी आहेत'); if(a.issues.docs) bad.push('documents uploaded पूर्ण नाहीत'); if(a.issues.details) bad.push('customer/loan details अपूर्ण आहेत'); if(a.issues.rejection) bad.push('rejection/fail cases जास्त आहेत');
-  if(a.score>=90) return 'कामगिरी चांगली आहे. verification, documents आणि details quality PP साठी योग्य आहे.';
-  return 'Field Officer PP साठी पात्र नाही. कारण: '+(bad.length?bad.join(', '):'overall quality score 90% पेक्षा कमी आहे')+'. सुधारणा करून पुढील महिन्यात पुन्हा पात्रता तपासावी.';
-}
-function render(){
-  const data=aggregate(), tb=document.querySelector('#reportTable tbody'); tb.innerHTML='';
-  let eligible=0, cases=0, avg=0; data.forEach(a=>{ cases+=a.cases; avg+=a.score; if(a.score>=90) eligible++; }); avg=data.length?avg/data.length:0;
-  document.getElementById('kpiStaff').textContent=data.length; document.getElementById('kpiCases').textContent=cases; document.getElementById('kpiEligible').textContent=eligible; document.getElementById('kpiNotEligible').textContent=data.length-eligible; document.getElementById('kpiAvg').textContent=avg.toFixed(1)+'%';
-  data.forEach(a=>{
-    const ok=a.score>=90;
-    tb.insertAdjacentHTML('beforeend', `<tr><td><b>${a.staff}</b></td><td>${a.branch}</td><td class="num">${a.cases}</td><td class="num">${a.manager.toFixed(1)}</td><td class="num">${a.verifier.toFixed(1)}</td><td class="num">${a.docs.toFixed(1)}</td><td class="num">${a.details.toFixed(1)}</td><td class="num">${a.rejection.toFixed(1)}</td><td><b>${a.score.toFixed(1)}%</b><div class="bar"><span style="width:${Math.min(100,a.score)}%"></span></div></td><td><span class="pill ${ok?'ok':'bad'}">${ok?'PP Eligible':'Not Eligible'}</span></td><td class="remark">${remark(a)}</td></tr>`);
-  });
-  const chart=document.getElementById('chart'); chart.innerHTML=''; data.slice(0,18).forEach(a=>{ chart.insertAdjacentHTML('beforeend',`<div class="col" title="${a.staff}: ${a.score.toFixed(1)}%"><b style="font-size:11px">${a.score.toFixed(0)}</b><i style="height:${Math.max(4,a.score*1.45)}px"></i><em>${a.staff.split(' ')[0]}</em></div>`); });
-}
-function fillFilters(){
-  const months=[...new Set(rawRows.map(monthKey))].sort().reverse(); const branches=[...new Set(rawRows.map(getBranch))].sort();
-  const headers = rawRows[0] ? Object.keys(rawRows[0]) : [];
-  if(!headers.includes('fieldOfficerName')){
-    document.getElementById('status').innerHTML = '<div class="error">Warning: CSV मध्ये exact fieldOfficerName column दिसत नाही. कृपया header spelling तपासा. Report customer name वर काम करणार नाही; blank FO वेगळा दाखवेल.</div>';
-  }
-  document.getElementById('monthFilter').innerHTML='<option value="all">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
-  document.getElementById('branchFilter').innerHTML='<option value="all">All Branches</option>'+branches.map(b=>`<option value="${b}">${b}</option>`).join('');
-}
-async function loadData(force=false){
-  const st=document.getElementById('status'); st.textContent='Loading live data from Google Sheet...';
-  try{
-    const url = PUB_URL + (force ? '&cacheBust=' + Date.now() : '');
-    const res = await fetch(url, {cache:'no-store'}); if(!res.ok) throw new Error('CSV fetch failed: '+res.status);
-    const text = await res.text(); rawRows = parseCSV(text);
-    if(!rawRows.length) throw new Error('No rows found. Please publish the sheet as CSV / web.');
-    fillFilters(); render(); if(st.textContent.indexOf('Warning:') === -1){ st.textContent=`Live data loaded: ${rawRows.length} rows. Staff read from exact column: fieldOfficerName. Last refresh: ${new Date().toLocaleString('en-IN')}`; }
-  }catch(err){
-    st.innerHTML=`<div class="error">Data load झाले नाही: ${err.message}<br>Google Sheet मध्ये File → Share → Publish to web चालू आहे का तपासा. Published CSV URL वापरा.</div>`;
-  }
-}
-['monthFilter','branchFilter','searchBox'].forEach(id=>document.addEventListener('input',e=>{ if(e.target && e.target.id===id) render(); }));
-loadData();
+const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQj5eV60MIJBSP2-7-ETG-UaIHwE4zqFxefYzjtkZVOvlG3byB8FH84BKemTe7H3dN97AJ_NT2gldgi/pub?output=csv";
+const GVIZ_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQj5eV60MIJBSP2-7-ETG-UaIHwE4zqFxefYzjtkZVOvlG3byB8FH84BKemTe7H3dN97AJ_NT2gldgi/gviz/tq?tqx=out:json";
+const REQUIRED_STAFF_COL="fieldOfficerName";let normalizedRows=[],debugLines=[];
+function logDebug(m){debugLines.push(new Date().toLocaleTimeString()+" - "+m);document.getElementById("debugInfo").textContent=debugLines.join("\n")}
+function setStatus(m,c=""){let e=document.getElementById("loadStatus");e.className="status "+c;e.innerHTML=m}
+function norm(s){return String(s??"").replace(/^\uFEFF/,"").trim()}function normKey(s){return norm(s).toLowerCase().replace(/[^a-z0-9]/g,"")}
+function escapeHtml(s){return String(s??"").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;"}[m]))}
+function parseCSV(t){const rows=[];let r=[],cell="",q=false;t=String(t||"").replace(/\r\n/g,"\n").replace(/\r/g,"\n");for(let i=0;i<t.length;i++){const c=t[i],n=t[i+1];if(q){if(c=='"'&&n=='"'){cell+='"';i++}else if(c=='"')q=false;else cell+=c}else{if(c=='"')q=true;else if(c==","){r.push(cell);cell=""}else if(c=="\n"){r.push(cell);rows.push(r);r=[];cell=""}else cell+=c}}r.push(cell);rows.push(r);return rows.filter(x=>x.some(c=>norm(c)!==""))}
+function rowsFromCsv(csv){const matrix=parseCSV(csv);if(!matrix.length)throw Error("CSV blank आहे.");let hi=matrix.findIndex(r=>r.some(c=>norm(c)===REQUIRED_STAFF_COL));if(hi<0)hi=matrix.findIndex(r=>r.some(c=>normKey(c)===normKey(REQUIRED_STAFF_COL)));if(hi<0){let first=matrix.slice(0,8).map((r,i)=>`Row ${i+1}: ${r.join(" | ")}`).join("\n");throw Error(`Exact column '${REQUIRED_STAFF_COL}' सापडला नाही. त्यामुळे date/time staff name म्हणून येत होता.\n\nपहिल्या rows:\n${first}`)}const headers=matrix[hi].map(h=>norm(h));const rows=matrix.slice(hi+1).map(r=>{let o={};headers.forEach((h,i)=>o[h||("col_"+i)]=norm(r[i]));return o}).filter(o=>norm(o[REQUIRED_STAFF_COL])!=="");logDebug(`CSV parsed. Header row ${hi+1}. Rows ${rows.length}. Staff column ${REQUIRED_STAFF_COL}.`);return rows}
+function rowsFromGviz(text){let jsonText=text.substring(text.indexOf("{"),text.lastIndexOf("}")+1),data=JSON.parse(jsonText);let cols=(data.table.cols||[]).map((c,i)=>norm(c.label||c.id||("col_"+i)));if(!cols.includes(REQUIRED_STAFF_COL))throw Error(`GViz मध्ये '${REQUIRED_STAFF_COL}' column नाही. Available: ${cols.join(", ")}`);let rows=(data.table.rows||[]).map(r=>{let o={};cols.forEach((h,i)=>{let cell=r.c&&r.c[i]?r.c[i]:null;o[h]=cell?norm(cell.f??cell.v??""):""});return o}).filter(o=>norm(o[REQUIRED_STAFF_COL])!=="");logDebug(`GViz parsed. Rows ${rows.length}.`);return rows}
+async function fetchCsv(){let res=await fetch(CSV_URL+"&_="+Date.now(),{cache:"no-store"});if(!res.ok)throw Error("CSV fetch HTTP "+res.status);return await res.text()}
+function fetchGvizJsonp(){return new Promise((resolve,reject)=>{const cb="gvizCb_"+Date.now(),s=document.createElement("script");const timer=setTimeout(()=>{cleanup();reject(Error("GViz timeout"))},12000);function cleanup(){clearTimeout(timer);delete window[cb];if(s.parentNode)s.parentNode.removeChild(s)}window[cb]=d=>{cleanup();resolve("google.visualization.Query.setResponse("+JSON.stringify(d)+");")};s.onerror=()=>{cleanup();reject(Error("GViz script failed"))};s.src=GVIZ_URL+"&tq="+encodeURIComponent("select *")+"&callback="+cb+"&_="+Date.now();document.body.appendChild(s)})}
+function getCols(){let s=new Set();normalizedRows.forEach(r=>Object.keys(r).forEach(k=>s.add(k)));return [...s]}
+function findCols(){const h=getCols();return{headers:h,branch:h.find(x=>/branch|unit|center|शाखा/i.test(x))||"",date:h.find(x=>/date|created|time|timestamp|दिनांक/i.test(x))||"",manager:h.filter(x=>/manager|bm|managerremark|managerverification|manger/i.test(normKey(x))&&x!==REQUIRED_STAFF_COL),verifier:h.filter(x=>/verifier|verification|verified|verify|tele|checker/i.test(normKey(x))&&x!==REQUIRED_STAFF_COL),docs:h.filter(x=>/document|doc|kyc|upload|aadhaar|aadhar|pan|photo|passbook/i.test(normKey(x))),details:h.filter(x=>/detail|complete|form|mobile|account|ifsc|address|dob|data/i.test(normKey(x))&&x!==REQUIRED_STAFF_COL),rejection:h.filter(x=>/reject|rejection|reason|status|fail|remark/i.test(normKey(x)))}}
+function val(r,ks){for(const k of ks){if(r[k]!=null&&String(r[k]).trim()!=="")return String(r[k]).trim()}return""}
+function good(v){let x=norm(v).toLowerCase();return /(ok|approved|approve|verified|complete|completed|yes|uploaded|done|success|accepted|clear|valid|योग्य|पूर्ण|मंजूर|अपलोड|झाले|होय)/i.test(x)}
+function bad(v){let x=norm(v).toLowerCase();return !x||/(reject|rejected|pending|missing|no|not|fail|failed|wrong|incomplete|hold|अपूर्ण|नाही|चुकी|रिजेक्ट|प्रलंबित|बाकी|नाकार)/i.test(x)}
+function rejected(v){let x=norm(v).toLowerCase();return /(reject|rejected|fail|failed|invalid|नाकार|रिजेक्ट|अयशस्वी)/i.test(x)}
+function monthFromRow(r,dc){let s=dc?val(r,[dc]):"";if(!s)return"No Date";let m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);if(m)return`${m[3]}-${String(m[2]).padStart(2,"0")}`;m=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);if(m)return`${m[1]}-${String(m[2]).padStart(2,"0")}`;let d=new Date(s);return isNaN(d)?"No Date":`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`}
+function score(items,cols){function rs(list,w,type){if(!list.length)return w*.6;let total=0,g=0;items.forEach(r=>{let vals=list.map(c=>val(r,[c])).filter(Boolean);total++;if(type==="rejection"){if(!vals.some(rejected))g++}else{if(vals.some(good)&&!vals.some(bad))g++;else if(vals.some(good))g+=.75}});return total?(g/total)*w:0}let managerScore=rs(cols.manager,20),verifierScore=rs(cols.verifier,20),docsScore=rs(cols.docs,25),detailsScore=rs(cols.details,20),rejectionScore=rs(cols.rejection,15,"rejection"),finalScore=managerScore+verifierScore+docsScore+detailsScore+rejectionScore;let reasons=[];if(managerScore<18)reasons.push("manager verification/remark मध्ये त्रुटी आहेत");if(verifierScore<18)reasons.push("verifier checking पूर्ण/योग्य नाही");if(docsScore<22.5)reasons.push("documents uploaded/complete मध्ये कमी आहे");if(detailsScore<18)reasons.push("customer details अपूर्ण आहेत");if(rejectionScore<13.5)reasons.push("rejection/fail cases जास्त आहेत");return{managerScore,verifierScore,docsScore,detailsScore,rejectionScore,finalScore,reasons}}
+function populateFilters(){let c=findCols(),months=[...new Set(normalizedRows.map(r=>monthFromRow(r,c.date)))].sort().reverse(),branches=[...new Set(normalizedRows.map(r=>c.branch?norm(r[c.branch])||"Unknown":"Unknown"))].sort();monthFilter.innerHTML='<option value="all">All Months</option>'+months.map(m=>`<option>${escapeHtml(m)}</option>`).join("");branchFilter.innerHTML='<option value="all">All Branches</option>'+branches.map(b=>`<option>${escapeHtml(b)}</option>`).join("")}
+function buildReport(){let c=findCols(),m=monthFilter.value,b=branchFilter.value,q=searchBox.value.toLowerCase().trim(),groups=new Map();normalizedRows.forEach(r=>{let fo=norm(r[REQUIRED_STAFF_COL]);if(!fo)return;let br=c.branch?norm(r[c.branch])||"Unknown":"Unknown",mo=monthFromRow(r,c.date);if(m!=="all"&&mo!==m)return;if(b!=="all"&&br!==b)return;if(q&&!fo.toLowerCase().includes(q))return;let key=fo+"||"+br;if(!groups.has(key))groups.set(key,{fo,br,items:[]});groups.get(key).items.push(r)});let rep=[...groups.values()].map(g=>({...g,...score(g.items,c)})).sort((a,b)=>b.finalScore-a.finalScore||a.fo.localeCompare(b.fo));render(rep)}
+function render(rep){if(!rep.length)reportBody.innerHTML='<tr><td colspan="11">या filter मध्ये data नाही.</td></tr>';else reportBody.innerHTML=rep.map(r=>{let e=r.finalScore>=90,remark=e?"Field Officer PP साठी पात्र आहे. Verification, documents, details आणि rejection control समाधानकारक आहे.":"Field Officer PP साठी पात्र नाही. कारण: "+(r.reasons.length?r.reasons.join(", "):"overall score 90% पेक्षा कमी आहे")+". सुधारणा करून पुढील महिन्यात पुन्हा पात्रता तपासावी.";return`<tr><td><b>${escapeHtml(r.fo)}</b></td><td>${escapeHtml(r.br)}</td><td>${r.items.length}</td><td>${r.managerScore.toFixed(1)}</td><td>${r.verifierScore.toFixed(1)}</td><td>${r.docsScore.toFixed(1)}</td><td>${r.detailsScore.toFixed(1)}</td><td>${r.rejectionScore.toFixed(1)}</td><td><div class="scoreText">${r.finalScore.toFixed(1)}%</div><div class="bar"><div class="fill" style="width:${Math.max(0,Math.min(100,r.finalScore))}%"></div></div></td><td><span class="badge ${e?'eligible':'not'}">${e?'PP Eligible':'Not Eligible'}</span></td><td class="reason">${escapeHtml(remark)}</td></tr>`}).join("");kpiFO.textContent=rep.length;kpiCases.textContent=rep.reduce((s,r)=>s+r.items.length,0);kpiEligible.textContent=rep.filter(r=>r.finalScore>=90).length;kpiAvg.textContent=(rep.length?rep.reduce((s,r)=>s+r.finalScore,0)/rep.length:0).toFixed(1)+"%"}
+async function loadData(){debugLines=[];debugBox.style.display="none";setStatus("Data loading...");try{logDebug("Trying CSV fetch");normalizedRows=rowsFromCsv(await fetchCsv());afterLoad("CSV live load successful.")}catch(e1){logDebug("CSV failed: "+e1.message);try{logDebug("Trying GViz JSONP fallback");normalizedRows=rowsFromGviz(await fetchGvizJsonp());afterLoad("GViz live load successful.")}catch(e2){logDebug("GViz failed: "+e2.message);setStatus("Live data load fail झाला. खाली error पहा. Exact fieldOfficerName column आहे का तपासा.","err");debugBox.style.display="block";reportBody.innerHTML='<tr><td colspan="11">Data load failed. Debug info खाली दिले आहे.</td></tr>'}}}
+function afterLoad(msg){if(!normalizedRows.length)throw Error("fieldOfficerName rows blank आहेत.");let c=findCols();logDebug("Available headers: "+c.headers.join(", "));logDebug("Exact staff column used: "+REQUIRED_STAFF_COL);populateFilters();buildReport();setStatus(`${msg} Total rows: <b>${normalizedRows.length}</b>. Staff name exact <b>fieldOfficerName</b> column मधून read होत आहे.`,"ok")}
+function loadManualCsv(){try{normalizedRows=rowsFromCsv(manualCsv.value);afterLoad("Manual CSV load successful.")}catch(e){setStatus(e.message,"err");logDebug("Manual failed: "+e.message)}}
+function copyDebug(){navigator.clipboard?.writeText(debugInfo.textContent||"").then(()=>alert("Debug copied"))}
+monthFilter.addEventListener("change",buildReport);branchFilter.addEventListener("change",buildReport);searchBox.addEventListener("input",buildReport);loadData();
 </script>
-</body>
-</html>
+</body></html>
