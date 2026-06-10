@@ -90,6 +90,7 @@
 
 <script>
 const PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQj5eV60MIJBSP2-7-ETG-UaIHwE4zqFxefYzjtkZVOvlG3byB8FH84BKemTe7H3dN97AJ_NT2gldgi/pub?output=csv';
+// IMPORTANT: Staff/FO name is read ONLY from exact Google Sheet column: fieldOfficerName
 let rawRows = [];
 
 const norm = v => String(v ?? '').trim();
@@ -132,16 +133,21 @@ function isBad(v){ const s=lower(v); return /(no|not|pending|reject|rejected|mis
 function scoreField(v, weight){ const s=norm(v); if(!s) return {score:0,bad:1,total:1}; if(isBad(s)) return {score:0,bad:1,total:1}; if(isGood(s)) return {score:weight,bad:0,total:1}; return {score:weight*.6,bad:0,total:1}; }
 function rejectionScore(v){ const s=lower(v); if(!s) return {score:15,bad:0,total:1}; if(isBad(s) || /(reject|rejected|fail|negative|रिजेक्ट|नकार)/.test(s)) return {score:0,bad:1,total:1}; return {score:15,bad:0,total:1}; }
 function caseScore(row){
-  const manager = pick(row, ['manager remark','manager verification','manager verifier remark','bm remark','manager status','manager','manager_remarks','व्यवस्थापक']);
-  const verifier = pick(row, ['verifier remark','verification remark','verifier status','checker remark','ho verifier','verifier','verification','तपासणी']);
-  const docs = pick(row, ['documents uploaded','document uploaded','docs uploaded','document status','documents','doc upload','kyc uploaded','दस्तऐवज']);
-  const details = pick(row, ['details','details complete','customer details','form details','loan details','all details','माहिती']);
-  const rejection = pick(row, ['rejection','rejection status','reject reason','rejected','rejection remark','status','rejectison']);
+  const manager = pick(row, ['managerVerifierRemark','managerRemark','managerVerification','manager remark','manager verification','manager verifier remark','bm remark','manager status','manager','manager_remarks','व्यवस्थापक']);
+  const verifier = pick(row, ['verifierRemark','verificationRemark','verifierStatus','checkerRemark','hoVerifier','verifier remark','verification remark','verifier status','checker remark','ho verifier','verifier','verification','तपासणी']);
+  const docs = pick(row, ['documentsUploaded','documentUploaded','docsUploaded','documentStatus','documents uploaded','document uploaded','docs uploaded','document status','documents','doc upload','kyc uploaded','दस्तऐवज']);
+  const details = pick(row, ['details','detailsComplete','customerDetails','formDetails','loanDetails','allDetails','details complete','customer details','form details','loan details','all details','माहिती']);
+  const rejection = pick(row, ['rejection','rejectionStatus','rejectReason','rejected','rejectionRemark','rejectison','status','rejection status','reject reason','rejection remark']);
   const m=scoreField(manager,20), v=scoreField(verifier,20), d=scoreField(docs,25), det=scoreField(details,20), r=rejectionScore(rejection);
   return {manager:m.score, verifier:v.score, docs:d.score, details:det.score, rejection:r.score, total:m.score+v.score+d.score+det.score+r.score,
           issues:{manager:m.bad, verifier:v.bad, docs:d.bad, details:det.bad, rejection:r.bad}};
 }
-function getStaff(row){ return pick(row, ['staff name','staff','employee name','employee','field officer','fo name','created by','user name','name','कर्मचारी']) || 'Unknown Staff'; }
+function getStaff(row){
+  // STRICT RULE: staff name must come only from the exact column fieldOfficerName.
+  // It will NOT use customer name / applicant name / generic name column.
+  const exact = row['fieldOfficerName'];
+  return norm(exact) || 'Field Officer Name Blank';
+}
 function getBranch(row){ return pick(row, ['branch','unit','branch name','office','location','ब्रांच','शाखा']) || 'Not Mentioned'; }
 function aggregate(){
   const mf=document.getElementById('monthFilter').value, bf=document.getElementById('branchFilter').value, q=lower(document.getElementById('searchBox').value);
@@ -172,6 +178,10 @@ function render(){
 }
 function fillFilters(){
   const months=[...new Set(rawRows.map(monthKey))].sort().reverse(); const branches=[...new Set(rawRows.map(getBranch))].sort();
+  const headers = rawRows[0] ? Object.keys(rawRows[0]) : [];
+  if(!headers.includes('fieldOfficerName')){
+    document.getElementById('status').innerHTML = '<div class="error">Warning: CSV मध्ये exact fieldOfficerName column दिसत नाही. कृपया header spelling तपासा. Report customer name वर काम करणार नाही; blank FO वेगळा दाखवेल.</div>';
+  }
   document.getElementById('monthFilter').innerHTML='<option value="all">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
   document.getElementById('branchFilter').innerHTML='<option value="all">All Branches</option>'+branches.map(b=>`<option value="${b}">${b}</option>`).join('');
 }
@@ -182,7 +192,7 @@ async function loadData(force=false){
     const res = await fetch(url, {cache:'no-store'}); if(!res.ok) throw new Error('CSV fetch failed: '+res.status);
     const text = await res.text(); rawRows = parseCSV(text);
     if(!rawRows.length) throw new Error('No rows found. Please publish the sheet as CSV / web.');
-    fillFilters(); render(); st.textContent=`Live data loaded: ${rawRows.length} rows. Last refresh: ${new Date().toLocaleString('en-IN')}`;
+    fillFilters(); render(); if(st.textContent.indexOf('Warning:') === -1){ st.textContent=`Live data loaded: ${rawRows.length} rows. Staff read from exact column: fieldOfficerName. Last refresh: ${new Date().toLocaleString('en-IN')}`; }
   }catch(err){
     st.innerHTML=`<div class="error">Data load झाले नाही: ${err.message}<br>Google Sheet मध्ये File → Share → Publish to web चालू आहे का तपासा. Published CSV URL वापरा.</div>`;
   }
