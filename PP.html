@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loan Appraisal - Monthly Staff Performance Dashboard</title>
+  <title>Loan Appraisal - Staff Performance Dashboard</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -33,7 +33,7 @@
       background:linear-gradient(135deg,#eef6ff 0%,#f8fafc 42%,#fff7ed 100%);
       color:var(--text);
     }
-    .app{max-width:1400px;margin:auto;padding:18px}
+    .app{max-width:1450px;margin:auto;padding:18px}
     .topbar{
       background:linear-gradient(135deg,#0f4c81,#153e75 55%,#b91c1c);
       color:white;
@@ -63,6 +63,22 @@
       font-size:18px;
       opacity:.92;
     }
+    .rule-box{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      position:relative;
+      z-index:1;
+    }
+    .rule-pill{
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.25);
+      padding:7px 11px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:14px;
+    }
     .controls{
       display:grid;
       grid-template-columns:repeat(5,minmax(150px,1fr));
@@ -70,7 +86,7 @@
       margin:16px 0;
     }
     .control-card,.card{
-      background:rgba(255,255,255,.92);
+      background:rgba(255,255,255,.94);
       border:1px solid rgba(226,232,240,.9);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
@@ -97,11 +113,6 @@
       transition:.2s;
     }
     button:hover{transform:translateY(-1px);filter:brightness(1.04)}
-    .btn-light{
-      background:#fff;
-      color:var(--blue);
-      border:1px solid #bfdbfe;
-    }
     .status{
       padding:12px 16px;
       margin:12px 0;
@@ -114,7 +125,7 @@
     .status.err{background:#fef2f2;color:#991b1b;border-color:#fecaca}
     .kpis{
       display:grid;
-      grid-template-columns:repeat(5,1fr);
+      grid-template-columns:repeat(6,1fr);
       gap:14px;
       margin:16px 0;
     }
@@ -128,7 +139,7 @@
       overflow:hidden;
     }
     .kpi small{color:var(--muted);font-weight:700}
-    .kpi b{display:block;font-size:31px;line-height:1.1;margin-top:5px}
+    .kpi b{display:block;font-size:29px;line-height:1.1;margin-top:5px}
     .kpi:before{
       content:"";
       position:absolute;
@@ -149,8 +160,13 @@
       font-size:23px;
       color:#0f172a;
     }
+    .small-title{
+      font-weight:800;
+      color:#475569;
+      margin:8px 0 10px;
+    }
     .table-wrap{overflow:auto;border-radius:14px;border:1px solid var(--border)}
-    table{width:100%;border-collapse:collapse;background:white;min-width:980px}
+    table{width:100%;border-collapse:collapse;background:white;min-width:1120px}
     th,td{
       border-bottom:1px solid var(--border);
       padding:10px 11px;
@@ -183,6 +199,7 @@
     .bad{background:#fee2e2;color:#991b1b}
     .warn{background:#ffedd5;color:#9a3412}
     .info{background:#dbeafe;color:#1d4ed8}
+    .gray{background:#f1f5f9;color:#475569}
     .score{
       font-weight:900;
       font-size:20px;
@@ -199,7 +216,7 @@
     }
     .bar span{display:block;height:100%;background:linear-gradient(90deg,#dc2626,#f97316,#16a34a)}
     .remark{
-      max-width:430px;
+      max-width:470px;
       color:#334155;
       font-weight:600;
     }
@@ -223,8 +240,7 @@
       font-weight:600;
       padding:10px 2px 30px;
     }
-    .hidden{display:none!important}
-    @media (max-width:1000px){
+    @media (max-width:1100px){
       .controls{grid-template-columns:repeat(2,1fr)}
       .kpis{grid-template-columns:repeat(2,1fr)}
       .grid{grid-template-columns:1fr}
@@ -233,10 +249,10 @@
       .app{padding:10px}
       .topbar{padding:17px;border-radius:18px}
       .controls,.kpis,.staff-detail{grid-template-columns:1fr}
-      table{min-width:900px}
+      table{min-width:1000px}
     }
     @media print{
-      .controls,.footer-note,.btn-light{display:none!important}
+      .controls,.footer-note{display:none!important}
       body{background:white}
       .topbar,.card,.kpi{box-shadow:none}
     }
@@ -246,7 +262,13 @@
 <div class="app">
   <section class="topbar">
     <h1>Loan Appraisal - Monthly Staff Performance Dashboard</h1>
-    <p>Field Officer wise कामगिरी, Document Quality, Verification, Manager Approval आणि PP Eligibility</p>
+    <p>Verifier Pass / Reject cases final PP score मध्ये, Pending / Process cases वेगळ्या quality मध्ये</p>
+    <div class="rule-box">
+      <span class="rule-pill">Final Count: Only Pass / Reject by Verifier</span>
+      <span class="rule-pill">Pending / Process: Skip from PP score</span>
+      <span class="rule-pill">Pending Quality: Docs + Staff data quality checked separately</span>
+      <span class="rule-pill">90%+ = PP Eligible</span>
+    </div>
   </section>
 
   <section class="controls">
@@ -275,10 +297,11 @@
   <div id="status" class="status">CSV data loading...</div>
 
   <section class="kpis">
-    <div class="kpi"><small>Total Loan Appraisals</small><b id="kTotal">0</b></div>
-    <div class="kpi"><small>Approved Cases</small><b id="kApproved">0</b></div>
-    <div class="kpi"><small>Rejected / Not Approved</small><b id="kRejected">0</b></div>
-    <div class="kpi"><small>Avg Staff Score</small><b id="kAvg">0%</b></div>
+    <div class="kpi"><small>Total Records</small><b id="kTotal">0</b></div>
+    <div class="kpi"><small>Done Cases</small><b id="kDone">0</b></div>
+    <div class="kpi"><small>Verifier Pass</small><b id="kPass">0</b></div>
+    <div class="kpi"><small>Verifier Reject</small><b id="kReject">0</b></div>
+    <div class="kpi"><small>Pending / Process</small><b id="kPending">0</b></div>
     <div class="kpi"><small>PP Eligible Staff</small><b id="kPP">0</b></div>
   </section>
 
@@ -286,18 +309,23 @@
     <div>
       <div class="card">
         <h2>Staff Monthly Performance Summary</h2>
+        <div class="small-title">
+          Final score मध्ये फक्त Verifier Pass / Reject झालेले cases घेतले आहेत. Pending / Process cases वेगळ्या quality column मध्ये दिसतील.
+        </div>
         <div class="table-wrap">
           <table id="staffTable">
             <thead>
               <tr>
                 <th>Staff Name</th>
                 <th>Branch</th>
-                <th>Cases</th>
-                <th>Approved</th>
-                <th>Rejected</th>
-                <th>Docs %</th>
-                <th>Verifier %</th>
-                <th>Manager %</th>
+                <th>Total</th>
+                <th>Done</th>
+                <th>Pass</th>
+                <th>Reject</th>
+                <th>Pending</th>
+                <th>Done Docs %</th>
+                <th>Remark Quality %</th>
+                <th>Pending Quality %</th>
                 <th>Final Score</th>
                 <th>PP Status</th>
                 <th>Clear Marathi Remark</th>
@@ -321,9 +349,9 @@
                 <th>Branch</th>
                 <th>Loan Amount</th>
                 <th>Verifier Status</th>
-                <th>Manager Status</th>
+                <th>Case Type</th>
                 <th>Docs</th>
-                <th>Case Quality</th>
+                <th>Quality Score</th>
                 <th>Remarks</th>
               </tr>
             </thead>
@@ -340,23 +368,27 @@
       </div>
 
       <div class="card">
-        <h2>Top / Low Performance Chart</h2>
+        <h2>Final PP Score Chart</h2>
         <canvas id="scoreChart"></canvas>
       </div>
 
       <div class="card">
-        <h2>Approval Quality Chart</h2>
+        <h2>Pass / Reject / Pending Chart</h2>
         <canvas id="approvalChart"></canvas>
       </div>
 
       <div class="card">
-        <h2>Scoring Formula</h2>
+        <h2>Final Scoring Formula</h2>
         <div class="remark">
-          <b>100 Marks:</b><br>
-          Document Uploaded Quality - 25<br>
-          Verifier Approval + Correct Info + Video Call - 25<br>
-          Manager Approval - 25<br>
-          Rejection / Negative Remarks Control - 25<br><br>
+          <b>Final PP Score only on Done cases:</b><br>
+          Document Upload Quality - 30 marks<br>
+          Verifier Pass Ratio / Rejection Control - 35 marks<br>
+          Verifier Remark Quality - 20 marks<br>
+          Manager Remark / Approval Quality - 15 marks<br><br>
+
+          <b>Pending / Process cases:</b><br>
+          PP final score मध्ये नाहीत. पण docs, customer info, photo/link/supportdoc, staff data quality वेगळे दाखवले आहे.<br><br>
+
           <span class="pill ok">90% + PP Eligible</span>
           <span class="pill bad">Below 90% Not Eligible</span>
         </div>
@@ -365,7 +397,7 @@
   </section>
 
   <div class="footer-note">
-    Note: हा dashboard published Google Sheet CSV वर live चालतो. Data बदलला की refresh केल्यावर नवीन result दिसेल.
+    Note: Google Sheet CSV published link वरून data live load होतो. Sheet update केल्यावर dashboard refresh करा.
   </div>
 </div>
 
@@ -379,16 +411,13 @@ let scoreChart, approvalChart;
 
 const $ = id => document.getElementById(id);
 
-function clean(v){
-  return (v ?? "").toString().trim();
-}
+function clean(v){ return (v ?? "").toString().trim(); }
 function lower(v){ return clean(v).toLowerCase(); }
 
 function parseDateAny(v){
   v = clean(v);
   if(!v) return null;
 
-  // Handles YYYY-MM-DD, DD/MM/YYYY, MM/DD/YYYY, date with time
   let d = new Date(v);
   if(!isNaN(d)) return d;
 
@@ -411,90 +440,111 @@ function displayDate(v){
   if(!d) return clean(v) || "-";
   return d.toLocaleDateString("en-GB");
 }
-function unique(arr){
-  return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-}
+function unique(arr){ return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b)); }
 
+function isPassStatus(v){
+  v = lower(v);
+  if(!v) return false;
+  return /\b(pass|passed|approved|approve|ok|verified|accept|accepted|eligible|done|correct)\b|मंजूर|पास|योग्य|स्वीकार|बरोबर|पूर्ण/.test(v);
+}
+function isRejectStatus(v){
+  v = lower(v);
+  if(!v) return false;
+  return /reject|rejected|not approved|notapprove|not approve|fail|failed|negative|नामंजूर|नाकार|रिजेक्ट|अयोग्य/.test(v);
+}
+function isPendingStatus(v){
+  v = lower(v);
+  if(!v) return true;
+  return /pending|process|processing|under process|in process|hold|blank|प्रलंबित|प्रक्रिया|होल्ड/.test(v);
+}
+function caseType(r){
+  const st = clean(r.VerificationStatus);
+  const vr = clean(r.VerifierRemarks);
+
+  // Verifier status is first priority.
+  if(isRejectStatus(st)) return "REJECT";
+  if(isPassStatus(st)) return "PASS";
+
+  // If status blank but verifier remark clearly says pass/reject, use remark.
+  if(isRejectStatus(vr)) return "REJECT";
+  if(isPassStatus(vr)) return "PASS";
+
+  return "PENDING";
+}
 function hasDoc(r){
-  // supportdoc is main. photoLinks and googleMapsLink are treated as supporting proof.
   return !!(clean(r.supportdoc) || clean(r.photoLinks) || clean(r.googleMapsLink));
 }
-function isPositiveText(v){
+function hasGoodCustomerInfo(r){
+  let count = 0;
+  ["customerName","mobileNumber","aadhaarNumber","villageName","loanAmountRequested","loanPurpose","gpsLatitude","gpsLongitude"].forEach(k=>{
+    if(clean(r[k])) count++;
+  });
+  return count;
+}
+function hasMeaningfulRemark(v){
+  v = clean(v);
+  if(!v) return false;
+  if(v.length < 3) return false;
+  if(/^(ok|yes|no|done)$/i.test(v)) return false;
+  return true;
+}
+function isNegativeRemark(v){
   v = lower(v);
   if(!v) return false;
-  return /(approved|approve|ok|done|yes|correct|verified|valid|eligible|accept|accepted|मंजूर|योग्य|बरोबर|पूर्ण|होय)/i.test(v);
+  return /missing|wrong|incorrect|incomplete|reject|not approved|fail|pending|hold|नाही|चूक|अपूर्ण|कमी|प्रलंबित|नाकार|नामंजूर/.test(v);
 }
-function isNegativeText(v){
-  v = lower(v);
-  if(!v) return false;
-  return /(reject|rejected|not approved|hold|pending|wrong|incorrect|missing|not done|fail|failed|negative|bad|incomplete|duplicate|मंजूर नाही|नामंजूर|नाकार|चूक|अपूर्ण|कमी|प्रलंबित|नाही)/i.test(v);
-}
-function verifierGood(r){
-  const status = clean(r.VerificationStatus);
-  const info = clean(r.IsInfoCorrect);
-  const video = clean(r.IsVideoCallDone);
-  const remarks = clean(r.VerifierRemarks);
 
-  let marks = 0;
-  if(isPositiveText(status)) marks += 10;
-  else if(!isNegativeText(status) && status) marks += 5;
+function doneCaseScore(r){
+  const type = caseType(r);
+  let docMarks = hasDoc(r) ? 30 : 0;
 
-  if(isPositiveText(info)) marks += 7;
-  else if(!isNegativeText(info) && info) marks += 3;
+  // Reject झाले तरी staff वर पूर्ण दोष नाही; पण जास्त rejection असल्यास ratio ने mark कमी होतील.
+  let statusMarks = type === "PASS" ? 35 : 12;
 
-  if(isPositiveText(video)) marks += 4;
-  else if(!isNegativeText(video) && video) marks += 2;
+  let verifierRemarkMarks = 0;
+  const vr = clean(r.VerifierRemarks);
+  if(hasMeaningfulRemark(vr) && !isNegativeRemark(vr)) verifierRemarkMarks = 20;
+  else if(hasMeaningfulRemark(vr)) verifierRemarkMarks = 12;
+  else verifierRemarkMarks = 5;
 
-  if(remarks && !isNegativeText(remarks)) marks += 4;
-  if(isNegativeText(remarks)) marks -= 5;
+  let managerMarks = 0;
+  const ms = clean(r.ManagerApprovalStatus);
+  const mr = clean(r.ManagerRemarks);
+  if(isPassStatus(ms)) managerMarks += 8;
+  else if(isRejectStatus(ms)) managerMarks += 5;
+  else if(clean(ms)) managerMarks += 4;
 
-  return Math.max(0, Math.min(25, marks));
-}
-function managerGood(r){
-  const status = clean(r.ManagerApprovalStatus);
-  const remarks = clean(r.ManagerRemarks);
+  if(hasMeaningfulRemark(mr) && !isNegativeRemark(mr)) managerMarks += 7;
+  else if(hasMeaningfulRemark(mr)) managerMarks += 5;
+  else managerMarks += 2;
 
-  let marks = 0;
-  if(isPositiveText(status)) marks += 17;
-  else if(!isNegativeText(status) && status) marks += 8;
+  managerMarks = Math.min(15, managerMarks);
 
-  if(remarks && !isNegativeText(remarks)) marks += 8;
-  if(isNegativeText(remarks)) marks -= 8;
-
-  return Math.max(0, Math.min(25, marks));
-}
-function rejectionMarks(r){
-  const combined = [
-    r.VerificationStatus, r.ManagerApprovalStatus, r.VerifierRemarks,
-    r.ManagerRemarks, r.remarks
-  ].map(clean).join(" ");
-
-  if(!combined) return 18; // no negative remark but also no clear quality
-  if(isNegativeText(combined)) return 0;
-
-  const managerApproved = isPositiveText(r.ManagerApprovalStatus);
-  const verifierApproved = isPositiveText(r.VerificationStatus);
-  if(managerApproved && verifierApproved) return 25;
-  if(managerApproved || verifierApproved) return 20;
-  return 15;
-}
-function rowScore(r){
-  const doc = hasDoc(r) ? 25 : 0;
-  const ver = verifierGood(r);
-  const man = managerGood(r);
-  const rej = rejectionMarks(r);
   return {
-    doc, ver, man, rej,
-    total: Math.round(doc + ver + man + rej)
+    docMarks,
+    statusMarks,
+    verifierRemarkMarks,
+    managerMarks,
+    total: Math.round(docMarks + statusMarks + verifierRemarkMarks + managerMarks)
   };
 }
-function isApproved(r){
-  return isPositiveText(r.ManagerApprovalStatus) || isPositiveText(r.VerificationStatus);
+
+function pendingQualityScore(r){
+  // Pending cases PP score मध्ये नाहीत; पण staff ने appraisal properly भरले का हे तपासते.
+  let marks = 0;
+
+  if(hasDoc(r)) marks += 35;
+
+  const infoCount = hasGoodCustomerInfo(r);
+  marks += Math.min(35, Math.round((infoCount / 8) * 35));
+
+  if(hasMeaningfulRemark(r.remarks)) marks += 10;
+  if(clean(r.googleMapsLink) || (clean(r.gpsLatitude) && clean(r.gpsLongitude))) marks += 10;
+  if(clean(r.photoLinks)) marks += 10;
+
+  return Math.max(0, Math.min(100, marks));
 }
-function isRejected(r){
-  const combined = [r.ManagerApprovalStatus, r.VerificationStatus, r.ManagerRemarks, r.VerifierRemarks, r.remarks].map(clean).join(" ");
-  return isNegativeText(combined);
-}
+
 function money(v){
   const n = Number((clean(v)).replace(/[^\d.-]/g,""));
   if(!isFinite(n)) return clean(v) || "-";
@@ -503,59 +553,82 @@ function money(v){
 
 function buildStaffSummary(rows){
   const map = {};
+
   rows.forEach(r=>{
     const staff = clean(r.fieldOfficerName) || "Unknown Staff";
     const branch = clean(r.branchName) || "-";
     if(!map[staff]){
       map[staff] = {
-        staff, branches:new Set(), cases:0, approved:0, rejected:0,
-        docMarks:0, verMarks:0, manMarks:0, rejMarks:0, totalMarks:0,
-        missingDocs:0, verifierIssue:0, managerIssue:0, rejectedCases:0
+        staff, branches:new Set(), total:0, done:0, pass:0, reject:0, pending:0,
+        doneScoreSum:0, doneDocSum:0, doneRemarkSum:0,
+        pendingQualitySum:0,
+        missingDocsDone:0, blankVerifierRemarkDone:0, managerWeakDone:0,
+        pendingWeak:0
       };
     }
-    const s = map[staff];
-    const sc = rowScore(r);
-    s.branches.add(branch);
-    s.cases++;
-    s.approved += isApproved(r) ? 1 : 0;
-    s.rejected += isRejected(r) ? 1 : 0;
-    s.docMarks += sc.doc;
-    s.verMarks += sc.ver;
-    s.manMarks += sc.man;
-    s.rejMarks += sc.rej;
-    s.totalMarks += sc.total;
 
-    if(sc.doc < 25) s.missingDocs++;
-    if(sc.ver < 20) s.verifierIssue++;
-    if(sc.man < 20) s.managerIssue++;
-    if(isRejected(r)) s.rejectedCases++;
+    const s = map[staff];
+    const type = caseType(r);
+    s.branches.add(branch);
+    s.total++;
+
+    if(type === "PASS" || type === "REJECT"){
+      s.done++;
+      if(type === "PASS") s.pass++;
+      if(type === "REJECT") s.reject++;
+
+      const sc = doneCaseScore(r);
+      s.doneScoreSum += sc.total;
+      s.doneDocSum += sc.docMarks;
+      s.doneRemarkSum += sc.verifierRemarkMarks;
+
+      if(!hasDoc(r)) s.missingDocsDone++;
+      if(!hasMeaningfulRemark(r.VerifierRemarks)) s.blankVerifierRemarkDone++;
+      if(sc.managerMarks < 10) s.managerWeakDone++;
+    } else {
+      s.pending++;
+      const pq = pendingQualityScore(r);
+      s.pendingQualitySum += pq;
+      if(pq < 70) s.pendingWeak++;
+    }
   });
 
   return Object.values(map).map(s=>{
     s.branchText = [...s.branches].join(", ");
-    s.docPct = Math.round((s.docMarks / (s.cases * 25)) * 100);
-    s.verPct = Math.round((s.verMarks / (s.cases * 25)) * 100);
-    s.manPct = Math.round((s.manMarks / (s.cases * 25)) * 100);
-    s.rejPct = Math.round((s.rejMarks / (s.cases * 25)) * 100);
-    s.score = Math.round(s.totalMarks / s.cases);
-    s.pp = s.score >= 90;
+    s.finalScore = s.done ? Math.round(s.doneScoreSum / s.done) : 0;
+    s.doneDocPct = s.done ? Math.round((s.doneDocSum / (s.done * 30)) * 100) : 0;
+    s.remarkQualityPct = s.done ? Math.round((s.doneRemarkSum / (s.done * 20)) * 100) : 0;
+    s.pendingQualityPct = s.pending ? Math.round(s.pendingQualitySum / s.pending) : 0;
+
+    // Done cases नसतील तर PP not eligible; because final result available नाही.
+    s.pp = s.done > 0 && s.finalScore >= 90;
     s.remark = makeStaffRemark(s);
     return s;
-  }).sort((a,b)=>b.score-a.score || b.cases-a.cases);
+  }).sort((a,b)=>b.finalScore-a.finalScore || b.done-a.done || b.total-a.total);
 }
 
 function makeStaffRemark(s){
   const issues = [];
-  if(s.missingDocs > 0) issues.push(`${s.missingDocs} प्रकरणांमध्ये कागदपत्रे/फोटो/सपोर्ट डॉक्युमेंट अपूर्ण आहेत`);
-  if(s.verifierIssue > 0) issues.push(`${s.verifierIssue} प्रकरणांमध्ये verifier कडून status/remark/video/info मध्ये अडचण दिसते`);
-  if(s.managerIssue > 0) issues.push(`${s.managerIssue} प्रकरणांमध्ये manager approval/remark स्पष्ट किंवा सकारात्मक नाही`);
-  if(s.rejectedCases > 0) issues.push(`${s.rejectedCases} प्रकरणे rejected / not approved / negative remark मध्ये आहेत`);
+
+  if(s.done === 0){
+    if(s.pending > 0){
+      return `PP साठी final निर्णय देता येणार नाही. या महिन्यात ${s.pending} cases pending/process मध्ये आहेत. Done म्हणजे verifier pass/reject झालेले case नाहीत. Pending quality ${s.pendingQualityPct}% आहे.`;
+    }
+    return "या महिन्यात appraisal data नाही.";
+  }
+
+  if(s.reject > 0) issues.push(`${s.reject} cases verifier कडून reject झाले आहेत`);
+  if(s.missingDocsDone > 0) issues.push(`${s.missingDocsDone} done cases मध्ये support document/photo/link missing आहे`);
+  if(s.blankVerifierRemarkDone > 0) issues.push(`${s.blankVerifierRemarkDone} done cases मध्ये verifier remark स्पष्ट नाही`);
+  if(s.managerWeakDone > 0) issues.push(`${s.managerWeakDone} done cases मध्ये manager remark/approval quality कमी आहे`);
+  if(s.pending > 0 && s.pendingWeak > 0) issues.push(`${s.pendingWeak} pending/process cases ची data quality 70% पेक्षा कमी आहे`);
 
   if(s.pp){
-    if(issues.length === 0) return "कामगिरी चांगली आहे. कागदपत्रे, verification आणि manager approval quality समाधानकारक आहे.";
-    return "PP साठी पात्र; पण सुधारणा गरजेची: " + issues.join("; ") + ".";
+    if(issues.length === 0) return "कामगिरी चांगली आहे. Verifier pass/reject done cases मध्ये document, remark आणि approval quality समाधानकारक आहे.";
+    return "PP साठी पात्र; पण सुधारणा आवश्यक: " + issues.join("; ") + ".";
   }
-  if(issues.length === 0) return "Score 90% पेक्षा कमी आहे. Approval quality अजून मजबूत करणे आवश्यक आहे.";
+
+  if(issues.length === 0) return "PP साठी पात्र नाही. Final score 90% पेक्षा कमी आहे. Done cases ची quality अजून सुधारावी.";
   return "PP साठी पात्र नाही. कारण: " + issues.join("; ") + ".";
 }
 
@@ -582,7 +655,7 @@ function applyFilters(){
     const bOk = branch === "ALL" || clean(r.branchName) === branch;
     const hay = [
       r.customerName,r.villageName,r.branchName,r.fieldOfficerName,
-      r.VerifierRemarks,r.ManagerRemarks,r.remarks,r.loanPurpose
+      r.VerifierRemarks,r.ManagerRemarks,r.remarks,r.loanPurpose,r.VerificationStatus
     ].map(clean).join(" ").toLowerCase();
     const qOk = !q || hay.includes(q);
     return mOk && sOk && bOk && qOk;
@@ -598,38 +671,43 @@ function applyFilters(){
 
 function renderKPIs(){
   const total = filteredRows.length;
-  const approved = filteredRows.filter(isApproved).length;
-  const rejected = filteredRows.filter(isRejected).length;
-  const avg = staffRows.length ? Math.round(staffRows.reduce((a,s)=>a+s.score,0)/staffRows.length) : 0;
+  const done = filteredRows.filter(r=>["PASS","REJECT"].includes(caseType(r))).length;
+  const pass = filteredRows.filter(r=>caseType(r)==="PASS").length;
+  const reject = filteredRows.filter(r=>caseType(r)==="REJECT").length;
+  const pending = filteredRows.filter(r=>caseType(r)==="PENDING").length;
   const pp = staffRows.filter(s=>s.pp).length;
 
   $("kTotal").textContent = total;
-  $("kApproved").textContent = approved;
-  $("kRejected").textContent = rejected;
-  $("kAvg").textContent = avg + "%";
+  $("kDone").textContent = done;
+  $("kPass").textContent = pass;
+  $("kReject").textContent = reject;
+  $("kPending").textContent = pending;
   $("kPP").textContent = pp;
 }
 
 function renderStaffTable(){
   const tbody = $("staffTable").querySelector("tbody");
   if(!staffRows.length){
-    tbody.innerHTML = `<tr><td colspan="11">No data found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13">No data found.</td></tr>`;
     return;
   }
+
   tbody.innerHTML = staffRows.map(s=>{
-    const cls = s.score >= 90 ? "good" : s.score >= 75 ? "mid" : "low";
+    const cls = s.finalScore >= 90 ? "good" : s.finalScore >= 75 ? "mid" : "low";
     return `<tr>
       <td><b>${escapeHtml(s.staff)}</b></td>
       <td>${escapeHtml(s.branchText)}</td>
-      <td>${s.cases}</td>
-      <td><span class="pill ok">${s.approved}</span></td>
-      <td><span class="pill ${s.rejected ? "bad":"ok"}">${s.rejected}</span></td>
-      <td>${s.docPct}%</td>
-      <td>${s.verPct}%</td>
-      <td>${s.manPct}%</td>
+      <td>${s.total}</td>
+      <td><span class="pill info">${s.done}</span></td>
+      <td><span class="pill ok">${s.pass}</span></td>
+      <td><span class="pill ${s.reject ? "bad":"ok"}">${s.reject}</span></td>
+      <td><span class="pill gray">${s.pending}</span></td>
+      <td>${s.doneDocPct}%</td>
+      <td>${s.remarkQualityPct}%</td>
+      <td>${s.pending ? s.pendingQualityPct + "%" : "-"}</td>
       <td>
-        <span class="score ${cls}">${s.score}%</span>
-        <div class="bar"><span style="width:${Math.min(100,s.score)}%"></span></div>
+        <span class="score ${cls}">${s.done ? s.finalScore + "%" : "-"}</span>
+        <div class="bar"><span style="width:${Math.min(100,s.finalScore)}%"></span></div>
       </td>
       <td>${s.pp ? `<span class="pill ok">PP Eligible</span>` : `<span class="pill bad">Not Eligible</span>`}</td>
       <td class="remark">${escapeHtml(s.remark)}</td>
@@ -639,18 +717,24 @@ function renderStaffTable(){
 
 function renderDetails(){
   const tbody = $("detailTable").querySelector("tbody");
-  const rows = filteredRows.slice(0,500);
+  const rows = filteredRows.slice(0,800);
   if(!rows.length){
     tbody.innerHTML = `<tr><td colspan="11">No customer details found.</td></tr>`;
     return;
   }
+
   tbody.innerHTML = rows.map(r=>{
-    const sc = rowScore(r);
-    const quality = sc.total >= 90 ? `<span class="pill ok">${sc.total}% Good</span>` :
-                    sc.total >= 75 ? `<span class="pill warn">${sc.total}% Need Improve</span>` :
-                    `<span class="pill bad">${sc.total}% Poor</span>`;
+    const type = caseType(r);
     const docs = hasDoc(r) ? `<span class="pill ok">Uploaded</span>` : `<span class="pill bad">Missing</span>`;
+    let qualityScore = type === "PENDING" ? pendingQualityScore(r) : doneCaseScore(r).total;
+    let qPill = qualityScore >= 90 ? `<span class="pill ok">${qualityScore}% Good</span>` :
+                qualityScore >= 70 ? `<span class="pill warn">${qualityScore}% Improve</span>` :
+                `<span class="pill bad">${qualityScore}% Poor</span>`;
+    const typePill = type === "PASS" ? `<span class="pill ok">PASS / Done</span>` :
+                     type === "REJECT" ? `<span class="pill bad">REJECT / Done</span>` :
+                     `<span class="pill gray">Pending / Process</span>`;
     const rem = [r.VerifierRemarks, r.ManagerRemarks, r.remarks].map(clean).filter(Boolean).join(" | ");
+
     return `<tr>
       <td>${displayDate(r.visitDate || r.actualTime || r.VerificationTimestamp)}</td>
       <td><b>${escapeHtml(clean(r.fieldOfficerName) || "Unknown Staff")}</b></td>
@@ -658,10 +742,10 @@ function renderDetails(){
       <td>${escapeHtml(clean(r.villageName) || "-")}</td>
       <td>${escapeHtml(clean(r.branchName) || "-")}</td>
       <td>${money(r.ApprovedLoanAmount || r.loanAmountRequested)}</td>
-      <td>${statusPill(r.VerificationStatus)}</td>
-      <td>${statusPill(r.ManagerApprovalStatus)}</td>
+      <td>${statusPill(r.VerificationStatus || r.VerifierRemarks)}</td>
+      <td>${typePill}</td>
       <td>${docs}</td>
-      <td>${quality}</td>
+      <td>${qPill}</td>
       <td class="remark">${escapeHtml(rem || "-")}</td>
     </tr>`;
   }).join("");
@@ -669,9 +753,10 @@ function renderDetails(){
 
 function statusPill(v){
   v = clean(v);
-  if(!v) return `<span class="pill warn">Blank</span>`;
-  if(isPositiveText(v)) return `<span class="pill ok">${escapeHtml(v)}</span>`;
-  if(isNegativeText(v)) return `<span class="pill bad">${escapeHtml(v)}</span>`;
+  if(!v) return `<span class="pill gray">Blank</span>`;
+  if(isPassStatus(v)) return `<span class="pill ok">${escapeHtml(v)}</span>`;
+  if(isRejectStatus(v)) return `<span class="pill bad">${escapeHtml(v)}</span>`;
+  if(isPendingStatus(v)) return `<span class="pill gray">${escapeHtml(v)}</span>`;
   return `<span class="pill info">${escapeHtml(v)}</span>`;
 }
 
@@ -685,26 +770,29 @@ function renderSnapshot(){
     $("staffSnapshot").innerHTML = `<div class="mini"><b>No data</b></div>`;
     return;
   }
+
   $("staffSnapshot").innerHTML = `
     <div class="mini"><small>Staff</small><b>${escapeHtml(top.staff)}</b></div>
-    <div class="mini"><small>Final Score</small><b>${top.score}%</b></div>
-    <div class="mini"><small>Total Cases</small><b>${top.cases}</b></div>
-    <div class="mini"><small>Approved</small><b>${top.approved}</b></div>
-    <div class="mini"><small>Rejected</small><b>${top.rejected}</b></div>
-    <div class="mini"><small>PP Status</small><b>${top.pp ? "Eligible" : "Not Eligible"}</b></div>
+    <div class="mini"><small>Final PP Score</small><b>${top.done ? top.finalScore + "%" : "-"}</b></div>
+    <div class="mini"><small>Total Records</small><b>${top.total}</b></div>
+    <div class="mini"><small>Done Cases</small><b>${top.done}</b></div>
+    <div class="mini"><small>Pass / Reject</small><b>${top.pass} / ${top.reject}</b></div>
+    <div class="mini"><small>Pending Quality</small><b>${top.pending ? top.pendingQualityPct + "%" : "-"}</b></div>
   `;
 }
 
 function renderCharts(){
-  const labels = staffRows.slice(0,12).map(s=>s.staff);
-  const scores = staffRows.slice(0,12).map(s=>s.score);
-  const approved = staffRows.slice(0,12).map(s=>s.approved);
-  const rejected = staffRows.slice(0,12).map(s=>s.rejected);
+  const rows = staffRows.slice(0,12);
+  const labels = rows.map(s=>s.staff);
+  const scores = rows.map(s=>s.done ? s.finalScore : 0);
+  const pass = rows.map(s=>s.pass);
+  const reject = rows.map(s=>s.reject);
+  const pending = rows.map(s=>s.pending);
 
   if(scoreChart) scoreChart.destroy();
   scoreChart = new Chart($("scoreChart"),{
     type:"bar",
-    data:{labels,datasets:[{label:"Score %",data:scores}]},
+    data:{labels,datasets:[{label:"Final PP Score %",data:scores}]},
     options:{
       responsive:true,
       plugins:{legend:{display:false}},
@@ -718,8 +806,9 @@ function renderCharts(){
     data:{
       labels,
       datasets:[
-        {label:"Approved",data:approved},
-        {label:"Rejected / Negative",data:rejected}
+        {label:"Pass",data:pass},
+        {label:"Reject",data:reject},
+        {label:"Pending / Process",data:pending}
       ]
     },
     options:{
@@ -752,7 +841,7 @@ function loadCSV(){
       populateFilters();
       applyFilters();
       $("status").className = "status";
-      $("status").textContent = `Data loaded successfully: ${rawRows.length} records.`;
+      $("status").textContent = `Data loaded successfully: ${rawRows.length} records. Final PP count मध्ये फक्त verifier pass/reject cases घेतले आहेत.`;
     },
     error: function(err){
       $("status").className = "status err";
