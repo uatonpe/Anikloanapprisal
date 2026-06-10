@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loan Appraisal - Staff Performance Dashboard V3</title>
+  <title>Loan Appraisal - Staff Performance Dashboard FINAL LOCKED</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -74,7 +74,7 @@
       <span class="rule-pill">Reject by Verifier OR Manager = Reject / Done</span>
       <span class="rule-pill">Pass by Verifier OR Manager = Pass / Done</span>
       <span class="rule-pill">Pending / Process = Final score मधून skip, पण quality तपासली जाते</span>
-      <span class="rule-pill">90%+ = PP Eligible</span>
+      <span class="rule-pill">95%+ = PP Eligible</span><span class="rule-pill">Threshold Locked: 95%</span>
     </div>
   </section>
 
@@ -139,7 +139,7 @@
       <div class="card"><h2>Final PP Score Chart</h2><canvas id="scoreChart"></canvas></div>
       <div class="card"><h2>Pass / Reject / Pending Chart</h2><canvas id="approvalChart"></canvas></div>
       <div class="card">
-        <h2>V3 Balanced Scoring Formula</h2>
+        <h2>Final Locked Scoring Formula</h2>
         <div class="remark">
           <b>Final PP Score only on Done cases:</b><br>
           Document Upload Quality - 25 marks<br>
@@ -147,8 +147,8 @@
           Manager Status + Manager Remark Quality - 30 marks<br>
           Pass / Reject Outcome Balance - 20 marks<br><br>
           <b>Important:</b> Manager ने reject केले असेल तर case reject/done धरले आहे. Pending / process cases final PP score मध्ये नाहीत, पण quality वेगळी दाखवली आहे.<br><br>
-          <span class="pill ok">90% + PP Eligible</span>
-          <span class="pill bad">Below 90% Not Eligible</span>
+          <span class="pill ok">95% + PP Eligible</span>
+          <span class="pill bad">Below 95% Not Eligible</span>
         </div>
       </div>
     </div>
@@ -338,7 +338,7 @@ function buildStaffSummary(rows){
     s.verPct = s.done ? Math.round((s.verSum / (s.done * 25)) * 100) : 0;
     s.manPct = s.done ? Math.round((s.manSum / (s.done * 30)) * 100) : 0;
     s.pendingQualityPct = s.pending ? Math.round(s.pendingQualitySum / s.pending) : 0;
-    s.pp = s.done > 0 && s.finalScore >= 90;
+    s.pp = s.done > 0 && s.finalScore >= 95;
     s.remark = makeStaffRemark(s);
     return s;
   }).sort((a,b)=>b.finalScore-a.finalScore || b.done-a.done || b.total-a.total);
@@ -365,7 +365,7 @@ function makeStaffRemark(s){
   }
   return issues.length
     ? "PP साठी पात्र नाही. कारण: " + issues.join("; ") + "."
-    : "PP साठी पात्र नाही. Final score 90% पेक्षा कमी आहे.";
+    : "PP साठी पात्र नाही. Final score 95% पेक्षा कमी आहे.";
 }
 
 function populateFilters(){
@@ -484,7 +484,7 @@ function loadCSV(){
       if(!rawRows.length){ $("status").className="status err"; $("status").textContent="CSV मध्ये data मिळाला नाही. Published CSV link तपासा."; return; }
       populateFilters(); applyFilters();
       $("status").className="status";
-      $("status").textContent=`Data loaded successfully: ${rawRows.length} records. V3 logic: Verifier किंवा Manager reject असेल तर case reject/done धरले आहे.`;
+      $("status").textContent=`Data loaded successfully: ${rawRows.length} records. Final locked logic: PP Eligible फक्त 95% आणि त्यापेक्षा जास्त. Verifier किंवा Manager reject असेल तर case reject/done धरले आहे.`;
     },
     error:function(err){
       $("status").className="status err";
