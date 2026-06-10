@@ -2,57 +2,771 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Field Officer PP Performance Report</title>
-<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#f4f7fb;--card:#fff;--text:#0d2344;--muted:#607089;--line:#dfe7f1;--blue:#173b7a;--red:#c62828;--green:#157347}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Mukta,Arial,sans-serif;font-size:15px}.wrap{max-width:1280px;margin:auto;padding:18px}
-.top{background:linear-gradient(135deg,#0d2344,#173b7a);color:#fff;border-radius:20px;padding:22px;box-shadow:0 14px 35px rgba(13,35,68,.18)}.top h1{margin:0;font-size:28px;font-weight:800}.top p{margin:5px 0 0;color:#dbe7ff}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}.kpi,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 25px rgba(15,35,70,.06)}.kpi{padding:15px}.kpi .l{color:var(--muted);font-weight:800;font-size:13px}.kpi .v{font-size:27px;font-weight:800}
-.panel{padding:14px;margin-bottom:14px}.filters{display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:10px;align-items:end}label{display:block;color:var(--muted);font-weight:800;font-size:13px;margin-bottom:4px}
-select,input,button,textarea{font-family:inherit}select,input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:700}button{border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:800;padding:11px 16px;cursor:pointer}
-.status{padding:10px 12px;border-radius:14px;margin-top:12px;background:#eef4ff;border:1px solid #d6e4ff;font-weight:800}.err{background:#fff1f1;border-color:#ffc9c9;color:#9b1c1c}.ok{background:#eefaf2;border-color:#bfe7ce;color:#106b37}.small{color:var(--muted);font-size:13px;font-weight:700}
-.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:1120px;background:#fff}th{background:#f7f9fc;text-align:left;font-size:13px;font-weight:800;padding:11px;border-bottom:1px solid var(--line);position:sticky;top:0}td{padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top;font-weight:650}.badge{display:inline-flex;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;white-space:nowrap}.eligible{background:#e9f8ef;color:var(--green)}.not{background:#fff0f0;color:#c51616}.bar{width:86px;height:8px;background:#e6eaf0;border-radius:99px;overflow:hidden;margin-top:5px}.fill{height:100%;background:linear-gradient(90deg,#c62828,#d97706,#157347)}.scoreText{font-weight:900}.reason{line-height:1.45;max-width:380px}.debug{display:none}.debug textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:14px;padding:12px}.debug pre{white-space:pre-wrap;background:#0b1220;color:#e5edff;padding:12px;border-radius:14px;max-height:240px;overflow:auto}.sectionTitle{font-size:18px;font-weight:900;margin:0 0 10px}
-@media(max-width:850px){.wrap{padding:10px}.grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.top h1{font-size:22px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Appraisal - Monthly Staff Performance Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#14213d;
+      --muted:#64748b;
+      --blue:#0f4c81;
+      --blue2:#2563eb;
+      --red:#dc2626;
+      --green:#15803d;
+      --orange:#f97316;
+      --yellow:#ca8a04;
+      --border:#e2e8f0;
+      --shadow:0 14px 35px rgba(15, 23, 42, .08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Mukta", system-ui, Arial, sans-serif;
+      background:linear-gradient(135deg,#eef6ff 0%,#f8fafc 42%,#fff7ed 100%);
+      color:var(--text);
+    }
+    .app{max-width:1400px;margin:auto;padding:18px}
+    .topbar{
+      background:linear-gradient(135deg,#0f4c81,#153e75 55%,#b91c1c);
+      color:white;
+      padding:22px;
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .topbar:after{
+      content:"";
+      position:absolute;
+      right:-90px;top:-80px;
+      width:260px;height:260px;
+      background:rgba(255,255,255,.13);
+      border-radius:50%;
+    }
+    .topbar h1{
+      margin:0;
+      font-size:clamp(24px,4vw,42px);
+      font-weight:800;
+      line-height:1.08;
+      letter-spacing:-.4px;
+    }
+    .topbar p{
+      margin:8px 0 0;
+      font-size:18px;
+      opacity:.92;
+    }
+    .controls{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(150px,1fr));
+      gap:12px;
+      margin:16px 0;
+    }
+    .control-card,.card{
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(226,232,240,.9);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .control-card{padding:14px}
+    label{display:block;font-weight:700;margin-bottom:5px;color:#334155}
+    select,input,button{
+      width:100%;
+      min-height:42px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 11px;
+      font-family:inherit;
+      font-size:16px;
+      background:white;
+      color:var(--text);
+    }
+    button{
+      background:linear-gradient(135deg,var(--blue2),var(--blue));
+      color:white;
+      border:none;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s;
+    }
+    button:hover{transform:translateY(-1px);filter:brightness(1.04)}
+    .btn-light{
+      background:#fff;
+      color:var(--blue);
+      border:1px solid #bfdbfe;
+    }
+    .status{
+      padding:12px 16px;
+      margin:12px 0;
+      border-radius:14px;
+      background:#eff6ff;
+      color:#1e3a8a;
+      border:1px solid #bfdbfe;
+      font-weight:700;
+    }
+    .status.err{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:14px;
+      margin:16px 0;
+    }
+    .kpi{
+      padding:18px;
+      border-radius:20px;
+      background:white;
+      box-shadow:var(--shadow);
+      border:1px solid var(--border);
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi small{color:var(--muted);font-weight:700}
+    .kpi b{display:block;font-size:31px;line-height:1.1;margin-top:5px}
+    .kpi:before{
+      content:"";
+      position:absolute;
+      right:-28px;bottom:-28px;
+      width:90px;height:90px;border-radius:50%;
+      background:#dbeafe;
+      opacity:.75;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+      align-items:start;
+    }
+    .card{padding:16px;margin-bottom:16px}
+    .card h2{
+      margin:0 0 12px;
+      font-size:23px;
+      color:#0f172a;
+    }
+    .table-wrap{overflow:auto;border-radius:14px;border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse;background:white;min-width:980px}
+    th,td{
+      border-bottom:1px solid var(--border);
+      padding:10px 11px;
+      text-align:left;
+      vertical-align:top;
+      font-size:15px;
+      line-height:1.25;
+    }
+    th{
+      position:sticky;top:0;
+      background:#f8fafc;
+      z-index:1;
+      color:#334155;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+    tr:hover td{background:#f8fafc}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      padding:4px 9px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .ok{background:#dcfce7;color:#166534}
+    .bad{background:#fee2e2;color:#991b1b}
+    .warn{background:#ffedd5;color:#9a3412}
+    .info{background:#dbeafe;color:#1d4ed8}
+    .score{
+      font-weight:900;
+      font-size:20px;
+    }
+    .score.good{color:var(--green)}
+    .score.mid{color:var(--orange)}
+    .score.low{color:var(--red)}
+    .bar{
+      height:9px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
+      min-width:90px;
+    }
+    .bar span{display:block;height:100%;background:linear-gradient(90deg,#dc2626,#f97316,#16a34a)}
+    .remark{
+      max-width:430px;
+      color:#334155;
+      font-weight:600;
+    }
+    .staff-detail{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .mini{
+      padding:12px;
+      border-radius:14px;
+      background:#f8fafc;
+      border:1px solid var(--border);
+    }
+    .mini small{display:block;color:var(--muted);font-weight:700}
+    .mini b{font-size:23px}
+    canvas{max-height:330px}
+    .footer-note{
+      color:#64748b;
+      font-weight:600;
+      padding:10px 2px 30px;
+    }
+    .hidden{display:none!important}
+    @media (max-width:1000px){
+      .controls{grid-template-columns:repeat(2,1fr)}
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      .grid{grid-template-columns:1fr}
+    }
+    @media (max-width:640px){
+      .app{padding:10px}
+      .topbar{padding:17px;border-radius:18px}
+      .controls,.kpis,.staff-detail{grid-template-columns:1fr}
+      table{min-width:900px}
+    }
+    @media print{
+      .controls,.footer-note,.btn-light{display:none!important}
+      body{background:white}
+      .topbar,.card,.kpi{box-shadow:none}
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-<div class="top"><h1>Field Officer-wise PP Performance Report</h1><p>Staff Name फक्त exact <b>fieldOfficerName</b> column मधूनच read होईल. Date/Time staff म्हणून येणार नाही.</p></div>
-<div class="grid"><div class="kpi"><div class="l">Total Field Officers</div><div class="v" id="kpiFO">0</div></div><div class="kpi"><div class="l">Total Cases</div><div class="v" id="kpiCases">0</div></div><div class="kpi"><div class="l">PP Eligible</div><div class="v" id="kpiEligible">0</div></div><div class="kpi"><div class="l">Average Score</div><div class="v" id="kpiAvg">0%</div></div></div>
-<div class="panel"><div class="filters"><div><label>Month</label><select id="monthFilter"><option value="all">All Months</option></select></div><div><label>Branch</label><select id="branchFilter"><option value="all">All Branches</option></select></div><div><label>Search Field Officer</label><input id="searchBox" placeholder="Field Officer name शोधा..."></div><div><button onclick="loadData()">Refresh</button></div></div><div id="loadStatus" class="status">Data loading...</div><div class="small" style="margin-top:8px">PP Rule: Final Score <b>90% किंवा जास्त</b> = PP Eligible.</div></div>
-<div class="panel"><h2 class="sectionTitle">Field Officer-wise PP Eligibility</h2><div class="tableWrap"><table><thead><tr><th>Field Officer Name</th><th>Branch</th><th>Customers / Cases</th><th>Manager<br>Score</th><th>Verifier<br>Score</th><th>Docs<br>Score</th><th>Details<br>Score</th><th>Rejection<br>Score</th><th>Final<br>Score</th><th>PP Status</th><th>Clear Marathi Remark</th></tr></thead><tbody id="reportBody"><tr><td colspan="11">Loading...</td></tr></tbody></table></div></div>
-<div class="panel debug" id="debugBox"><h2 class="sectionTitle">Troubleshooting / Manual CSV Paste</h2><p class="small">Live load fail झाल्यास CSV paste करा. Error मध्ये available headers दिसतील.</p><textarea id="manualCsv" placeholder="CSV data इथे paste करा..."></textarea><div style="display:flex;gap:10px;margin-top:10px"><button onclick="loadManualCsv()">Use Pasted CSV</button><button onclick="copyDebug()">Copy Debug</button></div><pre id="debugInfo"></pre></div>
+<div class="app">
+  <section class="topbar">
+    <h1>Loan Appraisal - Monthly Staff Performance Dashboard</h1>
+    <p>Field Officer wise कामगिरी, Document Quality, Verification, Manager Approval आणि PP Eligibility</p>
+  </section>
+
+  <section class="controls">
+    <div class="control-card">
+      <label>महिना निवडा</label>
+      <select id="monthFilter"></select>
+    </div>
+    <div class="control-card">
+      <label>Staff / Field Officer</label>
+      <select id="staffFilter"><option value="ALL">All Staff</option></select>
+    </div>
+    <div class="control-card">
+      <label>Branch</label>
+      <select id="branchFilter"><option value="ALL">All Branch</option></select>
+    </div>
+    <div class="control-card">
+      <label>Search Customer / Village</label>
+      <input id="searchBox" placeholder="ग्राहक / गाव / remark शोधा" />
+    </div>
+    <div class="control-card">
+      <label>&nbsp;</label>
+      <button onclick="applyFilters()">Dashboard Refresh</button>
+    </div>
+  </section>
+
+  <div id="status" class="status">CSV data loading...</div>
+
+  <section class="kpis">
+    <div class="kpi"><small>Total Loan Appraisals</small><b id="kTotal">0</b></div>
+    <div class="kpi"><small>Approved Cases</small><b id="kApproved">0</b></div>
+    <div class="kpi"><small>Rejected / Not Approved</small><b id="kRejected">0</b></div>
+    <div class="kpi"><small>Avg Staff Score</small><b id="kAvg">0%</b></div>
+    <div class="kpi"><small>PP Eligible Staff</small><b id="kPP">0</b></div>
+  </section>
+
+  <section class="grid">
+    <div>
+      <div class="card">
+        <h2>Staff Monthly Performance Summary</h2>
+        <div class="table-wrap">
+          <table id="staffTable">
+            <thead>
+              <tr>
+                <th>Staff Name</th>
+                <th>Branch</th>
+                <th>Cases</th>
+                <th>Approved</th>
+                <th>Rejected</th>
+                <th>Docs %</th>
+                <th>Verifier %</th>
+                <th>Manager %</th>
+                <th>Final Score</th>
+                <th>PP Status</th>
+                <th>Clear Marathi Remark</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Customer Level Details</h2>
+        <div class="table-wrap">
+          <table id="detailTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Staff</th>
+                <th>Customer</th>
+                <th>Village</th>
+                <th>Branch</th>
+                <th>Loan Amount</th>
+                <th>Verifier Status</th>
+                <th>Manager Status</th>
+                <th>Docs</th>
+                <th>Case Quality</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Selected Staff Snapshot</h2>
+        <div id="staffSnapshot" class="staff-detail"></div>
+      </div>
+
+      <div class="card">
+        <h2>Top / Low Performance Chart</h2>
+        <canvas id="scoreChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Approval Quality Chart</h2>
+        <canvas id="approvalChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Scoring Formula</h2>
+        <div class="remark">
+          <b>100 Marks:</b><br>
+          Document Uploaded Quality - 25<br>
+          Verifier Approval + Correct Info + Video Call - 25<br>
+          Manager Approval - 25<br>
+          Rejection / Negative Remarks Control - 25<br><br>
+          <span class="pill ok">90% + PP Eligible</span>
+          <span class="pill bad">Below 90% Not Eligible</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-note">
+    Note: हा dashboard published Google Sheet CSV वर live चालतो. Data बदलला की refresh केल्यावर नवीन result दिसेल.
+  </div>
 </div>
+
 <script>
-const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQj5eV60MIJBSP2-7-ETG-UaIHwE4zqFxefYzjtkZVOvlG3byB8FH84BKemTe7H3dN97AJ_NT2gldgi/pub?output=csv";
-const GVIZ_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQj5eV60MIJBSP2-7-ETG-UaIHwE4zqFxefYzjtkZVOvlG3byB8FH84BKemTe7H3dN97AJ_NT2gldgi/gviz/tq?tqx=out:json";
-const REQUIRED_STAFF_COL="fieldOfficerName";let normalizedRows=[],debugLines=[];
-function logDebug(m){debugLines.push(new Date().toLocaleTimeString()+" - "+m);document.getElementById("debugInfo").textContent=debugLines.join("\n")}
-function setStatus(m,c=""){let e=document.getElementById("loadStatus");e.className="status "+c;e.innerHTML=m}
-function norm(s){return String(s??"").replace(/^\uFEFF/,"").trim()}function normKey(s){return norm(s).toLowerCase().replace(/[^a-z0-9]/g,"")}
-function escapeHtml(s){return String(s??"").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;"}[m]))}
-function parseCSV(t){const rows=[];let r=[],cell="",q=false;t=String(t||"").replace(/\r\n/g,"\n").replace(/\r/g,"\n");for(let i=0;i<t.length;i++){const c=t[i],n=t[i+1];if(q){if(c=='"'&&n=='"'){cell+='"';i++}else if(c=='"')q=false;else cell+=c}else{if(c=='"')q=true;else if(c==","){r.push(cell);cell=""}else if(c=="\n"){r.push(cell);rows.push(r);r=[];cell=""}else cell+=c}}r.push(cell);rows.push(r);return rows.filter(x=>x.some(c=>norm(c)!==""))}
-function rowsFromCsv(csv){const matrix=parseCSV(csv);if(!matrix.length)throw Error("CSV blank आहे.");let hi=matrix.findIndex(r=>r.some(c=>norm(c)===REQUIRED_STAFF_COL));if(hi<0)hi=matrix.findIndex(r=>r.some(c=>normKey(c)===normKey(REQUIRED_STAFF_COL)));if(hi<0){let first=matrix.slice(0,8).map((r,i)=>`Row ${i+1}: ${r.join(" | ")}`).join("\n");throw Error(`Exact column '${REQUIRED_STAFF_COL}' सापडला नाही. त्यामुळे date/time staff name म्हणून येत होता.\n\nपहिल्या rows:\n${first}`)}const headers=matrix[hi].map(h=>norm(h));const rows=matrix.slice(hi+1).map(r=>{let o={};headers.forEach((h,i)=>o[h||("col_"+i)]=norm(r[i]));return o}).filter(o=>norm(o[REQUIRED_STAFF_COL])!=="");logDebug(`CSV parsed. Header row ${hi+1}. Rows ${rows.length}. Staff column ${REQUIRED_STAFF_COL}.`);return rows}
-function rowsFromGviz(text){let jsonText=text.substring(text.indexOf("{"),text.lastIndexOf("}")+1),data=JSON.parse(jsonText);let cols=(data.table.cols||[]).map((c,i)=>norm(c.label||c.id||("col_"+i)));if(!cols.includes(REQUIRED_STAFF_COL))throw Error(`GViz मध्ये '${REQUIRED_STAFF_COL}' column नाही. Available: ${cols.join(", ")}`);let rows=(data.table.rows||[]).map(r=>{let o={};cols.forEach((h,i)=>{let cell=r.c&&r.c[i]?r.c[i]:null;o[h]=cell?norm(cell.f??cell.v??""):""});return o}).filter(o=>norm(o[REQUIRED_STAFF_COL])!=="");logDebug(`GViz parsed. Rows ${rows.length}.`);return rows}
-async function fetchCsv(){let res=await fetch(CSV_URL+"&_="+Date.now(),{cache:"no-store"});if(!res.ok)throw Error("CSV fetch HTTP "+res.status);return await res.text()}
-function fetchGvizJsonp(){return new Promise((resolve,reject)=>{const cb="gvizCb_"+Date.now(),s=document.createElement("script");const timer=setTimeout(()=>{cleanup();reject(Error("GViz timeout"))},12000);function cleanup(){clearTimeout(timer);delete window[cb];if(s.parentNode)s.parentNode.removeChild(s)}window[cb]=d=>{cleanup();resolve("google.visualization.Query.setResponse("+JSON.stringify(d)+");")};s.onerror=()=>{cleanup();reject(Error("GViz script failed"))};s.src=GVIZ_URL+"&tq="+encodeURIComponent("select *")+"&callback="+cb+"&_="+Date.now();document.body.appendChild(s)})}
-function getCols(){let s=new Set();normalizedRows.forEach(r=>Object.keys(r).forEach(k=>s.add(k)));return [...s]}
-function findCols(){const h=getCols();return{headers:h,branch:h.find(x=>/branch|unit|center|शाखा/i.test(x))||"",date:h.find(x=>/date|created|time|timestamp|दिनांक/i.test(x))||"",manager:h.filter(x=>/manager|bm|managerremark|managerverification|manger/i.test(normKey(x))&&x!==REQUIRED_STAFF_COL),verifier:h.filter(x=>/verifier|verification|verified|verify|tele|checker/i.test(normKey(x))&&x!==REQUIRED_STAFF_COL),docs:h.filter(x=>/document|doc|kyc|upload|aadhaar|aadhar|pan|photo|passbook/i.test(normKey(x))),details:h.filter(x=>/detail|complete|form|mobile|account|ifsc|address|dob|data/i.test(normKey(x))&&x!==REQUIRED_STAFF_COL),rejection:h.filter(x=>/reject|rejection|reason|status|fail|remark/i.test(normKey(x)))}}
-function val(r,ks){for(const k of ks){if(r[k]!=null&&String(r[k]).trim()!=="")return String(r[k]).trim()}return""}
-function good(v){let x=norm(v).toLowerCase();return /(ok|approved|approve|verified|complete|completed|yes|uploaded|done|success|accepted|clear|valid|योग्य|पूर्ण|मंजूर|अपलोड|झाले|होय)/i.test(x)}
-function bad(v){let x=norm(v).toLowerCase();return !x||/(reject|rejected|pending|missing|no|not|fail|failed|wrong|incomplete|hold|अपूर्ण|नाही|चुकी|रिजेक्ट|प्रलंबित|बाकी|नाकार)/i.test(x)}
-function rejected(v){let x=norm(v).toLowerCase();return /(reject|rejected|fail|failed|invalid|नाकार|रिजेक्ट|अयशस्वी)/i.test(x)}
-function monthFromRow(r,dc){let s=dc?val(r,[dc]):"";if(!s)return"No Date";let m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);if(m)return`${m[3]}-${String(m[2]).padStart(2,"0")}`;m=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);if(m)return`${m[1]}-${String(m[2]).padStart(2,"0")}`;let d=new Date(s);return isNaN(d)?"No Date":`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`}
-function score(items,cols){function rs(list,w,type){if(!list.length)return w*.6;let total=0,g=0;items.forEach(r=>{let vals=list.map(c=>val(r,[c])).filter(Boolean);total++;if(type==="rejection"){if(!vals.some(rejected))g++}else{if(vals.some(good)&&!vals.some(bad))g++;else if(vals.some(good))g+=.75}});return total?(g/total)*w:0}let managerScore=rs(cols.manager,20),verifierScore=rs(cols.verifier,20),docsScore=rs(cols.docs,25),detailsScore=rs(cols.details,20),rejectionScore=rs(cols.rejection,15,"rejection"),finalScore=managerScore+verifierScore+docsScore+detailsScore+rejectionScore;let reasons=[];if(managerScore<18)reasons.push("manager verification/remark मध्ये त्रुटी आहेत");if(verifierScore<18)reasons.push("verifier checking पूर्ण/योग्य नाही");if(docsScore<22.5)reasons.push("documents uploaded/complete मध्ये कमी आहे");if(detailsScore<18)reasons.push("customer details अपूर्ण आहेत");if(rejectionScore<13.5)reasons.push("rejection/fail cases जास्त आहेत");return{managerScore,verifierScore,docsScore,detailsScore,rejectionScore,finalScore,reasons}}
-function populateFilters(){let c=findCols(),months=[...new Set(normalizedRows.map(r=>monthFromRow(r,c.date)))].sort().reverse(),branches=[...new Set(normalizedRows.map(r=>c.branch?norm(r[c.branch])||"Unknown":"Unknown"))].sort();monthFilter.innerHTML='<option value="all">All Months</option>'+months.map(m=>`<option>${escapeHtml(m)}</option>`).join("");branchFilter.innerHTML='<option value="all">All Branches</option>'+branches.map(b=>`<option>${escapeHtml(b)}</option>`).join("")}
-function buildReport(){let c=findCols(),m=monthFilter.value,b=branchFilter.value,q=searchBox.value.toLowerCase().trim(),groups=new Map();normalizedRows.forEach(r=>{let fo=norm(r[REQUIRED_STAFF_COL]);if(!fo)return;let br=c.branch?norm(r[c.branch])||"Unknown":"Unknown",mo=monthFromRow(r,c.date);if(m!=="all"&&mo!==m)return;if(b!=="all"&&br!==b)return;if(q&&!fo.toLowerCase().includes(q))return;let key=fo+"||"+br;if(!groups.has(key))groups.set(key,{fo,br,items:[]});groups.get(key).items.push(r)});let rep=[...groups.values()].map(g=>({...g,...score(g.items,c)})).sort((a,b)=>b.finalScore-a.finalScore||a.fo.localeCompare(b.fo));render(rep)}
-function render(rep){if(!rep.length)reportBody.innerHTML='<tr><td colspan="11">या filter मध्ये data नाही.</td></tr>';else reportBody.innerHTML=rep.map(r=>{let e=r.finalScore>=90,remark=e?"Field Officer PP साठी पात्र आहे. Verification, documents, details आणि rejection control समाधानकारक आहे.":"Field Officer PP साठी पात्र नाही. कारण: "+(r.reasons.length?r.reasons.join(", "):"overall score 90% पेक्षा कमी आहे")+". सुधारणा करून पुढील महिन्यात पुन्हा पात्रता तपासावी.";return`<tr><td><b>${escapeHtml(r.fo)}</b></td><td>${escapeHtml(r.br)}</td><td>${r.items.length}</td><td>${r.managerScore.toFixed(1)}</td><td>${r.verifierScore.toFixed(1)}</td><td>${r.docsScore.toFixed(1)}</td><td>${r.detailsScore.toFixed(1)}</td><td>${r.rejectionScore.toFixed(1)}</td><td><div class="scoreText">${r.finalScore.toFixed(1)}%</div><div class="bar"><div class="fill" style="width:${Math.max(0,Math.min(100,r.finalScore))}%"></div></div></td><td><span class="badge ${e?'eligible':'not'}">${e?'PP Eligible':'Not Eligible'}</span></td><td class="reason">${escapeHtml(remark)}</td></tr>`}).join("");kpiFO.textContent=rep.length;kpiCases.textContent=rep.reduce((s,r)=>s+r.items.length,0);kpiEligible.textContent=rep.filter(r=>r.finalScore>=90).length;kpiAvg.textContent=(rep.length?rep.reduce((s,r)=>s+r.finalScore,0)/rep.length:0).toFixed(1)+"%"}
-async function loadData(){debugLines=[];debugBox.style.display="none";setStatus("Data loading...");try{logDebug("Trying CSV fetch");normalizedRows=rowsFromCsv(await fetchCsv());afterLoad("CSV live load successful.")}catch(e1){logDebug("CSV failed: "+e1.message);try{logDebug("Trying GViz JSONP fallback");normalizedRows=rowsFromGviz(await fetchGvizJsonp());afterLoad("GViz live load successful.")}catch(e2){logDebug("GViz failed: "+e2.message);setStatus("Live data load fail झाला. खाली error पहा. Exact fieldOfficerName column आहे का तपासा.","err");debugBox.style.display="block";reportBody.innerHTML='<tr><td colspan="11">Data load failed. Debug info खाली दिले आहे.</td></tr>'}}}
-function afterLoad(msg){if(!normalizedRows.length)throw Error("fieldOfficerName rows blank आहेत.");let c=findCols();logDebug("Available headers: "+c.headers.join(", "));logDebug("Exact staff column used: "+REQUIRED_STAFF_COL);populateFilters();buildReport();setStatus(`${msg} Total rows: <b>${normalizedRows.length}</b>. Staff name exact <b>fieldOfficerName</b> column मधून read होत आहे.`,"ok")}
-function loadManualCsv(){try{normalizedRows=rowsFromCsv(manualCsv.value);afterLoad("Manual CSV load successful.")}catch(e){setStatus(e.message,"err");logDebug("Manual failed: "+e.message)}}
-function copyDebug(){navigator.clipboard?.writeText(debugInfo.textContent||"").then(()=>alert("Debug copied"))}
-monthFilter.addEventListener("change",buildReport);branchFilter.addEventListener("change",buildReport);searchBox.addEventListener("input",buildReport);loadData();
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQj5eV60MIJBSP2-7-ETG-UaIHwE4zqFxefYzjtkZVOvlG3byB8FH84BKemTe7H3dN97AJ_NT2gldgi/pub?output=csv";
+
+let rawRows = [];
+let filteredRows = [];
+let staffRows = [];
+let scoreChart, approvalChart;
+
+const $ = id => document.getElementById(id);
+
+function clean(v){
+  return (v ?? "").toString().trim();
+}
+function lower(v){ return clean(v).toLowerCase(); }
+
+function parseDateAny(v){
+  v = clean(v);
+  if(!v) return null;
+
+  // Handles YYYY-MM-DD, DD/MM/YYYY, MM/DD/YYYY, date with time
+  let d = new Date(v);
+  if(!isNaN(d)) return d;
+
+  const m = v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+  if(m){
+    let dd = +m[1], mm = +m[2], yy = +m[3];
+    if(yy < 100) yy += 2000;
+    d = new Date(yy, mm - 1, dd);
+    if(!isNaN(d)) return d;
+  }
+  return null;
+}
+function monthKeyFromRow(r){
+  const d = parseDateAny(r.visitDate) || parseDateAny(r.actualTime) || parseDateAny(r.VerificationTimestamp);
+  if(!d) return "Unknown";
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+}
+function displayDate(v){
+  const d = parseDateAny(v);
+  if(!d) return clean(v) || "-";
+  return d.toLocaleDateString("en-GB");
+}
+function unique(arr){
+  return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+}
+
+function hasDoc(r){
+  // supportdoc is main. photoLinks and googleMapsLink are treated as supporting proof.
+  return !!(clean(r.supportdoc) || clean(r.photoLinks) || clean(r.googleMapsLink));
+}
+function isPositiveText(v){
+  v = lower(v);
+  if(!v) return false;
+  return /(approved|approve|ok|done|yes|correct|verified|valid|eligible|accept|accepted|मंजूर|योग्य|बरोबर|पूर्ण|होय)/i.test(v);
+}
+function isNegativeText(v){
+  v = lower(v);
+  if(!v) return false;
+  return /(reject|rejected|not approved|hold|pending|wrong|incorrect|missing|not done|fail|failed|negative|bad|incomplete|duplicate|मंजूर नाही|नामंजूर|नाकार|चूक|अपूर्ण|कमी|प्रलंबित|नाही)/i.test(v);
+}
+function verifierGood(r){
+  const status = clean(r.VerificationStatus);
+  const info = clean(r.IsInfoCorrect);
+  const video = clean(r.IsVideoCallDone);
+  const remarks = clean(r.VerifierRemarks);
+
+  let marks = 0;
+  if(isPositiveText(status)) marks += 10;
+  else if(!isNegativeText(status) && status) marks += 5;
+
+  if(isPositiveText(info)) marks += 7;
+  else if(!isNegativeText(info) && info) marks += 3;
+
+  if(isPositiveText(video)) marks += 4;
+  else if(!isNegativeText(video) && video) marks += 2;
+
+  if(remarks && !isNegativeText(remarks)) marks += 4;
+  if(isNegativeText(remarks)) marks -= 5;
+
+  return Math.max(0, Math.min(25, marks));
+}
+function managerGood(r){
+  const status = clean(r.ManagerApprovalStatus);
+  const remarks = clean(r.ManagerRemarks);
+
+  let marks = 0;
+  if(isPositiveText(status)) marks += 17;
+  else if(!isNegativeText(status) && status) marks += 8;
+
+  if(remarks && !isNegativeText(remarks)) marks += 8;
+  if(isNegativeText(remarks)) marks -= 8;
+
+  return Math.max(0, Math.min(25, marks));
+}
+function rejectionMarks(r){
+  const combined = [
+    r.VerificationStatus, r.ManagerApprovalStatus, r.VerifierRemarks,
+    r.ManagerRemarks, r.remarks
+  ].map(clean).join(" ");
+
+  if(!combined) return 18; // no negative remark but also no clear quality
+  if(isNegativeText(combined)) return 0;
+
+  const managerApproved = isPositiveText(r.ManagerApprovalStatus);
+  const verifierApproved = isPositiveText(r.VerificationStatus);
+  if(managerApproved && verifierApproved) return 25;
+  if(managerApproved || verifierApproved) return 20;
+  return 15;
+}
+function rowScore(r){
+  const doc = hasDoc(r) ? 25 : 0;
+  const ver = verifierGood(r);
+  const man = managerGood(r);
+  const rej = rejectionMarks(r);
+  return {
+    doc, ver, man, rej,
+    total: Math.round(doc + ver + man + rej)
+  };
+}
+function isApproved(r){
+  return isPositiveText(r.ManagerApprovalStatus) || isPositiveText(r.VerificationStatus);
+}
+function isRejected(r){
+  const combined = [r.ManagerApprovalStatus, r.VerificationStatus, r.ManagerRemarks, r.VerifierRemarks, r.remarks].map(clean).join(" ");
+  return isNegativeText(combined);
+}
+function money(v){
+  const n = Number((clean(v)).replace(/[^\d.-]/g,""));
+  if(!isFinite(n)) return clean(v) || "-";
+  return "₹" + n.toLocaleString("en-IN");
+}
+
+function buildStaffSummary(rows){
+  const map = {};
+  rows.forEach(r=>{
+    const staff = clean(r.fieldOfficerName) || "Unknown Staff";
+    const branch = clean(r.branchName) || "-";
+    if(!map[staff]){
+      map[staff] = {
+        staff, branches:new Set(), cases:0, approved:0, rejected:0,
+        docMarks:0, verMarks:0, manMarks:0, rejMarks:0, totalMarks:0,
+        missingDocs:0, verifierIssue:0, managerIssue:0, rejectedCases:0
+      };
+    }
+    const s = map[staff];
+    const sc = rowScore(r);
+    s.branches.add(branch);
+    s.cases++;
+    s.approved += isApproved(r) ? 1 : 0;
+    s.rejected += isRejected(r) ? 1 : 0;
+    s.docMarks += sc.doc;
+    s.verMarks += sc.ver;
+    s.manMarks += sc.man;
+    s.rejMarks += sc.rej;
+    s.totalMarks += sc.total;
+
+    if(sc.doc < 25) s.missingDocs++;
+    if(sc.ver < 20) s.verifierIssue++;
+    if(sc.man < 20) s.managerIssue++;
+    if(isRejected(r)) s.rejectedCases++;
+  });
+
+  return Object.values(map).map(s=>{
+    s.branchText = [...s.branches].join(", ");
+    s.docPct = Math.round((s.docMarks / (s.cases * 25)) * 100);
+    s.verPct = Math.round((s.verMarks / (s.cases * 25)) * 100);
+    s.manPct = Math.round((s.manMarks / (s.cases * 25)) * 100);
+    s.rejPct = Math.round((s.rejMarks / (s.cases * 25)) * 100);
+    s.score = Math.round(s.totalMarks / s.cases);
+    s.pp = s.score >= 90;
+    s.remark = makeStaffRemark(s);
+    return s;
+  }).sort((a,b)=>b.score-a.score || b.cases-a.cases);
+}
+
+function makeStaffRemark(s){
+  const issues = [];
+  if(s.missingDocs > 0) issues.push(`${s.missingDocs} प्रकरणांमध्ये कागदपत्रे/फोटो/सपोर्ट डॉक्युमेंट अपूर्ण आहेत`);
+  if(s.verifierIssue > 0) issues.push(`${s.verifierIssue} प्रकरणांमध्ये verifier कडून status/remark/video/info मध्ये अडचण दिसते`);
+  if(s.managerIssue > 0) issues.push(`${s.managerIssue} प्रकरणांमध्ये manager approval/remark स्पष्ट किंवा सकारात्मक नाही`);
+  if(s.rejectedCases > 0) issues.push(`${s.rejectedCases} प्रकरणे rejected / not approved / negative remark मध्ये आहेत`);
+
+  if(s.pp){
+    if(issues.length === 0) return "कामगिरी चांगली आहे. कागदपत्रे, verification आणि manager approval quality समाधानकारक आहे.";
+    return "PP साठी पात्र; पण सुधारणा गरजेची: " + issues.join("; ") + ".";
+  }
+  if(issues.length === 0) return "Score 90% पेक्षा कमी आहे. Approval quality अजून मजबूत करणे आवश्यक आहे.";
+  return "PP साठी पात्र नाही. कारण: " + issues.join("; ") + ".";
+}
+
+function populateFilters(){
+  const months = unique(rawRows.map(monthKeyFromRow)).filter(m=>m !== "Unknown").reverse();
+  $("monthFilter").innerHTML = months.map(m=>`<option value="${m}">${m}</option>`).join("") + `<option value="ALL">All Months</option>`;
+
+  const staff = unique(rawRows.map(r=>clean(r.fieldOfficerName) || "Unknown Staff"));
+  $("staffFilter").innerHTML = `<option value="ALL">All Staff</option>` + staff.map(s=>`<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join("");
+
+  const branches = unique(rawRows.map(r=>clean(r.branchName)).filter(Boolean));
+  $("branchFilter").innerHTML = `<option value="ALL">All Branch</option>` + branches.map(b=>`<option value="${escapeAttr(b)}">${escapeHtml(b)}</option>`).join("");
+}
+
+function applyFilters(){
+  const month = $("monthFilter").value;
+  const staff = $("staffFilter").value;
+  const branch = $("branchFilter").value;
+  const q = lower($("searchBox").value);
+
+  filteredRows = rawRows.filter(r=>{
+    const mOk = month === "ALL" || monthKeyFromRow(r) === month;
+    const sOk = staff === "ALL" || (clean(r.fieldOfficerName) || "Unknown Staff") === staff;
+    const bOk = branch === "ALL" || clean(r.branchName) === branch;
+    const hay = [
+      r.customerName,r.villageName,r.branchName,r.fieldOfficerName,
+      r.VerifierRemarks,r.ManagerRemarks,r.remarks,r.loanPurpose
+    ].map(clean).join(" ").toLowerCase();
+    const qOk = !q || hay.includes(q);
+    return mOk && sOk && bOk && qOk;
+  });
+
+  staffRows = buildStaffSummary(filteredRows);
+  renderKPIs();
+  renderStaffTable();
+  renderDetails();
+  renderSnapshot();
+  renderCharts();
+}
+
+function renderKPIs(){
+  const total = filteredRows.length;
+  const approved = filteredRows.filter(isApproved).length;
+  const rejected = filteredRows.filter(isRejected).length;
+  const avg = staffRows.length ? Math.round(staffRows.reduce((a,s)=>a+s.score,0)/staffRows.length) : 0;
+  const pp = staffRows.filter(s=>s.pp).length;
+
+  $("kTotal").textContent = total;
+  $("kApproved").textContent = approved;
+  $("kRejected").textContent = rejected;
+  $("kAvg").textContent = avg + "%";
+  $("kPP").textContent = pp;
+}
+
+function renderStaffTable(){
+  const tbody = $("staffTable").querySelector("tbody");
+  if(!staffRows.length){
+    tbody.innerHTML = `<tr><td colspan="11">No data found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = staffRows.map(s=>{
+    const cls = s.score >= 90 ? "good" : s.score >= 75 ? "mid" : "low";
+    return `<tr>
+      <td><b>${escapeHtml(s.staff)}</b></td>
+      <td>${escapeHtml(s.branchText)}</td>
+      <td>${s.cases}</td>
+      <td><span class="pill ok">${s.approved}</span></td>
+      <td><span class="pill ${s.rejected ? "bad":"ok"}">${s.rejected}</span></td>
+      <td>${s.docPct}%</td>
+      <td>${s.verPct}%</td>
+      <td>${s.manPct}%</td>
+      <td>
+        <span class="score ${cls}">${s.score}%</span>
+        <div class="bar"><span style="width:${Math.min(100,s.score)}%"></span></div>
+      </td>
+      <td>${s.pp ? `<span class="pill ok">PP Eligible</span>` : `<span class="pill bad">Not Eligible</span>`}</td>
+      <td class="remark">${escapeHtml(s.remark)}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderDetails(){
+  const tbody = $("detailTable").querySelector("tbody");
+  const rows = filteredRows.slice(0,500);
+  if(!rows.length){
+    tbody.innerHTML = `<tr><td colspan="11">No customer details found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r=>{
+    const sc = rowScore(r);
+    const quality = sc.total >= 90 ? `<span class="pill ok">${sc.total}% Good</span>` :
+                    sc.total >= 75 ? `<span class="pill warn">${sc.total}% Need Improve</span>` :
+                    `<span class="pill bad">${sc.total}% Poor</span>`;
+    const docs = hasDoc(r) ? `<span class="pill ok">Uploaded</span>` : `<span class="pill bad">Missing</span>`;
+    const rem = [r.VerifierRemarks, r.ManagerRemarks, r.remarks].map(clean).filter(Boolean).join(" | ");
+    return `<tr>
+      <td>${displayDate(r.visitDate || r.actualTime || r.VerificationTimestamp)}</td>
+      <td><b>${escapeHtml(clean(r.fieldOfficerName) || "Unknown Staff")}</b></td>
+      <td>${escapeHtml(clean(r.customerName) || "-")}</td>
+      <td>${escapeHtml(clean(r.villageName) || "-")}</td>
+      <td>${escapeHtml(clean(r.branchName) || "-")}</td>
+      <td>${money(r.ApprovedLoanAmount || r.loanAmountRequested)}</td>
+      <td>${statusPill(r.VerificationStatus)}</td>
+      <td>${statusPill(r.ManagerApprovalStatus)}</td>
+      <td>${docs}</td>
+      <td>${quality}</td>
+      <td class="remark">${escapeHtml(rem || "-")}</td>
+    </tr>`;
+  }).join("");
+}
+
+function statusPill(v){
+  v = clean(v);
+  if(!v) return `<span class="pill warn">Blank</span>`;
+  if(isPositiveText(v)) return `<span class="pill ok">${escapeHtml(v)}</span>`;
+  if(isNegativeText(v)) return `<span class="pill bad">${escapeHtml(v)}</span>`;
+  return `<span class="pill info">${escapeHtml(v)}</span>`;
+}
+
+function renderSnapshot(){
+  let rows = staffRows;
+  const selected = $("staffFilter").value;
+  if(selected !== "ALL") rows = staffRows.filter(s=>s.staff === selected);
+  const top = rows[0];
+
+  if(!top){
+    $("staffSnapshot").innerHTML = `<div class="mini"><b>No data</b></div>`;
+    return;
+  }
+  $("staffSnapshot").innerHTML = `
+    <div class="mini"><small>Staff</small><b>${escapeHtml(top.staff)}</b></div>
+    <div class="mini"><small>Final Score</small><b>${top.score}%</b></div>
+    <div class="mini"><small>Total Cases</small><b>${top.cases}</b></div>
+    <div class="mini"><small>Approved</small><b>${top.approved}</b></div>
+    <div class="mini"><small>Rejected</small><b>${top.rejected}</b></div>
+    <div class="mini"><small>PP Status</small><b>${top.pp ? "Eligible" : "Not Eligible"}</b></div>
+  `;
+}
+
+function renderCharts(){
+  const labels = staffRows.slice(0,12).map(s=>s.staff);
+  const scores = staffRows.slice(0,12).map(s=>s.score);
+  const approved = staffRows.slice(0,12).map(s=>s.approved);
+  const rejected = staffRows.slice(0,12).map(s=>s.rejected);
+
+  if(scoreChart) scoreChart.destroy();
+  scoreChart = new Chart($("scoreChart"),{
+    type:"bar",
+    data:{labels,datasets:[{label:"Score %",data:scores}]},
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{y:{beginAtZero:true,max:100}}
+    }
+  });
+
+  if(approvalChart) approvalChart.destroy();
+  approvalChart = new Chart($("approvalChart"),{
+    type:"bar",
+    data:{
+      labels,
+      datasets:[
+        {label:"Approved",data:approved},
+        {label:"Rejected / Negative",data:rejected}
+      ]
+    },
+    options:{
+      responsive:true,
+      scales:{y:{beginAtZero:true}}
+    }
+  });
+}
+
+function escapeHtml(str){
+  return clean(str).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+function escapeAttr(str){ return escapeHtml(str).replace(/"/g,"&quot;"); }
+
+function loadCSV(){
+  $("status").textContent = "CSV data loading...";
+  Papa.parse(CSV_URL, {
+    download:true,
+    header:true,
+    skipEmptyLines:true,
+    complete: function(results){
+      rawRows = (results.data || []).filter(r => Object.values(r).some(v => clean(v)));
+      if(!rawRows.length){
+        $("status").className = "status err";
+        $("status").textContent = "CSV मध्ये data मिळाला नाही. Published CSV link तपासा.";
+        return;
+      }
+      populateFilters();
+      applyFilters();
+      $("status").className = "status";
+      $("status").textContent = `Data loaded successfully: ${rawRows.length} records.`;
+    },
+    error: function(err){
+      $("status").className = "status err";
+      $("status").innerHTML = "CSV load होत नाही. Google Sheet Publish to web ON आहे का आणि link public आहे का तपासा.<br>" + escapeHtml(err.message || err);
+    }
+  });
+}
+
+$("monthFilter").addEventListener("change", applyFilters);
+$("staffFilter").addEventListener("change", applyFilters);
+$("branchFilter").addEventListener("change", applyFilters);
+$("searchBox").addEventListener("input", applyFilters);
+
+loadCSV();
 </script>
-</body></html>
+</body>
+</html>
