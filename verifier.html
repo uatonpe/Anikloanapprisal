@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -81,6 +82,10 @@
         .sidebar-filters input, .sidebar-filters select { width: 100%; padding: 10px 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); font-size: 0.95rem; transition: border-color 0.2s; background: var(--white-color); }
         .sidebar-filters input:focus, .sidebar-filters select:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1); }
         .date-filter-label { font-size: 0.8rem; font-weight: 600; color: var(--dark-text); margin-bottom: 4px; display: block; }
+        .fast-load-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .fast-load-actions button { border: none; border-radius: var(--border-radius-md); padding: 11px 10px; font-weight: 700; cursor: pointer; font-family: inherit; }
+        #load-date-data-btn { background: var(--primary-color); color: #fff; }
+        #load-current-month-btn { background: #eef4ff; color: var(--primary-dark); border: 1px solid #cfe0ff; }
 
         .applicant-list-container { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .applicant-item { display: flex; flex-direction: column; gap: 6px; padding: 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s; position: relative; }
@@ -265,6 +270,10 @@
                     <label for="toDateFilter" class="date-filter-label">पर्यंतची तारीख</label>
                     <input type="date" id="toDateFilter">
                 </div>
+                <div class="filter-group full-width fast-load-actions">
+                    <button type="button" id="load-date-data-btn"><i class="fas fa-search"></i> या तारखेचा डेटा लोड करा</button>
+                    <button type="button" id="load-current-month-btn"><i class="fas fa-calendar-day"></i> चालू महिना</button>
+                </div>
                 <div class="filter-group"><select id="unit-filter"><option value="">सर्व युनिट</option></select></div>
                 <div class="filter-group"><select id="staff-filter"><option value="">सर्व अधिकारी</option></select></div>
                 <div class="filter-group full-width"><select id="status-filter"><option value="">सर्व स्टेटस</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select></div>
@@ -280,7 +289,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPIRgfPCaxX0DEBLX6hvF6BxtWBljurV5kYFU4tpRlBogI5YQzzAO6OkCcpE1CjcE/exec'; 
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpqr11pG1WIM6mhcltwUFM9lktbueurVSRUVzKjnEp0RCJY-Qmi_FEcew00wYcpWM/exec'; 
     const JITSI_BASE_URL = 'https://meet.jit.si/'; 
     let allApplicants = [], currentApplicant = null;
 
@@ -288,6 +297,7 @@
         pageLoader: document.getElementById('full-page-loader'), applicantListContainer: document.getElementById('applicant-list-container'),
         detailsView: document.getElementById('details-view'), welcomeMessage: document.getElementById('welcome-message'),
         searchBox: document.getElementById('search-box'), fromDateFilter: document.getElementById('fromDateFilter'), toDateFilter: document.getElementById('toDateFilter'),
+        loadDateDataBtn: document.getElementById('load-date-data-btn'), loadCurrentMonthBtn: document.getElementById('load-current-month-btn'),
         unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), statusFilter: document.getElementById('status-filter'),
         mainLayout: document.getElementById('main-layout'),
         kpi: { totalCount: document.getElementById('total-count'), pendingCount: document.getElementById('pending-count'), approvedCount: document.getElementById('approved-count'), rejectedCount: document.getElementById('rejected-count') }
@@ -398,18 +408,47 @@
         }
     }
 
-    // Initialize Fetch on Load
-    window.addEventListener('DOMContentLoaded', fetchData);
+    const FAST_PAGE_SIZE = 1200;
+
+    function getTodayISO() {
+        const d = new Date();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${d.getFullYear()}-${mm}-${dd}`;
+    }
+    function getMonthStartISO() {
+        const d = new Date();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        return `${d.getFullYear()}-${mm}-01`;
+    }
+    function setCurrentMonthFilters() {
+        ui.fromDateFilter.value = getMonthStartISO();
+        ui.toDateFilter.value = getTodayISO();
+    }
+    function buildFastDataUrl() {
+        const df = ui.fromDateFilter.value;
+        const dt = ui.toDateFilter.value;
+        let url = `${SCRIPT_URL}?action=getData&role=verifier&pageSize=${FAST_PAGE_SIZE}`;
+        if (df || dt) url += `&dateFrom=${encodeURIComponent(df)}&dateTo=${encodeURIComponent(dt)}`;
+        else url += '&currentMonth=1';
+        return url;
+    }
+
+    // Initialize Fetch on Load - only current month/date-window data, not full sheet
+    window.addEventListener('DOMContentLoaded', () => {
+        setCurrentMonthFilters();
+        fetchData();
+    });
 
     async function fetchData() {
         try {
             ui.pageLoader.classList.remove('hidden');
-            const response = await fetch(`${SCRIPT_URL}?action=getData&role=verifier`);
+            const response = await fetch(buildFastDataUrl());
             if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
             const result = await response.json();
             if (result.status === 'success') {
                 allApplicants = result.data.sort((a, b) => {
-                    const dateA = parseDate(a.actualTime || a.timestamp); const dateB = parseDate(b.actualTime || b.timestamp);
+                    const dateA = parseDate(a.actualTime || a.timestamp || a.visitDate); const dateB = parseDate(b.actualTime || b.timestamp || b.visitDate);
                     return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
                 });
                 populateUnitFilter(allApplicants); populateStaffFilter(allApplicants); 
@@ -424,7 +463,10 @@
     }
 
     function addEventListeners() {
-        [ui.searchBox, ui.unitFilter, ui.staffFilter, ui.statusFilter, ui.fromDateFilter, ui.toDateFilter].forEach(el => el.addEventListener('input', filterAndRender));
+        [ui.searchBox, ui.unitFilter, ui.staffFilter, ui.statusFilter].forEach(el => el.addEventListener('input', filterAndRender));
+        [ui.fromDateFilter, ui.toDateFilter].forEach(el => el.addEventListener('input', filterAndRender));
+        ui.loadDateDataBtn.addEventListener('click', fetchData);
+        ui.loadCurrentMonthBtn.addEventListener('click', () => { setCurrentMonthFilters(); fetchData(); });
         document.querySelectorAll('.kpi-card').forEach((card, index) => {
             card.addEventListener('click', () => {
                 const statuses = ['', 'Pending', 'Approved', 'Rejected'];
