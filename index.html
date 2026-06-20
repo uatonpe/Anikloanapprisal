@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -95,6 +96,17 @@
                         <label for="updateCustomerName">ग्राहकाचे नांव निवडा</label>
                         <select id="updateCustomerName" onchange="loadExistingForm(this.value)" disabled><option value="">क्षेत्र अधिकारी निवडा</option></select>
                     </div>
+                    <div class="input-group">
+                        <label for="updateDateFrom">पासूनची तारीख</label>
+                        <input type="date" id="updateDateFrom">
+                    </div>
+                    <div class="input-group">
+                        <label for="updateDateTo">पर्यंतची तारीख</label>
+                        <input type="date" id="updateDateTo">
+                    </div>
+                    <div class="input-group full-width">
+                        <button type="button" id="loadUpdateCustomersBtn" style="width:100%;background-color:#0056b3;"><i class="fas fa-search"></i> या तारखेतील ग्राहक लोड करा</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -178,6 +190,23 @@
         let currentLocationData = null;
         let originalLocationData = null;
         let capturedPhotos = [];
+        let cameraStarted = false;
+
+        function getTodayISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        function getMonthStartISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`; }
+        function setUpdateCurrentMonthDates() {
+            const df = document.getElementById('updateDateFrom');
+            const dt = document.getElementById('updateDateTo');
+            if (df && !df.value) df.value = getMonthStartISO();
+            if (dt && !dt.value) dt.value = getTodayISO();
+        }
+        async function initCameraOnce() {
+            if (cameraStarted) return;
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            elements.video.srcObject = stream;
+            elements.captureButton.addEventListener('click', handleCaptureClick);
+            cameraStarted = true;
+        }
 
         function setMode(mode) {
             formMode = mode;
@@ -191,6 +220,7 @@
                 elements.submitButton.innerHTML = `<i class="fas fa-save"></i> जुना फॉर्म अपडेट करा`;
                 elements.gpsStatusDiv.textContent = "जुना फॉर्म लोड करा...";
                 elements.captureButton.disabled = true;
+                setUpdateCurrentMonthDates();
                 fetchStaffNames(elements.updateOfficerSelect.id); 
             } else {
                 formMode = 'new';
@@ -202,7 +232,11 @@
                 updatePhotoGallery();
                 document.getElementById('visitDate').valueAsDate = new Date();
                 elements.submitButton.innerHTML = `<i class="fas fa-paper-plane"></i>फॉर्म सबमिट करा`;
-                initializeGeolocation();
+                fetchStaffNames('fieldOfficerName');
+                initCameraOnce().then(initializeGeolocation).catch(err => {
+                    console.error(err);
+                    alert("ॲप वापरण्यासाठी कॅमेरा आणि लोकेशनची परवानगी आवश्यक आहे. कृपया परवानगी द्या.");
+                });
             }
             window.scrollTo(0, 0);
         }
@@ -269,7 +303,9 @@
                 return;
             }
             try {
-                const url = `${SCRIPT_URL}?action=getCustomersByOfficer&officer=${encodeURIComponent(officerName)}`;
+                const df = document.getElementById('updateDateFrom')?.value || '';
+                const dt = document.getElementById('updateDateTo')?.value || '';
+                const url = `${SCRIPT_URL}?action=getCustomersByOfficer&officer=${encodeURIComponent(officerName)}&dateFrom=${encodeURIComponent(df)}&dateTo=${encodeURIComponent(dt)}`;
                 const response = await fetch(url);
                 const result = await response.json();
                 elements.updateCustomerSelect.innerHTML = '<option value="">ग्राहकाचे नांव निवडा</option>';
@@ -321,6 +357,8 @@
                         lon: data.gpsLongitude || null, 
                         address: data.gpsAddress || "पत्ता उपलब्ध नाही"
                     };
+
+                    try { await initCameraOnce(); } catch (camErr) { console.warn('Camera not started:', camErr); }
 
                     if (originalLocationData.lat) {
                         elements.gpsStatusDiv.innerHTML = `✅ मूळ लोकेशन लोड झाले.<br><small>${originalLocationData.address}</small>`;
@@ -553,18 +591,14 @@
         function generatePrintHTML(data) { const logoUrl = "https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png"; const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLatitude},pm2rdl` : ''; const gmapLink = (data.gpsLatitude && data.gpsLongitude) ? `https://www.google.com/maps?q=${data.gpsLatitude},${data.gpsLongitude}` : ''; let detailsHTML = `<div class="print-page"><div class="print-watermark">अनिक फायनान्स</div><div class="print-content"><div class="print-header"><img src="${logoUrl}" alt="Company Logo"><h1>GPS व्हेरिफिकेशन<br>अहवाल</h1></div>`; detailsHTML += `<h3 class="section-title">मूलभूत माहिती</h3><table class="print-table"><tr><td>ग्राहकाचे नाव</td><td>${data.customerName||''}</td></tr><tr><td>गाव</td><td>${data.villageName||''}</td></tr><tr><td>कर्जाची रक्कम</td><td>रु ${data.loanAmountRequested||''}</td></tr><tr><td>क्षेत्र अधिकारी</td><td>${data.fieldOfficerName||''}</td></tr></table>`; formConfig.forEach(section => { if (section.title.includes('अपलोड')) return; let sectionHasData = section.fields.some(field => data[field.id] && data[field.id].toString().trim() !== ''); if(sectionHasData){ detailsHTML += `<h3 class="section-title">${section.title}</h3><table class="print-table">`; section.fields.forEach(field => { if (field.id !== 'supportingDocuments' && data[field.id] && data[field.id].toString().trim() !== '' && (!field.value || data[field.id] !== field.value)) { detailsHTML += `<tr><td>${field.label}</td><td>${data[field.id]}</td></tr>`; } }); detailsHTML += `</table>`; } }); const allPhotoLinks = Array.isArray(data.photos) ? data.photos.filter(link => typeof link === 'string' && link.startsWith('data:')) : []; if (allPhotoLinks && allPhotoLinks.length > 0) { detailsHTML += `<h3 class="section-title">काढलेले छायाचित्र</h3><div class="photo-grid">`; allPhotoLinks.forEach(photoDataUrl => { detailsHTML += `<div class="print-photo-container"><img src="${photoDataUrl}"></div>`; }); detailsHTML += `</div>`; } if (mapImageUrl) { detailsHTML += `<div class="map-container"><h3 class="section-title">GPS लोकेशन नकाशा</h3><img src="${mapImageUrl}" class="print-map"><p style="font-size:10pt; margin-top:8px;"><strong>Google Maps Link:</strong> <a href="${gmapLink}" target="_blank">${gmapLink}</a></p></div>`; } detailsHTML += `<div class="print-footer">हा रिपोर्ट ${new Date().toLocaleString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे.</div></div></div>`; return detailsHTML; }
         function printReport() { if (lastSubmittedData) { elements.printArea.innerHTML = generatePrintHTML(lastSubmittedData); const images = elements.printArea.querySelectorAll('img'); const promises = []; images.forEach(img => { promises.push(new Promise((resolve) => { if (img.complete) { resolve(); } else { img.onload = resolve; img.onerror = resolve; } })); }); Promise.all(promises).then(() => { window.print(); }); } else { alert("प्रिंट करण्यासाठी डेटा उपलब्ध नाही."); } }
         
-        window.addEventListener('load', async () => { 
+        window.addEventListener('load', () => { 
+            // Fast first open: फक्त form HTML तयार करतो; staff/camera/GPS user mode निवडल्यावर load होईल.
             generateForm(); 
-            fetchStaffNames('updateFieldOfficerName'); 
-            try { 
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); 
-                elements.video.srcObject = stream; 
-                elements.captureButton.addEventListener('click', handleCaptureClick); 
-                elements.form.addEventListener('submit', handleSubmit); 
-            } catch (err) { 
-                console.error(err);
-                alert("ॲप वापरण्यासाठी कॅमेरा आणि लोकेशनची परवानगी आवश्यक आहे. कृपया पेज रिफ्रेश करा आणि परवानगी द्या."); 
-            } 
+            setUpdateCurrentMonthDates();
+            elements.form.addEventListener('submit', handleSubmit);
+            document.getElementById('loadUpdateCustomersBtn')?.addEventListener('click', () => fetchCustomerList(elements.updateOfficerSelect.value));
+            document.getElementById('updateDateFrom')?.addEventListener('change', () => { if (elements.updateOfficerSelect.value) fetchCustomerList(elements.updateOfficerSelect.value); });
+            document.getElementById('updateDateTo')?.addEventListener('change', () => { if (elements.updateOfficerSelect.value) fetchCustomerList(elements.updateOfficerSelect.value); });
         });
     </script>
 </body>
