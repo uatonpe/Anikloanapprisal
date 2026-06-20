@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -159,6 +160,8 @@
             <div class="filter-group"><label for="staff-filter">कर्मचारी निवडा</label><select id="staff-filter"></select></div>
             <div class="filter-group"><label for="date-from">या तारखेपासून</label><input type="date" id="date-from"></div>
             <div class="filter-group"><label for="date-to">या तारखेपर्यंत</label><input type="date" id="date-to"></div>
+            <div class="filter-group"><label>&nbsp;</label><button type="button" id="load-date-data-btn" style="width:100%;padding:11px;border:0;border-radius:6px;background:var(--primary-color);color:#fff;font-weight:700;cursor:pointer;"><i class="fas fa-search"></i> तारीखेनुसार डेटा लोड करा</button></div>
+            <div class="filter-group"><label>&nbsp;</label><button type="button" id="load-current-month-btn" style="width:100%;padding:11px;border:1px solid #cfe0ff;border-radius:6px;background:#eef4ff;color:var(--secondary-color);font-weight:700;cursor:pointer;"><i class="fas fa-calendar-day"></i> चालू महिना</button></div>
         </section>
         <section class="kpi-container">
             <div class="kpi-card clickable" id="kpi-total" data-status="Total"><div class="kpi-icon"><i class="fas fa-file-alt"></i></div><div class="kpi-content"><h3 id="total-count">0</h3><p>एकूण अर्ज</p></div></div>
@@ -213,27 +216,41 @@
         
         let allData = [], filteredData = [], chartInstances = {};
         
-        const ui = { loader: document.getElementById('loader'), customerSearch: document.getElementById('customer-search'), unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), dateFrom: document.getElementById('date-from'), dateTo: document.getElementById('date-to'), kpi: { total: document.getElementById('total-count'), pending: document.getElementById('pending-count'), approved: document.getElementById('approved-count'), approvedSum: document.getElementById('approved-sum-value'), rejected: document.getElementById('rejected-count'), }, approvedInsightsContainer: document.getElementById('approved-insights-container'), applicantModal: document.getElementById('applicant-modal'), modalTitle: document.getElementById('modal-title'), applicantModalCloseBtn: document.querySelector('.applicant-modal-close'), printArea: document.getElementById('print-area'), fileModal: document.getElementById('file-modal'), fileModalTitle: document.getElementById('file-modal-title'), fileModalBody: document.getElementById('file-modal-body'), fileModalCloseBtns: document.querySelectorAll('.file-modal-close'), openLinksBtn: document.getElementById('open-links-btn') };
+        const ui = { loader: document.getElementById('loader'), customerSearch: document.getElementById('customer-search'), unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), dateFrom: document.getElementById('date-from'), dateTo: document.getElementById('date-to'), kpi: { total: document.getElementById('total-count'), pending: document.getElementById('pending-count'), approved: document.getElementById('approved-count'), approvedSum: document.getElementById('approved-sum-value'), rejected: document.getElementById('rejected-count'), }, approvedInsightsContainer: document.getElementById('approved-insights-container'), applicantModal: document.getElementById('applicant-modal'), modalTitle: document.getElementById('modal-title'), applicantModalCloseBtn: document.querySelector('.applicant-modal-close'), printArea: document.getElementById('print-area'), fileModal: document.getElementById('file-modal'), fileModalTitle: document.getElementById('file-modal-title'), fileModalBody: document.getElementById('file-modal-body'), fileModalCloseBtns: document.querySelectorAll('.file-modal-close'), openLinksBtn: document.getElementById('open-links-btn'), loadDateDataBtn: document.getElementById('load-date-data-btn'), loadCurrentMonthBtn: document.getElementById('load-current-month-btn') };
 
-        window.addEventListener('load', initializeDashboard);
+        const FAST_PAGE_SIZE = 1500;
+        let listenersAdded = false;
+
+        function getTodayISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        function getMonthStartISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`; }
+        function setCurrentMonthFilters() { ui.dateFrom.value = getMonthStartISO(); ui.dateTo.value = getTodayISO(); }
+        function buildFastDataUrl() {
+            const df = ui.dateFrom.value, dt = ui.dateTo.value;
+            let url = `${SCRIPT_URL}?action=getData&pageSize=${FAST_PAGE_SIZE}`;
+            if (df || dt) url += `&dateFrom=${encodeURIComponent(df)}&dateTo=${encodeURIComponent(dt)}`;
+            else url += '&currentMonth=1';
+            return url;
+        }
+
+        window.addEventListener('load', () => { setCurrentMonthFilters(); initializeDashboard(); });
 
         async function initializeDashboard() {
             ui.loader.style.display = 'flex';
             try {
-                const response = await fetch(`${SCRIPT_URL}?action=getData`);
+                const response = await fetch(buildFastDataUrl());
                 if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
                 const result = await response.json();
                 if (result.status === 'success') {
-                    allData = result.data.map(row => ({ ...row, actualTime: row.actualTime || row.timestamp, VerificationStatus: row.VerificationStatus || 'Pending' })).sort((a, b) => {
+                    allData = result.data.map(row => ({ ...row, actualTime: row.actualTime || row.timestamp || row.visitDate, VerificationStatus: row.VerificationStatus || 'Pending' })).sort((a, b) => {
                         const dateA = parseDate(a.actualTime); const dateB = parseDate(b.actualTime); return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
                     });
                     setupFilters(); 
-                    setupEventListeners(); 
+                    if (!listenersAdded) { setupEventListeners(); listenersAdded = true; }
                     applyFiltersAndRender();
                 } else { throw new Error(result.message); }
             } catch (error) { 
                 console.error("Initialization Error:", error);
-                document.body.innerHTML = `<p style="text-align:center; padding:20px; color:red;">डॅशबोर्ड लोड करताना गंभीर त्रटी आली: ${error.message}</p>`; 
+                document.body.innerHTML = `<p style="text-align:center; padding:20px; color:red;">डॅशबोर्ड लोड करताना गंभीर त्रुटी आली: ${error.message}</p>`; 
             } 
             finally { ui.loader.style.display = 'none'; }
         }
@@ -243,7 +260,10 @@
         function setupFilters() { const u = [...new Set(allData.map(d => d.Unit).filter(Boolean))].sort(); const s = [...new Set(allData.map(d => d.fieldOfficerName).filter(Boolean))].sort(); ui.unitFilter.innerHTML = '<option value="">सर्व युनिट</option>' + u.map(i => `<option value="${i}">${i}</option>`).join(''); ui.staffFilter.innerHTML = '<option value="">सर्व कर्मचारी</option>' + s.map(i => `<option value="${i}">${i}</option>`).join(''); }
         
         function setupEventListeners() {
-            [ui.customerSearch, ui.unitFilter, ui.staffFilter, ui.dateFrom, ui.dateTo].forEach(el => el.addEventListener('input', applyFiltersAndRender));
+            [ui.customerSearch, ui.unitFilter, ui.staffFilter].forEach(el => el.addEventListener('input', applyFiltersAndRender));
+            [ui.dateFrom, ui.dateTo].forEach(el => el.addEventListener('input', applyFiltersAndRender));
+            ui.loadDateDataBtn.addEventListener('click', initializeDashboard);
+            ui.loadCurrentMonthBtn.addEventListener('click', () => { setCurrentMonthFilters(); initializeDashboard(); });
             document.querySelectorAll('.kpi-card.clickable').forEach(c => c.addEventListener('click', () => showStatusApplicantsModal(c.dataset.status)));
             ui.applicantModalCloseBtn.onclick = () => ui.applicantModal.style.display = "none";
             ui.fileModalCloseBtns.forEach(btn => btn.onclick = () => ui.fileModal.style.display = "none");
