@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -147,13 +149,144 @@
             #print-area, #print-area * { visibility: visible; }
             #print-area { position: static; display: block; left: auto; top: auto; margin: 0; padding: 0; }
         }
+
+
+        /* =========================================================
+           MODERN STRONG LOOK + PROCESS TRACKER UI
+           Original functions kept. Added process visibility layer.
+        ========================================================= */
+        :root {
+            --surface-glass: rgba(255,255,255,0.82);
+            --navy: #0b1f3a;
+            --blue: #0b63ce;
+            --sky: #eaf4ff;
+            --soft-red: #fff1f2;
+            --soft-green: #ecfdf3;
+            --soft-amber: #fff8e1;
+            --soft-purple: #f5f0ff;
+            --ring: rgba(11, 99, 206, .16);
+        }
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(0,120,212,.18), transparent 34%),
+                radial-gradient(circle at top right, rgba(81,45,168,.14), transparent 32%),
+                linear-gradient(135deg, #f3f8ff 0%, #f8fbff 45%, #f7f7fb 100%);
+            min-height: 100vh;
+        }
+        .dashboard-container { max-width: 1680px; padding: 22px; }
+        .dashboard-hero {
+            position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center;
+            gap: 22px; color: #fff; border: 0; border-radius: 22px; padding: 22px 24px;
+            background: linear-gradient(135deg, #081a33 0%, #0b63ce 55%, #1679e8 100%);
+            box-shadow: 0 20px 45px rgba(9, 45, 95, .22);
+        }
+        .dashboard-hero::after {
+            content: ""; position: absolute; right: -80px; top: -90px; width: 260px; height: 260px;
+            background: rgba(255,255,255,.12); border-radius: 50%;
+        }
+        .hero-left { display: flex; align-items: center; gap: 16px; position: relative; z-index: 1; }
+        .hero-logo-wrap { background: #fff; border-radius: 16px; padding: 8px 12px; box-shadow: 0 10px 25px rgba(0,0,0,.18); }
+        .dashboard-header img { height: 46px; display: block; }
+        .dashboard-header h1 { color: #fff; font-size: clamp(1.35rem, 2.5vw, 2.2rem); letter-spacing: -.5px; }
+        .hero-subtitle { margin: 4px 0 0 0; color: rgba(255,255,255,.82); font-weight: 500; }
+        .hero-badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; position: relative; z-index: 1; }
+        .hero-badge { padding: 9px 12px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); color: #fff; font-size: .86rem; font-weight: 700; backdrop-filter: blur(8px); }
+        .filter-bar, .grid-card, .kpi-card { border: 1px solid rgba(11, 99, 206, .08); border-radius: 18px; box-shadow: 0 16px 35px rgba(13, 39, 80, .08); background: var(--surface-glass); backdrop-filter: blur(12px); }
+        .filter-group input, .filter-group select { border-radius: 12px; border: 1px solid #d7e4f7; background: rgba(255,255,255,.88); }
+        .filter-group input:focus, .filter-group select:focus { box-shadow: 0 0 0 4px var(--ring); }
+        .kpi-card { min-height: 106px; border-left: 0; border-top: 5px solid var(--color); }
+        .kpi-card .kpi-icon { box-shadow: inset 0 0 0 1px rgba(var(--rgb-color), .22); }
+        .grid-card h2 { border-bottom: 0; display: flex; align-items: center; gap: 10px; color: var(--navy); }
+        .grid-card h2::before { content: ""; width: 10px; height: 26px; border-radius: 999px; background: linear-gradient(180deg, #0b63ce, #00bcd4); display: inline-block; }
+        .section-help { margin-top: 8px; color: #64748b; font-size: .92rem; }
+        .process-workflow-section { margin: 0 0 20px 0; }
+        .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 14px; }
+        .pipeline-card {
+            position: relative; overflow: hidden; padding: 16px; border-radius: 18px; background: #fff; border: 1px solid #e4edf9;
+            box-shadow: 0 10px 24px rgba(15, 52, 96, .08); cursor: pointer; transition: transform .2s, box-shadow .2s, border-color .2s;
+        }
+        .pipeline-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(11,99,206,.16); border-color: #b7d4ff; }
+        .pipeline-card::after { content: ""; position: absolute; right: -25px; top: -25px; width: 90px; height: 90px; border-radius: 50%; background: var(--tone-bg); }
+        .pipeline-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: relative; z-index: 1; }
+        .pipeline-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: var(--tone); background: var(--tone-bg); font-size: 1.25rem; }
+        .pipeline-count { font-size: 2.05rem; font-weight: 800; color: var(--navy); line-height: 1; }
+        .pipeline-title { margin: 12px 0 3px; font-weight: 800; color: #132238; position: relative; z-index: 1; }
+        .pipeline-sub { margin: 0; color: #64748b; font-size: .85rem; position: relative; z-index: 1; }
+        .tone-blue { --tone: #0b63ce; --tone-bg: #eaf4ff; }
+        .tone-amber { --tone: #b77900; --tone-bg: #fff4cf; }
+        .tone-purple { --tone: #6d28d9; --tone-bg: #f2eaff; }
+        .tone-red { --tone: #dc2626; --tone-bg: #fff1f2; }
+        .tone-green { --tone: #15803d; --tone-bg: #ecfdf3; }
+        .status-chip, .process-pill {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-weight: 800; font-size: .78rem; white-space: nowrap;
+        }
+        .chip-approved { color: #15803d; background: #dcfce7; }
+        .chip-pending { color: #a16207; background: #fef3c7; }
+        .chip-rejected { color: #b91c1c; background: #fee2e2; }
+        .chip-total { color: #0b63ce; background: #dbeafe; }
+        .process-pill { color: #0f172a; background: #f1f5f9; border: 1px solid #e2e8f0; cursor: pointer; }
+        .process-pill:hover { background: #eaf4ff; border-color: #b7d4ff; }
+        .blocker-cell { max-width: 270px; color: #334155; line-height: 1.35; }
+        .remark-cell { max-width: 330px; color: #475569; line-height: 1.35; }
+        .row-action-btn.process-btn { background: #0f172a; gap: 6px; font-size: .85rem; padding: 7px 10px; }
+        .modal-content.process-modal-content { max-width: 1100px; border-radius: 24px; padding: 0; overflow: hidden; }
+        .process-modal-head { padding: 22px 26px; background: linear-gradient(135deg, #081a33, #0b63ce); color: #fff; display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+        .process-modal-head h2 { margin: 0 0 5px 0; }
+        .process-modal-head p { margin: 0; color: rgba(255,255,255,.78); }
+        .process-modal-body { padding: 24px 26px; background: #f8fbff; }
+        .process-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .process-summary-box { background: #fff; border: 1px solid #e4edf9; border-radius: 16px; padding: 13px 14px; }
+        .process-summary-box span { display: block; color: #64748b; font-size: .8rem; font-weight: 700; }
+        .process-summary-box strong { display: block; margin-top: 4px; color: #0f172a; font-size: 1rem; }
+        .stepper { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0 20px; }
+        .step-item { background: #fff; border: 1px solid #e4edf9; border-radius: 16px; padding: 14px; min-height: 126px; position: relative; }
+        .step-no { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; margin-bottom: 9px; background: #eef2f7; color: #475569; }
+        .step-title { font-weight: 900; color: #132238; margin-bottom: 3px; }
+        .step-owner { color: #64748b; font-size: .82rem; }
+        .step-status { margin-top: 10px; display: inline-flex; padding: 5px 8px; border-radius: 999px; font-size: .74rem; font-weight: 900; }
+        .step-done { border-color: #bbf7d0; background: #f0fdf4; }
+        .step-done .step-no, .step-done .step-status { background: #16a34a; color: #fff; }
+        .step-current { border-color: #fde68a; background: #fffbeb; box-shadow: 0 0 0 4px rgba(245, 158, 11, .12); }
+        .step-current .step-no, .step-current .step-status { background: #f59e0b; color: #fff; }
+        .step-stop { border-color: #fecaca; background: #fff1f2; box-shadow: 0 0 0 4px rgba(220, 38, 38, .10); }
+        .step-stop .step-no, .step-stop .step-status { background: #dc2626; color: #fff; }
+        .step-wait { opacity: .82; }
+        .remarks-panel { background: #fff; border: 1px solid #e4edf9; border-radius: 18px; padding: 16px; }
+        .remarks-panel h3 { margin: 0 0 12px; color: #0f172a; }
+        .remark-row { border-left: 4px solid #0b63ce; background: #f8fbff; padding: 11px 12px; border-radius: 12px; margin-bottom: 10px; }
+        .remark-row strong { color: #0f172a; }
+        .remark-row p { margin: 4px 0 0; color: #475569; }
+        .remark-meta { margin-top: 5px; color: #64748b; font-size: .78rem; font-weight: 700; }
+        .decision-inline { margin-left: 8px; vertical-align: middle; display: inline-flex; }
+        .empty-state { text-align: center; padding: 30px; color: #64748b; }
+        @media (max-width: 800px) {
+            .dashboard-hero { align-items: flex-start; flex-direction: column; }
+            .hero-badges { justify-content: flex-start; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .stepper { grid-template-columns: 1fr; }
+            #modal-table { min-width: 980px; }
+        }
+
     </style>
 </head>
 <body>
     <div id="loader" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999;"><div class="spinner" style="border: 8px solid #f3f3f3; border-top: 8px solid #0078d4; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite;"></div><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style></div>
     
     <div class="dashboard-container">
-        <header class="dashboard-header"><h1><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo">युनिट परफॉर्मन्स डॅशबोर्ड</h1></header>
+        <header class="dashboard-header dashboard-hero">
+            <div class="hero-left">
+                <div class="hero-logo-wrap"><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo"></div>
+                <div>
+                    <h1>युनिट परफॉर्मन्स डॅशबोर्ड</h1>
+                    <p class="hero-subtitle">Smart Verification Tracker • Pending Flow • Customer-wise Remarks</p>
+                </div>
+            </div>
+            <div class="hero-badges">
+                <span class="hero-badge"><i class="fas fa-route"></i> Manager → Verifier Flow</span>
+                <span class="hero-badge"><i class="fas fa-user-clock"></i> Pending With</span>
+                <span class="hero-badge"><i class="fas fa-comments"></i> Rejection Remarks</span>
+            </div>
+        </header>
         <section class="filter-bar">
             <div class="filter-group"><label for="customer-search">ग्राहक नावाने शोधा</label><input type="search" id="customer-search" placeholder="ग्राहकाचे नाव टाईप करा..."></div>
             <div class="filter-group"><label for="unit-filter">युनिट निवडा</label><select id="unit-filter"></select></div>
@@ -177,6 +310,12 @@
     </div>
 </div>
         </section>
+        <section class="grid-card grid-card-full process-workflow-section" id="process-workflow-section">
+            <h2>अर्ज प्रोसेस ट्रॅकर</h2>
+            <p class="section-help">Flow आता Field/Staff → Manager/BM → Verifier → Final Status असा आहे. ManagerApprovalStatus / ManagerRemarks भरले की manager stage clear दिसेल. Manager/BM ने reject केले तर अर्ज तिथेच थांबेल, Rejected count मध्ये येईल आणि ManagerRemarks स्पष्ट दिसतील.</p>
+            <div class="pipeline-grid" id="process-overview-grid"></div>
+        </section>
+
         <section class="grid-card grid-card-full" id="customer-insights-section">
             <h2>मंजूर अर्जदारांचे विशेष विश्लेषण (Approved Customer Insights)</h2>
             <p>खालील कार्ड्स फक्त मंजूर झालेल्या अर्जांमधून तयार केलेले मुख्य ग्राहक अंतर्दृष्टी (Insights) दर्शवतात.</p>
@@ -191,11 +330,23 @@
     <!-- Modals -->
     <div id="applicant-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2 id="modal-title">अर्जदारांची यादी</h2><span class="close-btn applicant-modal-close">&times;</span></div><div id="modal-table-container"><table id="modal-table"><thead></thead><tbody></tbody></table></div></div></div>
     <div id="file-modal" class="modal"><div class="modal-content" style="max-width: 900px; margin-top: 5%;"><div class="modal-header"><h2 id="file-modal-title">फाइल्स</h2><span class="close-btn file-modal-close">&times;</span></div><div id="file-modal-body"></div><div class="modal-footer"><button id="open-links-btn" class="row-action-btn excel-btn"><i class="fas fa-external-link-alt"></i> सर्व फाइल्स उघडा</button></div></div></div>
+    <div id="process-modal" class="modal">
+        <div class="modal-content process-modal-content">
+            <div class="process-modal-head">
+                <div>
+                    <h2 id="process-modal-title">Process Details</h2>
+                    <p id="process-modal-subtitle">ग्राहक अर्जाची संपूर्ण process trail</p>
+                </div>
+                <span class="close-btn process-modal-close" style="color:#fff;">&times;</span>
+            </div>
+            <div class="process-modal-body" id="process-modal-body"></div>
+        </div>
+    </div>
     <div id="print-area"></div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpqr11pG1WIM6mhcltwUFM9lktbueurVSRUVzKjnEp0RCJY-Qmi_FEcew00wYcpWM/exec';
-        const MARATHI_LABELS = { actualTime: "अर्जाची वेळ/तारीख", timestamp: "अर्जाची वेळ/तारीख", customerName: "नाव", applicantAge: "वय", applicantGender: "लिंग", mobileNumber: "मोबाईल क्रमांक", aadhaarNumber: "आधार क्रमांक", panNumber: "पॅन क्रमांक", villageName: "गावाचे नांव", taluka: "तालुका", district: "जिल्हा", centerName: "केंद्राचे नाव/कोड", gpsLatitude: "GPS अक्षांश", gpsLongitude: "GPS रेखांश", gpsAddress: "GPS नुसार पत्ता", googleMapsLink: "Google Maps लिंक", coApplicantName: "सहकर्जदार/पती/पत्नीचे नाव", coApplicantAadhaar: "सहकर्जदार आधार नंबर", coApplicantPan: "सहकर्जदार पॅन नंबर", isExistingCustomer: "सध्या अनिकचे ग्राहक आहात?", existingAccountNumber: "सध्याचा खाते क्रमांक", branchName: "शाखेचे नाव", familyTotalMembers: "घरातील एकूण सदस्य", familyEarningMembers: "कमावणारे सदस्य", familyTotalIncome: "एकूण मासिक उत्पन्न", expenseHousehold: "घर खर्च", expenseEducation: "शिक्षण खर्च", expenseMedical: "वैद्यकीय खर्च", expenseOther: "इतर खर्च", expenseTotal: "एकूण मासिक खर्च", primaryIncomeSource: "प्राथमिक उत्पन्न स्रोत", primaryIncomeTypeDetails: "प्राथमिक उत्पन्नाचा तपशील", secondaryIncomeSource: "दुय्यम उत्पन्न स्रोत", secondaryIncomeAmount: "दुय्यम मासिक उत्पन्न", assetLandAcres: "जमीन (एकर)", assetLandType: "जमीनीचा प्रकार", assetHouseType: "घराचा प्रकार", assetPlots: "प्लॉट्स/Shopes", cows: "गायी", buffaloes: "म्हशी", goats: "बकऱ्या/मेंढ्या", 'other livestok': "इतर", bulls: "बैलजोडी", pigs: "वराह पालन", poultry: "कोंबड्या", milkProductionLiters: "दुग्धउत्पादन (लिटर)", assetEquipmentFarm: "शेतीसाठीची उपकरणे", assetEquipmentBusiness: "व्यवसायासाठीची उपकरणे", assetVehicle: "वाहन", savingsBankAccount: "बँक खाते क्रमांक", ifsccode: "IFSC CODE", savingsPigmy: "पिग्मी खाते", savingsInsurancePolicy: "विमा पॉलिसी", savingsInsuranceType: "विमा प्रकार", savingsOther: "इतर बचत/गुंतवणूक", loanAmountRequested: "मागितलेली रक्कम", previousLoanSource: "यापूर्वी कुठून कर्ज घेतले?", loanPurpose: "कर्जाचा उद्देश", previousLoanDetails: "मागील कर्ज तपशील", repaymentPeriod: "परतफेड कालावधी (महिने)", guarantorDetails: "हमीदाराची माहिती", loanCycle: "कर्ज सायकल", loanProductType: "कर्ज प्रकार", maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", existingEMI: "इतर कर्जाचा चालू EMI", VerificationStatus: "सद्यस्थिती (Status)", fieldOfficerName: "क्षेत्र अधिकारी", Unit: "युनिट", remarks: "शेरा (Remarks)", visitDate: "भेटीची तारीख", IsInfoCorrect: "माहिती बरोबर आहे का?", IsVideoCallDone: "व्हिडिओ कॉल झाला का?", ApprovedLoanAmount: "मंजूर कर्ज रक्कम", VerifierRemarks: "पडताळणी शेरा", VerifierName: "पडताळणी करणाऱ्याचे नाव", VerificationTimestamp: "पडताळणीची वेळ", photoLinks: "फोटो लिंक्स", supportdoc: "जोडलेली कागदपत्रे"};
+        const MARATHI_LABELS = { actualTime: "अर्जाची वेळ/तारीख", timestamp: "अर्जाची वेळ/तारीख", customerName: "नाव", applicantAge: "वय", applicantGender: "लिंग", mobileNumber: "मोबाईल क्रमांक", aadhaarNumber: "आधार क्रमांक", panNumber: "पॅन क्रमांक", villageName: "गावाचे नांव", taluka: "तालुका", district: "जिल्हा", centerName: "केंद्राचे नाव/कोड", gpsLatitude: "GPS अक्षांश", gpsLongitude: "GPS रेखांश", gpsAddress: "GPS नुसार पत्ता", googleMapsLink: "Google Maps लिंक", coApplicantName: "सहकर्जदार/पती/पत्नीचे नाव", coApplicantAadhaar: "सहकर्जदार आधार नंबर", coApplicantPan: "सहकर्जदार पॅन नंबर", isExistingCustomer: "सध्या अनिकचे ग्राहक आहात?", existingAccountNumber: "सध्याचा खाते क्रमांक", branchName: "शाखेचे नाव", familyTotalMembers: "घरातील एकूण सदस्य", familyEarningMembers: "कमावणारे सदस्य", familyTotalIncome: "एकूण मासिक उत्पन्न", expenseHousehold: "घर खर्च", expenseEducation: "शिक्षण खर्च", expenseMedical: "वैद्यकीय खर्च", expenseOther: "इतर खर्च", expenseTotal: "एकूण मासिक खर्च", primaryIncomeSource: "प्राथमिक उत्पन्न स्रोत", primaryIncomeTypeDetails: "प्राथमिक उत्पन्नाचा तपशील", secondaryIncomeSource: "दुय्यम उत्पन्न स्रोत", secondaryIncomeAmount: "दुय्यम मासिक उत्पन्न", assetLandAcres: "जमीन (एकर)", assetLandType: "जमीनीचा प्रकार", assetHouseType: "घराचा प्रकार", assetPlots: "प्लॉट्स/Shopes", cows: "गायी", buffaloes: "म्हशी", goats: "बकऱ्या/मेंढ्या", 'other livestok': "इतर", bulls: "बैलजोडी", pigs: "वराह पालन", poultry: "कोंबड्या", milkProductionLiters: "दुग्धउत्पादन (लिटर)", assetEquipmentFarm: "शेतीसाठीची उपकरणे", assetEquipmentBusiness: "व्यवसायासाठीची उपकरणे", assetVehicle: "वाहन", savingsBankAccount: "बँक खाते क्रमांक", ifsccode: "IFSC CODE", savingsPigmy: "पिग्मी खाते", savingsInsurancePolicy: "विमा पॉलिसी", savingsInsuranceType: "विमा प्रकार", savingsOther: "इतर बचत/गुंतवणूक", loanAmountRequested: "मागितलेली रक्कम", previousLoanSource: "यापूर्वी कुठून कर्ज घेतले?", loanPurpose: "कर्जाचा उद्देश", previousLoanDetails: "मागील कर्ज तपशील", repaymentPeriod: "परतफेड कालावधी (महिने)", guarantorDetails: "हमीदाराची माहिती", loanCycle: "कर्ज सायकल", loanProductType: "कर्ज प्रकार", maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", existingEMI: "इतर कर्जाचा चालू EMI", VerificationStatus: "सद्यस्थिती (Status)", fieldOfficerName: "क्षेत्र अधिकारी", Unit: "युनिट", remarks: "शेरा (Remarks)", visitDate: "भेटीची तारीख", IsInfoCorrect: "माहिती बरोबर आहे का?", IsVideoCallDone: "व्हिडिओ कॉल झाला का?", ApprovedLoanAmount: "मंजूर कर्ज रक्कम", VerifierRemarks: "पडताळणी शेरा", VerifierName: "पडताळणी करणाऱ्याचे नाव", VerificationTimestamp: "पडताळणीची वेळ", photoLinks: "फोटो लिंक्स", supportdoc: "जोडलेली कागदपत्रे", ManagerName: "Manager / BM नाव", ManagerRemarks: "Manager / BM शेरा", BMName: "BM नाव", BMRemarks: "BM शेरा", FinalVerifierRemarks: "Final Verifier शेरा", ManagerApprovalStatus: "Manager Approval Status", managerApprovalStatus: "Manager Approval Status", ManagerStatus: "Manager Status", BMStatus: "BM Status", ManagerDecision: "Manager Decision", BMDecision: "BM Decision"};
         
         // assetHouseType filter updated to catch ANY value present in the spreadsheet
         const INSIGHT_KPIS = [
@@ -216,7 +367,7 @@
         
         let allData = [], filteredData = [], chartInstances = {};
         
-        const ui = { loader: document.getElementById('loader'), customerSearch: document.getElementById('customer-search'), unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), dateFrom: document.getElementById('date-from'), dateTo: document.getElementById('date-to'), kpi: { total: document.getElementById('total-count'), pending: document.getElementById('pending-count'), approved: document.getElementById('approved-count'), approvedSum: document.getElementById('approved-sum-value'), rejected: document.getElementById('rejected-count'), }, approvedInsightsContainer: document.getElementById('approved-insights-container'), applicantModal: document.getElementById('applicant-modal'), modalTitle: document.getElementById('modal-title'), applicantModalCloseBtn: document.querySelector('.applicant-modal-close'), printArea: document.getElementById('print-area'), fileModal: document.getElementById('file-modal'), fileModalTitle: document.getElementById('file-modal-title'), fileModalBody: document.getElementById('file-modal-body'), fileModalCloseBtns: document.querySelectorAll('.file-modal-close'), openLinksBtn: document.getElementById('open-links-btn'), loadDateDataBtn: document.getElementById('load-date-data-btn'), loadCurrentMonthBtn: document.getElementById('load-current-month-btn') };
+        const ui = { loader: document.getElementById('loader'), customerSearch: document.getElementById('customer-search'), unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'), dateFrom: document.getElementById('date-from'), dateTo: document.getElementById('date-to'), kpi: { total: document.getElementById('total-count'), pending: document.getElementById('pending-count'), approved: document.getElementById('approved-count'), approvedSum: document.getElementById('approved-sum-value'), rejected: document.getElementById('rejected-count'), }, approvedInsightsContainer: document.getElementById('approved-insights-container'), applicantModal: document.getElementById('applicant-modal'), modalTitle: document.getElementById('modal-title'), applicantModalCloseBtn: document.querySelector('.applicant-modal-close'), printArea: document.getElementById('print-area'), fileModal: document.getElementById('file-modal'), fileModalTitle: document.getElementById('file-modal-title'), fileModalBody: document.getElementById('file-modal-body'), fileModalCloseBtns: document.querySelectorAll('.file-modal-close'), openLinksBtn: document.getElementById('open-links-btn'), loadDateDataBtn: document.getElementById('load-date-data-btn'), loadCurrentMonthBtn: document.getElementById('load-current-month-btn'), processOverviewGrid: document.getElementById('process-overview-grid'), processModal: document.getElementById('process-modal'), processModalBody: document.getElementById('process-modal-body'), processModalTitle: document.getElementById('process-modal-title'), processModalSubtitle: document.getElementById('process-modal-subtitle'), processModalCloseBtn: document.querySelector('.process-modal-close') };
 
         const FAST_PAGE_SIZE = 1500;
         let listenersAdded = false;
@@ -267,27 +418,273 @@
             document.querySelectorAll('.kpi-card.clickable').forEach(c => c.addEventListener('click', () => showStatusApplicantsModal(c.dataset.status)));
             ui.applicantModalCloseBtn.onclick = () => ui.applicantModal.style.display = "none";
             ui.fileModalCloseBtns.forEach(btn => btn.onclick = () => ui.fileModal.style.display = "none");
+            if (ui.processModalCloseBtn) ui.processModalCloseBtn.onclick = () => ui.processModal.style.display = "none";
             window.onclick = (e) => {
                 if (e.target == ui.applicantModal) ui.applicantModal.style.display = "none";
                 if (e.target == ui.fileModal) ui.fileModal.style.display = "none";
+                if (e.target == ui.processModal) ui.processModal.style.display = "none";
             };
         }
 
-        function applyFiltersAndRender() { const s = ui.customerSearch.value.toLowerCase(), u = ui.unitFilter.value, f = ui.staffFilter.value, dF = ui.dateFrom.value ? parseDate(ui.dateFrom.value) : null, dT = ui.dateTo.value ? parseDate(ui.dateTo.value) : null; if (dT) dT.setHours(23, 59, 59, 999); if (dF) dF.setHours(0, 0, 0, 0); filteredData = allData.filter(d => (!s || (d.customerName && d.customerName.toLowerCase().includes(s))) && (!u || d.Unit === u) && (!f || d.fieldOfficerName === f) && (!dF || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() >= dF.getTime())) && (!dT || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() <= dT.getTime()))); updateKPIs(); renderCharts(); generateApprovedCustomerInsights(); }
-        function updateKPIs() { ui.kpi.total.textContent = filteredData.length; ui.kpi.pending.textContent = filteredData.filter(d => d.VerificationStatus === 'Pending').length; ui.kpi.approved.textContent = filteredData.filter(d => d.VerificationStatus === 'Approved').length; ui.kpi.rejected.textContent = filteredData.filter(d => d.VerificationStatus === 'Rejected').length; 
-                               // Calculate Total Approved Amount
-    const totalApprovedAmount = filteredData
-        .filter(d => d.VerificationStatus === 'Approved')
-        .reduce((sum, item) => sum + (parseFloat(item.ApprovedLoanAmount) || 0), 0);
+        function applyFiltersAndRender() { const s = ui.customerSearch.value.toLowerCase(), u = ui.unitFilter.value, f = ui.staffFilter.value, dF = ui.dateFrom.value ? parseDate(ui.dateFrom.value) : null, dT = ui.dateTo.value ? parseDate(ui.dateTo.value) : null; if (dT) dT.setHours(23, 59, 59, 999); if (dF) dF.setHours(0, 0, 0, 0); filteredData = allData.filter(d => (!s || (d.customerName && d.customerName.toLowerCase().includes(s))) && (!u || d.Unit === u) && (!f || d.fieldOfficerName === f) && (!dF || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() >= dF.getTime())) && (!dT || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() <= dT.getTime()))); updateKPIs(); renderProcessOverview(); renderCharts(); generateApprovedCustomerInsights(); }
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
+        }
+        function pickValue(obj, keys) {
+            for (const key of keys) {
+                if (obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== '') return obj[key];
+            }
+            return '';
+        }
+        function normalizeText(v) {
+            return String(v === undefined || v === null ? '' : v).trim().toLowerCase();
+        }
+        function hasValue(v) { return v !== undefined && v !== null && String(v).trim() !== ''; }
+        function statusWord(v) {
+            const s = normalizeText(v);
+            if (!s) return '';
+            const compact = s.replace(/\s+/g, ' ');
+            const noSpace = compact.replace(/\s+/g, '');
 
-    // Format the number to Indian Currency (e.g., ₹ 5,00,000)
-    ui.kpi.approvedSum.textContent = '₹ ' + Math.round(totalApprovedAmount).toLocaleString('en-IN');
-}
+            const hasAny = (arr) => arr.some(x => compact.includes(x) || noSpace.includes(String(x).replace(/\s+/g, '')));
+
+            if (hasAny(['rework','correction','दुरुस्ती','पुन्हा तपासा','resubmit','re submit'])) return 'Rework';
+
+            if (hasAny([
+                'rejected','reject','rejectd','rejet','rejct','rject','rejected success','reject success','rejection',
+                'not approved','failed','fail','declined','deny','denied','नामंजूर','नाकारले','नाकार','नकार','रिजेक्ट',
+                'अपात्र','योग्य नाही','हरकत आहे','कर्ज देऊ नये','कर्ज देऊ नका','देऊ नये','देऊ नका','रद्द'
+            ])) return 'Rejected';
+
+            if (hasAny([
+                'approved','approve','approval','approve success','success','successful','done','completed','ok','accepted',
+                'recommended','recommend','recommendation','मंजूर','manjur','मान्य','योग्य आहे','पात्र','हरकत नाही','देण्यात हरकत नाही'
+            ])) return 'Approved';
+
+            if (hasAny(['pending','hold','waiting','प्रलंबित','बाकी','wait'])) return 'Pending';
+            return '';
+        }
+        function normalizeStatus(input) {
+            // Backward compatible: works with a simple status string or with the full row object.
+            if (input && typeof input === 'object') return getRowStatus(input).status;
+            return statusWord(input) || 'Pending';
+        }
+        function getRowStatus(data) {
+            const finalStatusValue = pickValue(data, [
+                'VerificationStatus','verificationStatus','Verification Status','FinalStatus','Final Status',
+                'FinalDecision','Final Decision','ApplicationStatus','Application Status','Status','status'
+            ]);
+            const finalStatus = statusWord(finalStatusValue);
+
+            const managerApprovalStatusValue = pickValue(data, [
+                'ManagerApprovalStatus','managerApprovalStatus','Manager Approval Status','ManagerApproval Status',
+                'ManagerStatus','BMStatus','ManagerDecision','BMDecision','ApprovalStatus','ApproverStatus',
+                'ManagerApproval','BMApproval','managerStatus','bmStatus','Manager Result','BM Result'
+            ]);
+            const managerStatus = statusWord(managerApprovalStatusValue);
+
+            const managerRemarkText = pickValue(data, [
+                'ManagerRemarks','ManagerRemark','BMRemarks','BMRemark','ApproverRemarks','ApprovalRemarks',
+                'ManagerRejectRemarks','BMRejectRemarks','LatestRemark','latestRemark','remarks','Remark','remark'
+            ]);
+            const managerRemarkDecision = statusWord(managerRemarkText);
+
+            const rejectedRemark = pickValue(data, [
+                'ManagerRejectRemarks','BMRejectRemarks','RejectedRemarks','RejectRemarks','RejectionRemarks',
+                'RejectReason','RejectionReason','Reject Remark','Rejected Remark'
+            ]);
+            const rejectedRemarkDecision = statusWord(rejectedRemark);
+
+            if (managerStatus === 'Rejected' || managerRemarkDecision === 'Rejected' || rejectedRemarkDecision === 'Rejected' || hasValue(rejectedRemark)) {
+                return { status: 'Rejected', finalStatus: finalStatus || 'Pending', managerStatus: 'Rejected', managerApprovalStatusValue };
+            }
+
+            if (finalStatus === 'Approved' || finalStatus === 'Rejected') {
+                return { status: finalStatus, finalStatus, managerStatus: managerStatus || managerRemarkDecision || '', managerApprovalStatusValue };
+            }
+
+            return { status: 'Pending', finalStatus: finalStatus || 'Pending', managerStatus: managerStatus || managerRemarkDecision || '', managerApprovalStatusValue };
+        }
+        function yesValue(v) {
+            const s = normalizeText(v);
+            return ['yes','y','true','done','completed','होय','झाले','ok'].some(x => s.includes(x));
+        }
+        function formatINR(num) { return '₹ ' + Math.round(parseFloat(num || 0)).toLocaleString('en-IN'); }
+        function getPersonName(data, keys, fallback) {
+            const val = pickValue(data, keys);
+            return val || fallback || 'माहिती नाही';
+        }
+        function getProcessMeta(data) {
+            const rowStatus = getRowStatus(data);
+            const status = rowStatus.status;
+            const fieldOfficer = getPersonName(data, ['fieldOfficerName','FieldOfficerName','StaffName','staffName','FOName','CreatedBy','createdBy'], 'Field/Staff');
+            const manager = getPersonName(data, ['ManagerName','BMName','UnitManager','BranchManager','ApproverName','approverName','ApprovedBy','approvedBy'], 'Unit Manager / BM');
+            const verifier = getPersonName(data, ['VerifierName','verifierName','VerificationBy','VerifiedBy','verifiedBy'], 'Verifier');
+
+            const genericRemark = pickValue(data, ['LatestRemark','latestRemark','remarks','Remark','remark']);
+            const fieldRemark = pickValue(data, ['FieldRemarks','StaffRemarks','FieldRemark','StaffRemark','FORemarks','FORemark','FieldOfficerRemarks','StaffComment']);
+            const managerApprovalStatusRaw = pickValue(data, [
+                'ManagerApprovalStatus','managerApprovalStatus','Manager Approval Status','ManagerApproval Status',
+                'ManagerStatus','BMStatus','ManagerDecision','BMDecision','ApprovalStatus','ApproverStatus','ManagerApproval','BMApproval','Manager Result','BM Result'
+            ]);
+            const managerRemark = pickValue(data, [
+                'ManagerRemarks','ManagerRemark','BMRemarks','BMRemark','ApproverRemarks','ApprovalRemarks','ManagerComment','BMComment'
+            ]) || genericRemark;
+            const verifierRemark = pickValue(data, ['VerifierRemarks','VerificationRemarks','FinalVerifierRemarks','VerifierRemark','VerificationRemark']);
+            const rejectedRemarkText = pickValue(data, ['ManagerRejectRemarks','BMRejectRemarks','RejectedRemarks','RejectRemarks','RejectionRemarks','RejectReason','RejectionReason']);
+
+            const managerDecisionStatus = statusWord(managerApprovalStatusRaw) || statusWord(managerRemark);
+            const latestRemark = (managerDecisionStatus === 'Rejected'
+                    ? (rejectedRemarkText || managerRemark || managerApprovalStatusRaw || genericRemark)
+                    : (rejectedRemarkText || verifierRemark || managerRemark || genericRemark || fieldRemark)) || 'Remark उपलब्ध नाही';
+
+            const isInfoCorrect = pickValue(data, ['IsInfoCorrect','isInfoCorrect']);
+            const isVideoDone = pickValue(data, ['IsVideoCallDone','isVideoCallDone']);
+            const managerTimestamp = pickValue(data, ['ManagerTimestamp','BMTimestamp','ApprovalTimestamp','ApproverTimestamp','ManagerTime','BMTime']);
+            const verificationTimestamp = pickValue(data, ['VerificationTimestamp','VerifierTimestamp','VerifiedTimestamp']);
+            const approvedAmount = pickValue(data, ['ApprovedLoanAmount','approvedLoanAmount']);
+
+            const hasFinalVerification = hasValue(verificationTimestamp) || hasValue(data.VerifierName) || hasValue(verifierRemark) || yesValue(isInfoCorrect) || yesValue(isVideoDone);
+            const managerRejected = (rowStatus.managerStatus === 'Rejected') || managerDecisionStatus === 'Rejected' || statusWord(rejectedRemarkText) === 'Rejected' || (status === 'Rejected' && !hasFinalVerification && (hasValue(managerRemark) || hasValue(managerApprovalStatusRaw) || hasValue(managerTimestamp)));
+            const managerApproved = !managerRejected && (managerDecisionStatus === 'Approved' || hasValue(managerRemark) || hasValue(managerApprovalStatusRaw) || hasValue(managerTimestamp) || hasValue(data.ManagerName) || hasValue(data.BMName) || hasValue(data.ApproverName) || hasValue(data.ApprovedBy) || hasValue(approvedAmount) || status === 'Approved' || hasFinalVerification);
+            const hasManagerReview = managerRejected || managerApproved;
+            const hasFinalDecision = status === 'Approved' || status === 'Rejected';
+
+            let currentStage = 'Field/Staff Entry';
+            let pendingWith = fieldOfficer;
+            let blocker = 'Field/Staff कडून अर्ज पूर्ण submit होणे बाकी आहे.';
+            let stageIndex = 0;
+            let rejectedBy = '';
+            let managerActionLabel = hasManagerReview ? 'Manager Review Done' : 'Manager Pending';
+
+            const infoWrong = normalizeText(isInfoCorrect).includes('नाही') || normalizeText(isInfoCorrect) === 'no';
+            const reworkFlag = statusWord(managerApprovalStatusRaw) === 'Rework' || statusWord(managerRemark) === 'Rework';
+            const managerDecisionText = managerApprovalStatusRaw || (managerApproved ? 'Manager Success' : (managerRejected ? 'Manager Rejected' : 'Pending'));
+            const managerBlockerText = [
+                hasValue(managerApprovalStatusRaw) ? `ManagerApprovalStatus: ${managerApprovalStatusRaw}` : '',
+                hasValue(managerRemark) ? `ManagerRemarks: ${managerRemark}` : '',
+                hasValue(rejectedRemarkText) ? `RejectRemarks: ${rejectedRemarkText}` : ''
+            ].filter(Boolean).join(' | ');
+
+            if (managerRejected) {
+                currentStage = 'Manager / BM Rejected';
+                pendingWith = manager;
+                stageIndex = 1;
+                rejectedBy = pickValue(data, ['RejectedBy','RejectBy','ManagerName','BMName','ApproverName']) || manager;
+                blocker = managerBlockerText || 'Manager/BM ने अर्ज reject केला आहे. त्यामुळे process Verifier कडे जाणार नाही.';
+                managerActionLabel = 'Manager Rejected';
+            } else if (status === 'Rejected') {
+                if (hasFinalVerification) {
+                    currentStage = 'Rejected by Verifier';
+                    pendingWith = verifier;
+                    stageIndex = 2;
+                } else if (hasManagerReview) {
+                    currentStage = 'Rejected at Manager / BM Review';
+                    pendingWith = manager;
+                    stageIndex = 1;
+                } else {
+                    currentStage = 'Rejected at Field/Staff Review';
+                    pendingWith = fieldOfficer;
+                    stageIndex = 0;
+                }
+                rejectedBy = pickValue(data, ['RejectedBy','RejectBy','VerifierName','ManagerName','BMName','ApproverName','fieldOfficerName']) || pendingWith;
+                blocker = latestRemark;
+                managerActionLabel = stageIndex >= 1 ? 'Manager Review Done' : 'Manager Pending';
+            } else if (status === 'Approved') {
+                currentStage = 'Completed / Approved';
+                pendingWith = '-';
+                blocker = 'Manager/BM review आणि Verifier पडताळणी पूर्ण होऊन अर्ज मंजूर झाला आहे.';
+                stageIndex = 3;
+                managerActionLabel = 'Manager Success';
+            } else {
+                if (!hasValue(data.fieldOfficerName) && !hasValue(data.customerName)) {
+                    currentStage = 'Field/Staff Entry';
+                    pendingWith = fieldOfficer;
+                    blocker = 'Field/Staff कडून customer entry पूर्ण होणे बाकी आहे.';
+                    stageIndex = 0;
+                } else if (infoWrong || reworkFlag) {
+                    currentStage = 'Correction / Rework Pending';
+                    pendingWith = fieldOfficer;
+                    blocker = latestRemark !== 'Remark उपलब्ध नाही' ? latestRemark : 'Manager/BM किंवा Verifier यांनी माहिती दुरुस्ती सांगितली आहे. Field/Staff correction pending आहे.';
+                    stageIndex = 0;
+                } else if (!hasManagerReview) {
+                    currentStage = 'Manager / BM कडे Pending';
+                    pendingWith = manager;
+                    blocker = 'Manager/BM कडून ManagerApprovalStatus किंवा ManagerRemarks update बाकी आहे.';
+                    stageIndex = 1;
+                } else if (!hasFinalVerification) {
+                    currentStage = 'Verifier कडे Pending';
+                    pendingWith = verifier;
+                    blocker = managerBlockerText || 'Manager review complete आहे. Verifier कडून final verification / video call / remarks update बाकी आहे.';
+                    stageIndex = 2;
+                    managerActionLabel = 'Manager Success';
+                } else if (!hasFinalDecision) {
+                    currentStage = 'Final Status Update Pending';
+                    pendingWith = verifier;
+                    blocker = 'Verifier कडून Approved / Rejected final status sheet मध्ये update करणे बाकी आहे.';
+                    stageIndex = 3;
+                    managerActionLabel = 'Manager Success';
+                }
+            }
+            return { status, fieldOfficer, manager, verifier, latestRemark, fieldRemark, managerRemark, verifierRemark, currentStage, pendingWith, blocker, stageIndex, hasManagerReview, hasFinalVerification, hasFinalDecision, rejectedBy, managerRejected, managerApproved, managerActionLabel, managerApprovalStatusRaw, managerDecisionText, managerDecisionStatus, rejectedRemarkText };
+        }
+        function statusChip(status) {
+            const st = normalizeStatus(status);
+            if (st === 'Approved') return `<span class="status-chip chip-approved"><i class="fas fa-check-circle"></i> मंजूर</span>`;
+            if (st === 'Rejected') return `<span class="status-chip chip-rejected"><i class="fas fa-ban"></i> नामंजूर</span>`;
+            return `<span class="status-chip chip-pending"><i class="fas fa-hourglass-half"></i> प्रलंबित</span>`;
+        }
+        function updateKPIs() { 
+            ui.kpi.total.textContent = filteredData.length; 
+            ui.kpi.pending.textContent = filteredData.filter(d => getProcessMeta(d).status === 'Pending').length; 
+            ui.kpi.approved.textContent = filteredData.filter(d => getProcessMeta(d).status === 'Approved').length; 
+            ui.kpi.rejected.textContent = filteredData.filter(d => getProcessMeta(d).status === 'Rejected').length; 
+            const totalApprovedAmount = filteredData
+                .filter(d => getProcessMeta(d).status === 'Approved')
+                .reduce((sum, item) => sum + (parseFloat(item.ApprovedLoanAmount) || 0), 0);
+            ui.kpi.approvedSum.textContent = '₹ ' + Math.round(totalApprovedAmount).toLocaleString('en-IN');
+        }
+        function renderProcessOverview() {
+            if (!ui.processOverviewGrid) return;
+            const groups = [
+                { key:'allPending', title:'एकूण Pending Flow', sub:'सर्व pending अर्ज', icon:'fas fa-stream', tone:'tone-blue', filter:d => getProcessMeta(d).status === 'Pending' },
+                { key:'managerPending', title:'Manager / BM कडे Pending', sub:'Manager review / amount recommendation बाकी', icon:'fas fa-user-tie', tone:'tone-purple', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Manager') },
+                { key:'verifierPending', title:'Verifier कडे Pending', sub:'Final verification / video call बाकी', icon:'fas fa-user-check', tone:'tone-amber', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Verifier') },
+                { key:'finalStatusPending', title:'Final Status Update Pending', sub:'Verifier final status update बाकी', icon:'fas fa-clipboard-check', tone:'tone-blue', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Final Status') },
+                { key:'correctionPending', title:'Correction / Rework', sub:'Staff correction मुळे काम अडले', icon:'fas fa-rotate-left', tone:'tone-red', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Correction') },
+                { key:'rejected', title:'Rejected with Remarks', sub:'कोणी काय remark दिला ते पहा', icon:'fas fa-comment-slash', tone:'tone-red', filter:d => getProcessMeta(d).status === 'Rejected' },
+                { key:'approved', title:'Completed / Approved', sub:'Manager + Verifier verification पूर्ण', icon:'fas fa-circle-check', tone:'tone-green', filter:d => getProcessMeta(d).status === 'Approved' }
+            ];
+            ui.processOverviewGrid.innerHTML = groups.map(g => {
+                const count = filteredData.filter(g.filter).length;
+                return `<div class="pipeline-card ${g.tone}" data-process-group="${g.key}">
+                    <div class="pipeline-top"><div class="pipeline-icon"><i class="${g.icon}"></i></div><div class="pipeline-count">${count}</div></div>
+                    <div class="pipeline-title">${g.title}</div><p class="pipeline-sub">${g.sub}</p>
+                </div>`;
+            }).join('');
+            ui.processOverviewGrid.querySelectorAll('.pipeline-card').forEach(card => {
+                card.addEventListener('click', () => showProcessGroupModal(card.dataset.processGroup));
+            });
+        }
+        function showProcessGroupModal(groupKey) {
+            const groupMap = {
+                allPending: { title:'एकूण Pending Flow', filter:d => getProcessMeta(d).status === 'Pending' },
+                managerPending: { title:'Manager / BM कडे Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Manager') },
+                verifierPending: { title:'Verifier कडे Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Verifier') },
+                finalStatusPending: { title:'Final Status Update Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Final Status') },
+                correctionPending: { title:'Correction / Rework Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Correction') },
+                rejected: { title:'Rejected अर्ज व Remarks', filter:d => getProcessMeta(d).status === 'Rejected' },
+                approved: { title:'Completed / Approved अर्ज', filter:d => getProcessMeta(d).status === 'Approved' }
+            };
+            const g = groupMap[groupKey] || groupMap.allPending;
+            showApplicantsListModal(g.title, filteredData.filter(g.filter));
+        }
+        
         function renderCharts() {['loanTypeChart', 'talukaChart'].forEach((id, i) => { if (chartInstances[id]) chartInstances[id].destroy(); const ctx = document.getElementById(id)?.getContext('2d'); if (!ctx) return; const field = i === 0 ? 'loanProductType' : 'taluka'; const counts = filteredData.reduce((a, item) => { const k = item[field] || 'माहिती नाही'; a[k] = (a[k] || 0) + 1; return a; }, {}); const colors = ['#0078d4', '#28a745', '#ffb900', '#e81123', '#17a2b8', '#6c757d', '#512da8']; chartInstances[id] = new Chart(ctx, { type: i === 0 ? 'doughnut' : 'bar', data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: Object.keys(counts).map((_, idx) => colors[idx % colors.length]) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: i === 0, position: 'bottom' } }, scales: i === 1 ? { y: { beginAtZero: true } } : {} } }); }); }
         
         function generateApprovedCustomerInsights() { 
             // Normalized status check to handle case-sensitivity issues
-            const approvedData = filteredData.filter(d => d.VerificationStatus && d.VerificationStatus.toLowerCase() === 'approved'); 
+            const approvedData = filteredData.filter(d => getProcessMeta(d).status === 'Approved'); 
             ui.approvedInsightsContainer.innerHTML = ''; 
             INSIGHT_KPIS.forEach(kpi => { 
                 const count = approvedData.filter(kpi.filter).length; 
@@ -297,7 +694,7 @@
         }
         
         function showApprovedInsightDetailsModal(k, l) { 
-            const a = filteredData.filter(d => d.VerificationStatus && d.VerificationStatus.toLowerCase() === 'approved'); 
+            const a = filteredData.filter(d => getProcessMeta(d).status === 'Approved'); 
             const kpi = INSIGHT_KPIS.find(i => i.key === k); 
             if (!kpi) return; 
             const data = a.filter(kpi.filter); 
@@ -315,46 +712,154 @@
             ui.applicantModal.style.display = 'block'; 
         }
         
+        function getApplicantByRow(rowId) {
+            return allData.find(d => String(d.row) === String(rowId)) || filteredData.find(d => String(d.row) === String(rowId));
+        }
         function showStatusApplicantsModal(status) {
             let data, statusMarathi;
             if (status === 'Total') { data = filteredData; statusMarathi = 'एकूण'; } 
             else {
-                data = filteredData.filter(d => d.VerificationStatus === status);
+                data = filteredData.filter(d => getProcessMeta(d).status === status);
                 if (status === 'Pending') statusMarathi = 'प्रोसेस / प्रलंबित';
                 else if (status === 'Approved') statusMarathi = 'मंजूर';
                 else if (status === 'Rejected') statusMarathi = 'नामंजूर';
             }
-            ui.modalTitle.textContent = `${statusMarathi} अर्जदारांची यादी (${data.length})`;
+            showApplicantsListModal(`${statusMarathi} अर्जदारांची यादी`, data, status);
+        }
+        function showApplicantsListModal(title, data, statusContext = '') {
+            ui.modalTitle.textContent = `${title} (${data.length})`;
             const modalTable = document.getElementById('modal-table');
-            const hasActions = PRINT_ALLOWED_STATUSES.includes(status);
-            let headerHTML = `<thead><tr><th>ग्राहक</th><th>गाव</th><th>मोबाईल</th><th>अर्ज तारीख</th><th>कर्ज मागणी</th><th>मंजूर रक्कम</th>` + (hasActions ? `<th style="width: 200px;">कृती (Actions)</th>` : ``) + `</tr></thead><tbody></tbody>`;
-            modalTable.innerHTML = headerHTML;
+            modalTable.innerHTML = `<thead><tr>
+                <th>ग्राहक</th><th>गाव</th><th>मोबाईल</th><th>अर्ज तारीख</th><th>स्थिती</th>
+                <th>ManagerApprovalStatus</th><th>ManagerRemarks</th>
+                <th>सध्याचा Stage</th><th>Pending / Decision कोणाकडे?</th><th>काम का थांबले / Reject Remark</th>
+                <th>कर्ज मागणी</th><th>मंजूर रक्कम</th><th style="width: 260px;">कृती</th>
+            </tr></thead><tbody></tbody>`;
             const tbody = modalTable.querySelector('tbody');
-            tbody.innerHTML = data.length === 0 ? `<tr><td colspan="${hasActions ? 7 : 6}" style="text-align:center;">या गटात एकही अर्ज नाही.</td></tr>` : data.map(item => {
-                let actionCellHTML = '';
-                if (status === 'Approved') {
+            if (!data.length) {
+                tbody.innerHTML = `<tr><td colspan="13" class="empty-state">या गटात एकही अर्ज नाही.</td></tr>`;
+            } else {
+                tbody.innerHTML = data.map(item => {
+                    const meta = getProcessMeta(item);
+                    const st = meta.status;
                     const hasPhotos = item.photoLinks && item.photoLinks.trim() !== '';
                     const hasDocs = item.supportdoc && item.supportdoc.trim() !== '';
-                    actionCellHTML = `<div class="action-btn-group"><button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${item.row}"><i class="fas fa-print"></i></button><button class="row-action-btn excel-btn" title="एक्सेलमध्ये एक्सपोर्ट करा" data-row="${item.row}"><i class="fas fa-file-excel"></i></button><button class="row-action-btn photos-btn" title="फोटो पहा" data-row="${item.row}" ${!hasPhotos ? 'disabled' : ''}><i class="fas fa-camera"></i></button><button class="row-action-btn docs-btn" title="कागदपत्रे पहा" data-row="${item.row}" ${!hasDocs ? 'disabled' : ''}><i class="fas fa-file-alt"></i></button></div>`;
-                } else if (status === 'Rejected') {
-                    actionCellHTML = `<button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${item.row}"><i class="fas fa-print"></i></button>`;
-                }
-                return `<tr><td>${item.customerName || 'N/A'}</td><td>${item.villageName || 'N/A'}</td><td>${item.mobileNumber || 'N/A'}</td> <td>${formatDate(item.actualTime)}</td><td>₹ ${parseInt(item.loanAmountRequested || 0).toLocaleString('en-IN')}</td><td>₹ ${parseInt(item.ApprovedLoanAmount || 0).toLocaleString('en-IN')}</td>${hasActions ? `<td>${actionCellHTML}</td>` : ''}</tr>`;
-            }).join('');
-            
+                    const managerDecisionDisplay = meta.managerApprovalStatusRaw ? `${escapeHTML(meta.managerApprovalStatusRaw)} ${statusChip(statusWord(meta.managerApprovalStatusRaw) || meta.managerDecisionStatus || 'Pending')}` : (meta.hasManagerReview ? (meta.managerRejected ? statusChip('Rejected') : statusChip('Approved')) : statusChip('Pending'));
+                    let actionCellHTML = `<div class="action-btn-group">
+                        <button class="row-action-btn process-btn" title="Process Trail पहा" data-row="${escapeHTML(item.row)}"><i class="fas fa-route"></i> Process</button>`;
+                    if (st === 'Approved') {
+                        actionCellHTML += `<button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${escapeHTML(item.row)}"><i class="fas fa-print"></i></button><button class="row-action-btn excel-btn" title="एक्सेलमध्ये एक्सपोर्ट करा" data-row="${escapeHTML(item.row)}"><i class="fas fa-file-excel"></i></button><button class="row-action-btn photos-btn" title="फोटो पहा" data-row="${escapeHTML(item.row)}" ${!hasPhotos ? 'disabled' : ''}><i class="fas fa-camera"></i></button><button class="row-action-btn docs-btn" title="कागदपत्रे पहा" data-row="${escapeHTML(item.row)}" ${!hasDocs ? 'disabled' : ''}><i class="fas fa-file-alt"></i></button>`;
+                    } else if (st === 'Rejected') {
+                        actionCellHTML += `<button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${escapeHTML(item.row)}"><i class="fas fa-print"></i></button>`;
+                    }
+                    actionCellHTML += `</div>`;
+                    return `<tr>
+                        <td><strong>${escapeHTML(item.customerName || 'N/A')}</strong><br><small>${escapeHTML(item.Unit || '')}</small></td>
+                        <td>${escapeHTML(item.villageName || 'N/A')}</td>
+                        <td>${escapeHTML(item.mobileNumber || 'N/A')}</td>
+                        <td>${formatDate(item.actualTime)}</td>
+                        <td>${statusChip(st)}</td>
+                        <td class="remark-cell">${managerDecisionDisplay}</td>
+                        <td class="remark-cell">${escapeHTML(meta.managerRemark || '-')}</td>
+                        <td><span class="process-pill" data-row="${escapeHTML(item.row)}"><i class="fas fa-location-dot"></i>${escapeHTML(meta.currentStage)}</span></td>
+                        <td>${escapeHTML(meta.pendingWith)}</td>
+                        <td class="blocker-cell">${escapeHTML(meta.blocker)}</td>
+                        <td>${formatINR(item.loanAmountRequested || 0)}</td>
+                        <td>${formatINR(item.ApprovedLoanAmount || 0)}</td>
+                        <td>${actionCellHTML}</td>
+                    </tr>`;
+                }).join('');
+            }
             ui.applicantModal.style.display = "block";
-            modalTable.querySelectorAll('.row-action-btn').forEach(btn => {
+            modalTable.querySelectorAll('.row-action-btn, .process-pill').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const button = e.currentTarget;
-                    const rowId = parseInt(button.dataset.row);
-                    const applicantData = allData.find(d => d.row === rowId);
+                    const rowId = button.dataset.row;
+                    const applicantData = getApplicantByRow(rowId);
                     if (!applicantData) return;
                     if (button.classList.contains('print-btn')) printReport(applicantData);
                     else if (button.classList.contains('excel-btn')) exportDataToExcel([applicantData], `Applicant_${applicantData.customerName || rowId}`);
                     else if (button.classList.contains('photos-btn')) showFilesModal(applicantData, 'photoLinks', 'फोटो');
                     else if (button.classList.contains('docs-btn')) showFilesModal(applicantData, 'supportdoc', 'कागदपत्रे');
+                    else showProcessDetailsModal(applicantData);
                 });
             });
+        }
+        function buildRemarkRows(data, meta) {
+            const rows = [];
+            const add = (stage, label, by, field, text) => {
+                if (!hasValue(text)) return;
+                const value = String(text).trim();
+                const duplicate = rows.some(r => r.field === field && String(r.text).trim() === value);
+                if (!duplicate) rows.push({ stage, label, by: by || 'माहिती नाही', field, text: value });
+            };
+
+            add('1. Field / Staff Entry', 'Entry Remark', meta.fieldOfficer, 'remarks / FieldRemarks', pickValue(data, ['FieldRemarks','StaffRemarks','FieldRemark','StaffRemark','FORemarks','FORemark','FieldOfficerRemarks','StaffComment','remarks','Remark','remark']));
+            add('1. Field / Staff Entry', 'Submitted By', meta.fieldOfficer, 'fieldOfficerName', pickValue(data, ['fieldOfficerName','FieldOfficerName','StaffName','FOName']));
+
+            add('2. Manager / BM Review', 'ManagerApprovalStatus', meta.manager, 'ManagerApprovalStatus', meta.managerApprovalStatusRaw || pickValue(data, ['ManagerApprovalStatus','managerApprovalStatus','Manager Approval Status','ManagerStatus','BMStatus','ManagerDecision','BMDecision','ApprovalStatus','ApproverStatus']));
+            add('2. Manager / BM Review', 'ManagerRemarks', meta.manager, 'ManagerRemarks', pickValue(data, ['ManagerRemarks','ManagerRemark','BMRemarks','BMRemark','ApproverRemarks','ApprovalRemarks','ManagerComment','BMComment']));
+            add('2. Manager / BM Review', 'Manager Reject Remark', meta.manager, 'ManagerRejectRemarks', pickValue(data, ['ManagerRejectRemarks','BMRejectRemarks']));
+            add('2. Manager / BM Review', 'Manager Time', meta.manager, 'ManagerTimestamp', pickValue(data, ['ManagerTimestamp','BMTimestamp','ApprovalTimestamp','ApproverTimestamp','ManagerTime','BMTime']));
+
+            add('3. Verifier', 'Verifier Remark', meta.verifier, 'VerifierRemarks', pickValue(data, ['VerifierRemarks','VerificationRemarks','FinalVerifierRemarks','VerifierRemark','VerificationRemark']));
+            add('3. Verifier', 'Info Correct?', meta.verifier, 'IsInfoCorrect', pickValue(data, ['IsInfoCorrect','isInfoCorrect']));
+            add('3. Verifier', 'Video Call?', meta.verifier, 'IsVideoCallDone', pickValue(data, ['IsVideoCallDone','isVideoCallDone']));
+            add('3. Verifier', 'Verifier Time', meta.verifier, 'VerificationTimestamp', pickValue(data, ['VerificationTimestamp','VerifierTimestamp','VerifiedTimestamp']));
+
+            add('4. Final Status', 'Final Status', meta.rejectedBy || meta.pendingWith, 'VerificationStatus / FinalStatus', pickValue(data, ['VerificationStatus','FinalStatus','FinalDecision','ApplicationStatus','Status']));
+            add('4. Final Status', 'Final / Reject Remark', meta.rejectedBy || meta.pendingWith, 'RejectedRemarks / FinalRemarks', pickValue(data, ['RejectedRemarks','RejectRemarks','RejectionRemarks','RejectReason','RejectionReason','FinalRemarks']));
+            add('4. Final Status', 'Latest Remark', meta.rejectedBy || meta.pendingWith, 'LatestRemark', pickValue(data, ['LatestRemark','latestRemark']));
+
+            if (!rows.length) return `<div class="empty-state">या अर्जावर अजून remark उपलब्ध नाही.</div>`;
+            return rows.map(r => {
+                const decision = statusWord(r.text);
+                const chip = decision ? `<span class="decision-inline">${statusChip(decision)}</span>` : '';
+                return `<div class="remark-row">
+                    <strong>${escapeHTML(r.stage)} - ${escapeHTML(r.label)} ${chip}</strong>
+                    <div class="remark-meta"><i class="fas fa-user"></i> ${escapeHTML(r.by)} &nbsp; <i class="fas fa-database"></i> ${escapeHTML(r.field)}</div>
+                    <p>${escapeHTML(r.text)}</p>
+                </div>`;
+            }).join('');
+        }
+        function showProcessDetailsModal(data) {
+            const meta = getProcessMeta(data);
+            const steps = [
+                { title:'1. Field/Staff Entry', owner: meta.fieldOfficer, hint:'ग्राहक माहिती, फोटो व documents submit', done: true },
+                { title:'2. Manager / BM Review', owner: meta.manager, hint:'Manager/BM review, amount recommendation आणि remarks', done: meta.hasManagerReview || meta.status === 'Approved' || (meta.status === 'Rejected' && meta.stageIndex >= 1), managerStep:true },
+                { title:'3. Verifier', owner: meta.verifier || 'Verifier', hint:'Final verification, video call, अंतिम remarks', done: meta.hasFinalVerification || meta.status === 'Approved' || (meta.status === 'Rejected' && meta.stageIndex >= 2 && !meta.managerRejected), skipped: meta.managerRejected },
+                { title:'4. Final Status', owner: meta.status === 'Approved' ? 'Approved' : (meta.status === 'Rejected' ? 'Rejected' : meta.pendingWith), hint:'Approved / Rejected / Pending close', done: meta.status === 'Approved' || meta.status === 'Rejected', finalStep:true }
+            ];
+            ui.processModalTitle.textContent = `${data.customerName || 'ग्राहक'} - Process Trail`;
+            ui.processModalSubtitle.textContent = `Flow: Field/Staff → Manager/BM → Verifier → Final Status ${data.villageName ? '• ' + data.villageName : ''} ${data.mobileNumber ? '• ' + data.mobileNumber : ''}`;
+            const stepHTML = steps.map((s, idx) => {
+                let cls = 'step-wait'; let label = 'Waiting';
+                if (s.done) { cls = 'step-done'; label = s.managerStep ? (meta.managerRejected ? 'Manager Rejected' : (meta.hasManagerReview ? 'Manager Success' : 'Done')) : 'Done'; }
+                if (s.skipped) { cls = 'step-wait'; label = 'Not Required'; }
+                if (meta.status === 'Pending' && idx === meta.stageIndex) { cls = 'step-current'; label = 'Pending Here'; }
+                if (meta.status === 'Rejected' && idx === meta.stageIndex) { cls = 'step-stop'; label = 'Rejected Here'; }
+                if (meta.managerRejected && s.finalStep) { cls = 'step-stop'; label = 'Rejected Counted'; }
+                return `<div class="step-item ${cls}">
+                    <div class="step-no">${idx + 1}</div>
+                    <div class="step-title">${escapeHTML(s.title)}</div>
+                    <div class="step-owner"><i class="fas fa-user"></i> ${escapeHTML(s.owner || 'माहिती नाही')}</div>
+                    <div class="step-owner" style="margin-top:5px;">${escapeHTML(s.hint)}</div>
+                    <span class="step-status">${label}</span>
+                </div>`;
+            }).join('');
+            ui.processModalBody.innerHTML = `<div class="process-summary-grid">
+                <div class="process-summary-box"><span>सध्याची स्थिती</span><strong>${statusChip(meta.status)}</strong></div>
+                <div class="process-summary-box"><span>सध्याचा Stage</span><strong>${escapeHTML(meta.currentStage)}</strong></div>
+                <div class="process-summary-box"><span>Pending / Decision By</span><strong>${escapeHTML(meta.pendingWith)}</strong></div>
+                <div class="process-summary-box"><span>ManagerApprovalStatus</span><strong>${escapeHTML(meta.managerApprovalStatusRaw || (meta.managerApproved ? 'Manager Success' : (meta.managerRejected ? 'Manager Rejected' : 'Pending')))}</strong></div>
+                <div class="process-summary-box"><span>ManagerRemarks</span><strong>${escapeHTML(meta.managerRemark || '-')}</strong></div>
+                <div class="process-summary-box"><span>Amount</span><strong>मागणी ${formatINR(data.loanAmountRequested || 0)} / मंजूर ${formatINR(data.ApprovedLoanAmount || 0)}</strong></div>
+            </div>
+            <div class="remarks-panel" style="margin-bottom:18px;"><h3><i class="fas fa-route"></i> Correct Flow</h3><p style="margin:0;color:#475569;">Field/Staff → Manager/BM → Verifier → Final Status</p></div>
+            <div class="remarks-panel" style="margin-bottom:18px;"><h3><i class="fas fa-triangle-exclamation"></i> काम कुठे थांबले?</h3><p style="margin:0;color:#475569;">${escapeHTML(meta.blocker)}</p></div>
+            <div class="stepper">${stepHTML}</div>
+            <div class="remarks-panel"><h3><i class="fas fa-comments"></i> Remarks History</h3>${buildRemarkRows(data, meta)}</div>`;
+            ui.processModal.style.display = 'block';
         }
         
         function showFilesModal(applicantData, linkFieldKey, fileType) {
@@ -403,7 +908,7 @@
             const personalKeys = ['coApplicantName', 'applicantAge', 'applicantGender', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber'];
             const financialKeys = ['familyTotalMembers', 'familyEarningMembers', 'familyTotalIncome', 'expenseTotal', 'existingEMI', 'primaryIncomeSource', 'secondaryIncomeSource', 'secondaryIncomeAmount'];
             const assetKeys = ['assetHouseType', 'assetLandAcres', 'assetLandType', 'assetVehicle', 'cows', 'buffaloes', 'goats', 'poultry'];
-            const verificationKeys = ['VerificationStatus', 'VerifierName', 'VerifierRemarks', 'VerificationTimestamp', 'fieldOfficerName', 'remarks'];
+            const verificationKeys = ['ManagerApprovalStatus', 'ManagerName', 'ManagerRemarks', 'BMName', 'BMRemarks', 'VerificationStatus', 'VerifierName', 'VerifierRemarks', 'VerificationTimestamp', 'fieldOfficerName', 'remarks', 'RejectedRemarks', 'RejectRemarks'];
             
             const photoLinks = (data.photoLinks || '').split(/[\s,]+/).filter(Boolean);
             const docLinks = (data.supportdoc || '').split(/[\s,]+/).filter(Boolean);
@@ -437,7 +942,125 @@
                     .doc-list li a { text-decoration: none; color: #0056b3; font-size: 9pt; word-break: break-all; }
                     .print-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #0056b3; font-size: 9pt; color: #888; }
                     @media print { @page { size: A4; margin: 1cm; } body { -webkit-print-color-adjust: exact; } .print-container { font-size: 9pt; } }
-                </style>
+            
+
+        /* =========================================================
+           MODERN STRONG LOOK + PROCESS TRACKER UI
+           Original functions kept. Added process visibility layer.
+        ========================================================= */
+        :root {
+            --surface-glass: rgba(255,255,255,0.82);
+            --navy: #0b1f3a;
+            --blue: #0b63ce;
+            --sky: #eaf4ff;
+            --soft-red: #fff1f2;
+            --soft-green: #ecfdf3;
+            --soft-amber: #fff8e1;
+            --soft-purple: #f5f0ff;
+            --ring: rgba(11, 99, 206, .16);
+        }
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(0,120,212,.18), transparent 34%),
+                radial-gradient(circle at top right, rgba(81,45,168,.14), transparent 32%),
+                linear-gradient(135deg, #f3f8ff 0%, #f8fbff 45%, #f7f7fb 100%);
+            min-height: 100vh;
+        }
+        .dashboard-container { max-width: 1680px; padding: 22px; }
+        .dashboard-hero {
+            position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center;
+            gap: 22px; color: #fff; border: 0; border-radius: 22px; padding: 22px 24px;
+            background: linear-gradient(135deg, #081a33 0%, #0b63ce 55%, #1679e8 100%);
+            box-shadow: 0 20px 45px rgba(9, 45, 95, .22);
+        }
+        .dashboard-hero::after {
+            content: ""; position: absolute; right: -80px; top: -90px; width: 260px; height: 260px;
+            background: rgba(255,255,255,.12); border-radius: 50%;
+        }
+        .hero-left { display: flex; align-items: center; gap: 16px; position: relative; z-index: 1; }
+        .hero-logo-wrap { background: #fff; border-radius: 16px; padding: 8px 12px; box-shadow: 0 10px 25px rgba(0,0,0,.18); }
+        .dashboard-header img { height: 46px; display: block; }
+        .dashboard-header h1 { color: #fff; font-size: clamp(1.35rem, 2.5vw, 2.2rem); letter-spacing: -.5px; }
+        .hero-subtitle { margin: 4px 0 0 0; color: rgba(255,255,255,.82); font-weight: 500; }
+        .hero-badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; position: relative; z-index: 1; }
+        .hero-badge { padding: 9px 12px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); color: #fff; font-size: .86rem; font-weight: 700; backdrop-filter: blur(8px); }
+        .filter-bar, .grid-card, .kpi-card { border: 1px solid rgba(11, 99, 206, .08); border-radius: 18px; box-shadow: 0 16px 35px rgba(13, 39, 80, .08); background: var(--surface-glass); backdrop-filter: blur(12px); }
+        .filter-group input, .filter-group select { border-radius: 12px; border: 1px solid #d7e4f7; background: rgba(255,255,255,.88); }
+        .filter-group input:focus, .filter-group select:focus { box-shadow: 0 0 0 4px var(--ring); }
+        .kpi-card { min-height: 106px; border-left: 0; border-top: 5px solid var(--color); }
+        .kpi-card .kpi-icon { box-shadow: inset 0 0 0 1px rgba(var(--rgb-color), .22); }
+        .grid-card h2 { border-bottom: 0; display: flex; align-items: center; gap: 10px; color: var(--navy); }
+        .grid-card h2::before { content: ""; width: 10px; height: 26px; border-radius: 999px; background: linear-gradient(180deg, #0b63ce, #00bcd4); display: inline-block; }
+        .section-help { margin-top: 8px; color: #64748b; font-size: .92rem; }
+        .process-workflow-section { margin: 0 0 20px 0; }
+        .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 14px; }
+        .pipeline-card {
+            position: relative; overflow: hidden; padding: 16px; border-radius: 18px; background: #fff; border: 1px solid #e4edf9;
+            box-shadow: 0 10px 24px rgba(15, 52, 96, .08); cursor: pointer; transition: transform .2s, box-shadow .2s, border-color .2s;
+        }
+        .pipeline-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(11,99,206,.16); border-color: #b7d4ff; }
+        .pipeline-card::after { content: ""; position: absolute; right: -25px; top: -25px; width: 90px; height: 90px; border-radius: 50%; background: var(--tone-bg); }
+        .pipeline-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: relative; z-index: 1; }
+        .pipeline-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: var(--tone); background: var(--tone-bg); font-size: 1.25rem; }
+        .pipeline-count { font-size: 2.05rem; font-weight: 800; color: var(--navy); line-height: 1; }
+        .pipeline-title { margin: 12px 0 3px; font-weight: 800; color: #132238; position: relative; z-index: 1; }
+        .pipeline-sub { margin: 0; color: #64748b; font-size: .85rem; position: relative; z-index: 1; }
+        .tone-blue { --tone: #0b63ce; --tone-bg: #eaf4ff; }
+        .tone-amber { --tone: #b77900; --tone-bg: #fff4cf; }
+        .tone-purple { --tone: #6d28d9; --tone-bg: #f2eaff; }
+        .tone-red { --tone: #dc2626; --tone-bg: #fff1f2; }
+        .tone-green { --tone: #15803d; --tone-bg: #ecfdf3; }
+        .status-chip, .process-pill {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-weight: 800; font-size: .78rem; white-space: nowrap;
+        }
+        .chip-approved { color: #15803d; background: #dcfce7; }
+        .chip-pending { color: #a16207; background: #fef3c7; }
+        .chip-rejected { color: #b91c1c; background: #fee2e2; }
+        .chip-total { color: #0b63ce; background: #dbeafe; }
+        .process-pill { color: #0f172a; background: #f1f5f9; border: 1px solid #e2e8f0; cursor: pointer; }
+        .process-pill:hover { background: #eaf4ff; border-color: #b7d4ff; }
+        .blocker-cell { max-width: 270px; color: #334155; line-height: 1.35; }
+        .remark-cell { max-width: 330px; color: #475569; line-height: 1.35; }
+        .row-action-btn.process-btn { background: #0f172a; gap: 6px; font-size: .85rem; padding: 7px 10px; }
+        .modal-content.process-modal-content { max-width: 1100px; border-radius: 24px; padding: 0; overflow: hidden; }
+        .process-modal-head { padding: 22px 26px; background: linear-gradient(135deg, #081a33, #0b63ce); color: #fff; display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+        .process-modal-head h2 { margin: 0 0 5px 0; }
+        .process-modal-head p { margin: 0; color: rgba(255,255,255,.78); }
+        .process-modal-body { padding: 24px 26px; background: #f8fbff; }
+        .process-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .process-summary-box { background: #fff; border: 1px solid #e4edf9; border-radius: 16px; padding: 13px 14px; }
+        .process-summary-box span { display: block; color: #64748b; font-size: .8rem; font-weight: 700; }
+        .process-summary-box strong { display: block; margin-top: 4px; color: #0f172a; font-size: 1rem; }
+        .stepper { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0 20px; }
+        .step-item { background: #fff; border: 1px solid #e4edf9; border-radius: 16px; padding: 14px; min-height: 126px; position: relative; }
+        .step-no { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; margin-bottom: 9px; background: #eef2f7; color: #475569; }
+        .step-title { font-weight: 900; color: #132238; margin-bottom: 3px; }
+        .step-owner { color: #64748b; font-size: .82rem; }
+        .step-status { margin-top: 10px; display: inline-flex; padding: 5px 8px; border-radius: 999px; font-size: .74rem; font-weight: 900; }
+        .step-done { border-color: #bbf7d0; background: #f0fdf4; }
+        .step-done .step-no, .step-done .step-status { background: #16a34a; color: #fff; }
+        .step-current { border-color: #fde68a; background: #fffbeb; box-shadow: 0 0 0 4px rgba(245, 158, 11, .12); }
+        .step-current .step-no, .step-current .step-status { background: #f59e0b; color: #fff; }
+        .step-stop { border-color: #fecaca; background: #fff1f2; box-shadow: 0 0 0 4px rgba(220, 38, 38, .10); }
+        .step-stop .step-no, .step-stop .step-status { background: #dc2626; color: #fff; }
+        .step-wait { opacity: .82; }
+        .remarks-panel { background: #fff; border: 1px solid #e4edf9; border-radius: 18px; padding: 16px; }
+        .remarks-panel h3 { margin: 0 0 12px; color: #0f172a; }
+        .remark-row { border-left: 4px solid #0b63ce; background: #f8fbff; padding: 11px 12px; border-radius: 12px; margin-bottom: 10px; }
+        .remark-row strong { color: #0f172a; }
+        .remark-row p { margin: 4px 0 0; color: #475569; }
+        .remark-meta { margin-top: 5px; color: #64748b; font-size: .78rem; font-weight: 700; }
+        .decision-inline { margin-left: 8px; vertical-align: middle; display: inline-flex; }
+        .empty-state { text-align: center; padding: 30px; color: #64748b; }
+        @media (max-width: 800px) {
+            .dashboard-hero { align-items: flex-start; flex-direction: column; }
+            .hero-badges { justify-content: flex-start; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .stepper { grid-template-columns: 1fr; }
+            #modal-table { min-width: 980px; }
+        }
+
+    </style>
                 <header class="print-header">
                     <img src="${logoUrl}" alt="Anik Financial Services">
                     <div class="title-block">
