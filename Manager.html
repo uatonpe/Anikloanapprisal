@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -30,7 +32,8 @@
             font-family: 'Poppins', 'Noto Sans Devanagari', sans-serif; 
             background-color: var(--light-bg); margin: 0; color: var(--dark-text);
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-            overflow: hidden; /* Prevent body scroll */
+            overflow-x: hidden;
+            overflow-y: auto; /* Desktop + mobile page scroll enabled */
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -43,7 +46,12 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #full-page-loader.hidden { opacity: 0; visibility: hidden; }
 
-        .dashboard-container { display: flex; flex-direction: column; height: 100vh; }
+        .dashboard-container { display: flex; flex-direction: column; min-height: 100vh; height: auto; }
+        .top-bar-subtitle { margin: 6px 0 0; color: var(--light-text); font-size: 0.9rem; font-weight: 500; }
+        .filter-summary { padding: 10px 15px; border-bottom: 1px solid var(--border-color); background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .summary-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(var(--primary-rgb), 0.08); color: var(--primary-dark); font-weight: 700; font-size: 0.85rem; }
+        .summary-chip i { color: var(--primary-color); }
+        .summary-note { font-size: 0.82rem; color: var(--light-text); font-weight: 500; }
     
         .top-bar { background-color: var(--white-color); padding: 15px 30px; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.03); z-index: 100; }
         .top-bar-header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 15px; font-weight: 700; color: #1e2a38; }
@@ -65,14 +73,18 @@
         .kpi-content p { margin: 0; color: var(--light-text); font-weight: 600; font-size: 0.9rem; }
         #kpi-total h3 { color: var(--primary-dark); } #kpi-pending h3 { color: #d39e00; } #kpi-approved h3 { color: var(--success-color); } #kpi-rejected h3 { color: var(--danger-color); }
 
-        .main-layout { display: flex; flex: 1; overflow: hidden; position: relative; }
-        .applicant-sidebar { width: 400px; background-color: var(--white-color); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 50; }
+        .main-layout { display: flex; flex: 1; overflow: visible; position: relative; min-height: calc(100vh - 190px); }
+        .applicant-sidebar { width: 400px; background-color: var(--white-color); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 50; align-self: flex-start; max-height: calc(100vh - 190px); position: sticky; top: 0; }
         
         .sidebar-filters { padding: 15px; border-bottom: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background-color: #fcfdff; flex-shrink: 0; }
         .filter-group.full-width { grid-column: 1 / -1; }
         .sidebar-filters input, .sidebar-filters select { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.95rem; transition: border-color var(--transition-speed); }
         .sidebar-filters input:focus, .sidebar-filters select:focus { border-color: var(--primary-color); outline: none; }
         .date-filter-label { font-size: 0.8rem; font-weight: 600; color: var(--dark-text); margin-bottom: 3px; display: block; }
+        .sidebar-filters input:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        .clear-filter-btn { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(var(--primary-rgb), 0.25); background: rgba(var(--primary-rgb), 0.08); color: var(--primary-dark); font-weight: 700; cursor: pointer; transition: all var(--transition-speed); font-family: inherit; }
+        .clear-filter-btn:hover { background: rgba(var(--primary-rgb), 0.14); transform: translateY(-1px); }
+        #date-filter-hint { grid-column: 1 / -1; font-size: 0.78rem; color: var(--light-text); margin-top: -4px; line-height: 1.4; }
 
         .applicant-list-container { flex: 1; overflow-y: auto; background-color: #fff; }
         .applicant-item { display: flex; flex-direction: column; gap: 6px; padding: 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color var(--transition-speed); position: relative; }
@@ -84,7 +96,7 @@
         .status-pill { padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; }
         .status-pill.Approved { background-color: rgba(var(--success-rgb), 0.1); color: var(--success-color); border: 1px solid rgba(var(--success-rgb), 0.2); } .status-pill.Rejected { background-color: rgba(var(--danger-rgb), 0.1); color: var(--danger-color); border: 1px solid rgba(var(--danger-rgb), 0.2); } .status-pill.Pending { background-color: rgba(var(--warning-rgb), 0.15); color: #b07d03; border: 1px solid rgba(var(--warning-rgb), 0.2); }
         
-        .details-panel { flex: 1; padding: 25px; overflow-y: auto; background-color: var(--light-bg); scroll-behavior: smooth; }
+        .details-panel { flex: 1; padding: 25px; overflow: visible; background-color: var(--light-bg); scroll-behavior: smooth; min-width: 0; }
         #welcome-message { text-align: center; padding-top: 15vh; color: var(--light-text); opacity: 0.8; }
         #welcome-message i { animation: pulse 2s infinite ease-in-out; margin-bottom: 15px; color: var(--primary-color); }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
@@ -148,6 +160,12 @@
         .form-actions button { background: var(--primary-color); color: white; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.2s; }
         .form-actions button:hover { background: var(--primary-dark); }
 
+        @media (min-width: 769px) {
+            .applicant-list-container { max-height: calc(100vh - 520px); min-height: 260px; overflow-y: auto; }
+            .details-view-card { margin-bottom: 60px; }
+            .top-bar { position: relative; }
+        }
+
         @media (max-width: 1200px) {
             .details-header { flex-direction: column; align-items: flex-start; }
             .details-header .loan-amounts { order: 1; align-self: flex-start; text-align: left; margin-top: 10px;}
@@ -157,18 +175,23 @@
 
         @media (max-width: 768px) { 
             body { overflow: auto; }
-            .dashboard-container { height: auto; display: block; }
-            .top-bar { padding: 15px; position: sticky; top: 0; } 
-            .sidebar-filters { grid-template-columns: 1fr; } 
-            .main-layout { display: block; overflow: visible; } 
-            .applicant-sidebar { width: 100%; height: auto; border-right: none; } 
-            .applicant-list-container { max-height: 60vh; border-bottom: 1px solid var(--border-color); }
-            
-            .details-panel { display: none; padding: 15px; height: auto; } 
-            .main-layout.mobile-details-active .applicant-sidebar { display: none; } 
-            .main-layout.mobile-details-active .details-panel { display: block; } 
-            #back-to-list-btn { display: grid; } 
+            .dashboard-container { height: auto; display: block; min-height: 100vh; }
+            .top-bar { padding: 15px; position: static; }
+            .top-bar-header h1 { font-size: 1.2rem; align-items: flex-start; }
+            .top-bar-header img { height: 30px; }
+            .top-bar-subtitle { font-size: 0.82rem; }
+            .sidebar-filters { grid-template-columns: 1fr; }
+            .filter-summary { padding: 10px 12px; }
+            .main-layout { display: block; overflow: visible; min-height: 0; }
+            .applicant-sidebar { width: 100%; height: auto; border-right: none; max-height: none; position: static; }
+            .applicant-list-container { max-height: none; overflow: visible; border-bottom: 1px solid var(--border-color); }
+            .details-panel { display: none; padding: 15px; height: auto; overflow: visible; }
+            .main-layout.mobile-details-active .applicant-sidebar { display: none; }
+            .main-layout.mobile-details-active .details-panel { display: block; }
+            #back-to-list-btn { display: grid; }
             .kpi-container { grid-template-columns: 1fr 1fr; }
+            .details-header, .tab-content, .verification-section { padding-left: 15px; padding-right: 15px; }
+            .tabs-container { padding: 0 10px; }
         }
     </style>
 </head>
@@ -178,7 +201,7 @@
 
 <div class="dashboard-container">
     <header class="top-bar">
-        <div class="top-bar-header"><h1><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo"> ब्रांच मॅनेजर डॅशबोर्ड</h1></div>
+        <div class="top-bar-header"><h1><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo"> ब्रांच मॅनेजर डॅशबोर्ड</h1><p class="top-bar-subtitle">Fast open साठी सुरुवातीला फक्त चालू महिन्याचा डेटा लोड होईल. Back date filter निवडल्यावर सर्व डेटा उपलब्ध होईल.</p></div>
         <div class="kpi-container">
             <div class="kpi-card" id="kpi-total"><div class="kpi-icon"><i class="fas fa-file-invoice"></i></div><div class="kpi-content"><h3 id="total-count">0</h3><p>एकूण अर्ज</p></div></div>
             <div class="kpi-card" id="kpi-pending"><div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div><div class="kpi-content"><h3 id="pending-count">0</h3><p>प्रलंबित</p></div></div>
@@ -191,6 +214,16 @@
         <aside class="applicant-sidebar">
             <div class="sidebar-filters">
                 <div class="filter-group full-width"><input type="text" id="search-box" placeholder="नाव किंवा गाव शोधा..."></div>
+
+                <div class="filter-group full-width">
+                    <label for="dateModeFilter" class="date-filter-label">डेटा कालावधी</label>
+                    <select id="dateModeFilter">
+                        <option value="current_month" selected>चालू महिना (Fast Load)</option>
+                        <option value="range">तारीख निवडा / Back Date Filter</option>
+                        <option value="all">सुरुवातीपासून सर्व डेटा</option>
+                        <option value="today">आजचा दिवस</option>
+                    </select>
+                </div>
                 
                 <div class="filter-group">
                     <label for="fromDateFilter" class="date-filter-label">पासूनची तारीख</label>
@@ -200,6 +233,7 @@
                     <label for="toDateFilter" class="date-filter-label">पर्यंतची तारीख</label>
                     <input type="date" id="toDateFilter">
                 </div>
+                <div id="date-filter-hint">चालू महिन्याचा डेटा आधी लोड होईल. Back date / सर्व डेटा पाहताना एकदाच full data load होईल.</div>
                 
                 <div class="filter-group"><select id="unit-filter"><option value="">सर्व युनिट</option></select></div>
                 <div class="filter-group"><select id="staff-filter"><option value="">सर्व अधिकारी</option></select></div>
@@ -211,6 +245,12 @@
                         <option value="Rejected">Rejected (नामंजूर)</option>
                     </select>
                 </div>
+                <div class="filter-group full-width"><button type="button" id="clear-filter-btn" class="clear-filter-btn"><i class="fas fa-filter-circle-xmark"></i> सर्व फिल्टर काढा</button></div>
+            </div>
+            <div class="filter-summary">
+                <div class="summary-chip"><i class="fas fa-database"></i> <span id="loaded-scope-text">लोड: चालू महिना</span></div>
+                <div class="summary-chip"><i class="fas fa-list"></i> <span id="result-count-text">0 records</span></div>
+                <div class="summary-note" id="summary-note-text">मोबाईलवर आता filters lock राहणार नाहीत.</div>
             </div>
             <div class="applicant-list-container" id="applicant-list-container"></div>
         </aside>
@@ -225,13 +265,19 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpqr11pG1WIM6mhcltwUFM9lktbueurVSRUVzKjnEp0RCJY-Qmi_FEcew00wYcpWM/exec'; 
     const JITSI_BASE_URL = 'https://meet.jit.si/'; 
     let allApplicants = [], currentApplicant = null;
+    let fetchAbortController = null;
+    const dataCache = { current_month: null, all: null };
+    let activeServerScope = 'current_month';
 
     const ui = {
         pageLoader: document.getElementById('full-page-loader'), applicantListContainer: document.getElementById('applicant-list-container'),
         detailsView: document.getElementById('details-view'), welcomeMessage: document.getElementById('welcome-message'),
-        searchBox: document.getElementById('search-box'), fromDateFilter: document.getElementById('fromDateFilter'),
-        toDateFilter: document.getElementById('toDateFilter'), unitFilter: document.getElementById('unit-filter'),
-        staffFilter: document.getElementById('staff-filter'), statusFilter: document.getElementById('status-filter'),
+        searchBox: document.getElementById('search-box'), dateModeFilter: document.getElementById('dateModeFilter'),
+        fromDateFilter: document.getElementById('fromDateFilter'), toDateFilter: document.getElementById('toDateFilter'),
+        unitFilter: document.getElementById('unit-filter'), staffFilter: document.getElementById('staff-filter'),
+        statusFilter: document.getElementById('status-filter'), clearFilterBtn: document.getElementById('clear-filter-btn'),
+        dateFilterHint: document.getElementById('date-filter-hint'),
+        loadedScopeText: document.getElementById('loaded-scope-text'), resultCountText: document.getElementById('result-count-text'), summaryNoteText: document.getElementById('summary-note-text'),
         mainLayout: document.getElementById('main-layout'), detailsMainPanel: document.getElementById('details-main-panel'),
         kpi: { totalCount: document.getElementById('total-count'), pendingCount: document.getElementById('pending-count'), approvedCount: document.getElementById('approved-count'), rejectedCount: document.getElementById('rejected-count') }
     };
@@ -275,31 +321,192 @@
 
     function formatHeader(key) { return MARATHI_LABELS[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim(); }
     
-    // Date parsing logic
-    function parseDate(dateStr) {
-        if (!dateStr || typeof dateStr !== 'string') return null;
-        dateStr = dateStr.trim();
-        let date = null;
-        if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
-            const parts = dateStr.split(' ');
-            const dateParts = parts[0].split('/'); 
-            if (dateParts.length === 3) {
-                const day = dateParts[0].padStart(2, '0');    
-                const month = dateParts[1].padStart(2, '0');  
-                const year = dateParts[2];                    
-                const isoDateStr = `${year}-${month}-${day}`; 
-                date = new Date(`${isoDateStr}T${parts[1] || '00:00:00'}`);
-                if (!isNaN(date.getTime())) return date;
+    // Date parsing logic - local timezone safe, supports Sheet date formats, ISO strings, numbers and input[type=date]
+    function parseDate(dateValue) {
+        if (!dateValue) return null;
+        if (dateValue instanceof Date) return isNaN(dateValue.getTime()) ? null : dateValue;
+
+        // Google Sheet / Excel serial number OR epoch milliseconds
+        if (typeof dateValue === 'number') {
+            if (dateValue > 100000000000) {
+                const epochDate = new Date(dateValue);
+                return isNaN(epochDate.getTime()) ? null : epochDate;
             }
+            if (dateValue > 20000) {
+                // Sheets serial date: days since 1899-12-30
+                const serialDate = new Date(Math.round((dateValue - 25569) * 86400 * 1000));
+                return isNaN(serialDate.getTime()) ? null : serialDate;
+            }
+            return null;
         }
-        if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            const parts = dateStr.split('-');
-            date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-            if (!isNaN(date.getTime())) return date;
+
+        if (typeof dateValue !== 'string') return null;
+        let dateStr = dateValue.trim();
+        if (!dateStr) return null;
+        dateStr = dateStr.replace(',', ' ').replace(/\s+/g, ' ');
+
+        // HTML date input: yyyy-mm-dd. Use LOCAL date, not UTC, to avoid one-day shift.
+        let m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (m) {
+            const date = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+            return isNaN(date.getTime()) ? null : date;
         }
-        date = new Date(dateStr);
-        if (!isNaN(date.getTime())) return date;
-        return null;
+
+        // ISO date with time like 2026-06-23T10:20:30.000Z or 2026-06-23 10:20:30
+        m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+        if (m) {
+            const parsed = new Date(dateStr);
+            if (!isNaN(parsed.getTime())) return parsed;
+            const localDate = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6] || 0));
+            return isNaN(localDate.getTime()) ? null : localDate;
+        }
+
+        // Google Sheet common India format: dd/mm/yyyy or dd/mm/yyyy hh:mm:ss or dd/mm/yyyy hh:mm AM/PM
+        m = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(.*))?$/);
+        if (m) {
+            const day = Number(m[1]);
+            const month = Number(m[2]) - 1;
+            const year = Number(m[3]);
+            const timePart = (m[4] || '').trim();
+            let hours = 0, minutes = 0, seconds = 0;
+            const timeMatch = timePart.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM|am|pm)?/);
+            if (timeMatch) {
+                hours = Number(timeMatch[1]); minutes = Number(timeMatch[2]); seconds = Number(timeMatch[3] || 0);
+                const ampm = (timeMatch[4] || '').toLowerCase();
+                if (ampm === 'pm' && hours < 12) hours += 12;
+                if (ampm === 'am' && hours === 12) hours = 0;
+            }
+            const date = new Date(year, month, day, hours, minutes, seconds);
+            return isNaN(date.getTime()) ? null : date;
+        }
+
+        // dd-mm-yyyy support
+        m = dateStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+(.*))?$/);
+        if (m) {
+            const date = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+            return isNaN(date.getTime()) ? null : date;
+        }
+
+        const date = new Date(dateStr);
+        return isNaN(date.getTime()) ? null : date;
+    }
+
+    function formatDateInputLocal(date) {
+        if (!(date instanceof Date) || isNaN(date.getTime())) return '';
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function getCurrentMonthRange() {
+        const now = new Date();
+        const first = new Date(now.getFullYear(), now.getMonth(), 1);
+        const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        return { fromDate: formatDateInputLocal(first), toDate: formatDateInputLocal(last) };
+    }
+
+    function getTodayRange() {
+        const today = formatDateInputLocal(new Date());
+        return { fromDate: today, toDate: today };
+    }
+
+    function normaliseRangeDates() {
+        let fromDate = ui.fromDateFilter.value;
+        let toDate = ui.toDateFilter.value;
+
+        // Manager selects only one back date: show that complete day.
+        if (ui.dateModeFilter.value === 'range') {
+            if (fromDate && !toDate) toDate = fromDate;
+            if (!fromDate && toDate) fromDate = toDate;
+        }
+        return { fromDate, toDate };
+    }
+
+    function applyDateModeUI() {
+        const mode = ui.dateModeFilter.value || 'current_month';
+        const isRange = mode === 'range';
+        ui.fromDateFilter.disabled = !isRange;
+        ui.toDateFilter.disabled = !isRange;
+
+        if (mode === 'current_month') {
+            const range = getCurrentMonthRange();
+            ui.fromDateFilter.value = range.fromDate;
+            ui.toDateFilter.value = range.toDate;
+            ui.dateFilterHint.textContent = 'Fast open mode: सुरुवातीला चालू महिन्याचा डेटा लोड होईल.';
+        } else if (mode === 'today') {
+            const range = getTodayRange();
+            ui.fromDateFilter.value = range.fromDate;
+            ui.toDateFilter.value = range.toDate;
+            ui.dateFilterHint.textContent = 'आजच्या दिवसाचा filter आहे.';
+        } else if (mode === 'all') {
+            ui.fromDateFilter.value = '';
+            ui.toDateFilter.value = '';
+            ui.dateFilterHint.textContent = 'सुरुवातीपासून सर्व डेटा दाखवला जाईल. पहिल्यांदा full data load होऊ शकतो.';
+        } else {
+            ui.dateFilterHint.textContent = 'Back date filter साठी तारीख निवडा. एकच तारीख दिली तरी त्या दिवसाचा पूर्ण डेटा दिसेल.';
+        }
+    }
+
+    function getDateFetchParams() {
+        const mode = ui.dateModeFilter.value || 'all';
+        if (mode === 'all') return { mode, fromDate: '', toDate: '' };
+        if (mode === 'current_month') {
+            const range = getCurrentMonthRange();
+            return { mode, fromDate: range.fromDate, toDate: range.toDate };
+        }
+        if (mode === 'today') {
+            const range = getTodayRange();
+            return { mode, fromDate: range.fromDate, toDate: range.toDate };
+        }
+        const range = normaliseRangeDates();
+        return { mode, fromDate: range.fromDate, toDate: range.toDate };
+    }
+
+    function getScopeForMode(mode) {
+        return (mode === 'current_month' || mode === 'today') ? 'current_month' : 'all';
+    }
+
+    function updateFilterSummary(resultCount = 0) {
+        const scopeLabel = activeServerScope === 'current_month' ? 'लोड: चालू महिना' : 'लोड: सर्व डेटा';
+        if (ui.loadedScopeText) ui.loadedScopeText.textContent = scopeLabel;
+        if (ui.resultCountText) ui.resultCountText.textContent = `${resultCount} records`;
+        let note = 'मोबाईलवर आता filters lock राहणार नाहीत.';
+        const mode = ui.dateModeFilter.value || 'current_month';
+        if (mode === 'current_month') note = 'Fast open mode — फक्त चालू महिन्याचा डेटा दाखवत आहोत.';
+        else if (mode === 'range') note = 'Back date filter साठी full data वापरला जात आहे.';
+        else if (mode === 'all') note = 'सुरुवातीपासून सर्व डेटा दिसत आहे.';
+        else if (mode === 'today') note = 'आजच्या दिवसाचा डेटा दिसत आहे.';
+        if (ui.summaryNoteText) ui.summaryNoteText.textContent = note;
+    }
+
+    function buildFetchUrl(scope = 'current_month') {
+        const url = new URL(SCRIPT_URL);
+        url.searchParams.set('action', 'getData');
+        url.searchParams.set('role', 'manager');
+        if (scope === 'current_month') {
+            const range = getCurrentMonthRange();
+            url.searchParams.set('dateMode', 'current_month');
+            url.searchParams.set('fetchMode', 'current_month');
+            url.searchParams.set('scope', 'current_month');
+            url.searchParams.set('currentMonthOnly', 'true');
+            url.searchParams.set('fromDate', range.fromDate);
+            url.searchParams.set('toDate', range.toDate);
+            url.searchParams.set('startDate', range.fromDate);
+            url.searchParams.set('endDate', range.toDate);
+        } else {
+            url.searchParams.set('dateMode', 'all');
+            url.searchParams.set('fetchMode', 'all');
+            url.searchParams.set('scope', 'all');
+            url.searchParams.set('loadAll', 'true');
+            url.searchParams.set('noDateFilter', 'true');
+            url.searchParams.set('fromDate', '1900-01-01');
+            url.searchParams.set('toDate', '2099-12-31');
+            url.searchParams.set('startDate', '1900-01-01');
+            url.searchParams.set('endDate', '2099-12-31');
+        }
+        url.searchParams.set('_', Date.now().toString());
+        return url.toString();
     }
 
     function formatTimestamp(timestamp, includeTime = false) {
@@ -342,20 +549,44 @@
         }
     }
 
-    window.addEventListener('load', fetchData);
+    window.addEventListener('load', () => {
+        ui.dateModeFilter.value = 'current_month';
+        applyDateModeUI();
+        fetchData('current_month');
+    });
 
-    async function fetchData() {
+    async function fetchData(scope = 'current_month') {
+        if (dataCache[scope]) {
+            activeServerScope = scope;
+            allApplicants = dataCache[scope];
+            populateUnitFilter(allApplicants);
+            populateStaffFilter(allApplicants);
+            applyDateModeUI();
+            filterAndRender();
+            if (!window.listenersAdded) { addEventListeners(); window.listenersAdded = true; }
+            return;
+        }
+
         try {
+            activeServerScope = scope;
             ui.pageLoader.classList.remove('hidden');
-            const response = await fetch(`${SCRIPT_URL}?action=getData&role=manager`);
+            ui.applicantListContainer.innerHTML = `<p style="text-align:center; padding:25px; color:#7f8c8d;">${scope === 'current_month' ? 'चालू महिन्याचा डेटा घेत आहे...' : 'सुरुवातीपासून सर्व डेटा घेत आहे...'}</p>`;
+
+            if (fetchAbortController) fetchAbortController.abort();
+            fetchAbortController = new AbortController();
+
+            const response = await fetch(buildFetchUrl(scope), { signal: fetchAbortController.signal, cache: 'no-store' });
             if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
             const result = await response.json();
             
             if (result.status === 'success') {
-                // PERFORMANCE BOOST: Parse dates once during load instead of during every filter
-                allApplicants = result.data.map(app => {
-                    app._parsedDate = parseDate(app.actualTime || app.timestamp);
-                    app.ManagerApprovalStatus = app.ManagerApprovalStatus || 'Pending';
+                const records = Array.isArray(result.data) ? result.data : [];
+
+                const parsed = records.map(app => {
+                    app._parsedDate = parseDate(
+                        app.actualTime || app.ActualTime || app.timestamp || app.Timestamp || app.timeStamp || app.visitDate || app.VisitDate || app['Timestamp']
+                    );
+                    app.ManagerApprovalStatus = app.ManagerApprovalStatus || app.managerStatus || 'Pending';
                     return app;
                 }).sort((a, b) => {
                     const timeA = a._parsedDate ? a._parsedDate.getTime() : 0;
@@ -363,52 +594,84 @@
                     return timeB - timeA;
                 });
 
-                populateUnitFilter(allApplicants); 
-                populateStaffFilter(allApplicants); 
-                updateKpis(allApplicants);
+                dataCache[scope] = parsed;
+                allApplicants = parsed;
+                activeServerScope = scope;
+                populateUnitFilter(allApplicants);
+                populateStaffFilter(allApplicants);
+                applyDateModeUI();
                 filterAndRender();
                 
                 if (!window.listenersAdded) { addEventListeners(); window.listenersAdded = true; }
-            } else { throw new Error(result.message); }
+            } else { throw new Error(result.message || 'Unknown server error'); }
         } catch (error) { 
+            if (error.name === 'AbortError') return;
             ui.applicantListContainer.innerHTML = `<p style="text-align:center; padding:20px; color: red;">डेटा लोड करताना त्रुटी: ${error.message}</p>`; 
         } finally { 
             ui.pageLoader.classList.add('hidden');
         }
     }
 
-    function addEventListeners() {
-        // Remove KPI active styles if user manually changes filters
-        const removeKpiActive = () => { document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter')); };
-        
-        [ui.searchBox, ui.unitFilter, ui.staffFilter, ui.fromDateFilter, ui.toDateFilter].forEach(el => {
-            el.addEventListener('input', () => { removeKpiActive(); filterAndRender(); });
-        });
-        
-        ui.statusFilter.addEventListener('change', () => { removeKpiActive(); filterAndRender(); });
+    async function ensureCorrectDataScope() {
+        const requiredScope = getScopeForMode(ui.dateModeFilter.value || 'current_month');
+        if (requiredScope !== activeServerScope || !dataCache[requiredScope]) {
+            await fetchData(requiredScope);
+        } else {
+            applyDateModeUI();
+            filterAndRender();
+        }
+    }
 
-        // KPI CLICK FEATURE
+    function addEventListeners() {
+        const removeKpiActive = () => { document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter')); };
+        const localFilterOnly = () => { removeKpiActive(); filterAndRender(); };
+
+        [ui.searchBox, ui.unitFilter, ui.staffFilter].forEach(el => {
+            el.addEventListener('input', localFilterOnly);
+            el.addEventListener('change', localFilterOnly);
+        });
+        ui.statusFilter.addEventListener('change', localFilterOnly);
+
+        ui.dateModeFilter.addEventListener('change', async () => {
+            removeKpiActive();
+            applyDateModeUI();
+            await ensureCorrectDataScope();
+        });
+
+        [ui.fromDateFilter, ui.toDateFilter].forEach(el => {
+            el.addEventListener('change', async () => {
+                removeKpiActive();
+                ui.dateModeFilter.value = 'range';
+                applyDateModeUI();
+                await ensureCorrectDataScope();
+            });
+        });
+
+        ui.clearFilterBtn.addEventListener('click', async () => {
+            removeKpiActive();
+            ui.searchBox.value = '';
+            ui.unitFilter.value = '';
+            ui.staffFilter.value = '';
+            ui.statusFilter.value = '';
+            ui.dateModeFilter.value = 'current_month';
+            applyDateModeUI();
+            ui.mainLayout.classList.remove('mobile-details-active');
+            await ensureCorrectDataScope();
+        });
+
         document.querySelectorAll('.kpi-card').forEach((card, index) => {
             card.addEventListener('click', () => {
-                // 1. Clear all search & date filters to show EXACTLY what the KPI represents
                 ui.searchBox.value = '';
-                ui.fromDateFilter.value = '';
-                ui.toDateFilter.value = '';
                 ui.unitFilter.value = '';
                 ui.staffFilter.value = '';
-                
-                // 2. Set Status Filter
+
                 const statuses = ['', 'Pending', 'Approved', 'Rejected'];
-                ui.statusFilter.value = statuses[index]; 
-                
-                // 3. Highlight the clicked KPI card
+                ui.statusFilter.value = statuses[index];
+
                 document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter'));
                 card.classList.add('active-filter');
-                
-                // 4. Update the List
-                filterAndRender();
 
-                // On mobile, switch to list view
+                filterAndRender();
                 ui.mainLayout.classList.remove('mobile-details-active');
             });
         });
@@ -428,18 +691,30 @@
 
     // FAST FILTERING
     function filterAndRender() {
-        const searchTerm = ui.searchBox.value.toLowerCase();
-        const unit = ui.unitFilter.value; const staffName = ui.staffFilter.value; const status = ui.statusFilter.value;
-        const fromDateStr = ui.fromDateFilter.value; const toDateStr = ui.toDateFilter.value;
+        const searchTerm = (ui.searchBox.value || '').toLowerCase().trim();
+        const unit = ui.unitFilter.value;
+        const staffName = ui.staffFilter.value;
+        const status = ui.statusFilter.value;
+        const params = getDateFetchParams();
         
-        let fromTime = fromDateStr ? parseDate(fromDateStr).setHours(0,0,0,0) : null;
-        let toTime = toDateStr ? parseDate(toDateStr).setHours(23,59,59,999) : null;
+        let fromTime = null, toTime = null;
+        if (params.mode !== 'all' && (params.fromDate || params.toDate)) {
+            const fromDateObj = params.fromDate ? parseDate(params.fromDate) : null;
+            const toDateObj = params.toDate ? parseDate(params.toDate) : null;
+            if (fromDateObj) fromTime = new Date(fromDateObj.getFullYear(), fromDateObj.getMonth(), fromDateObj.getDate(), 0, 0, 0, 0).getTime();
+            if (toDateObj) toTime = new Date(toDateObj.getFullYear(), toDateObj.getMonth(), toDateObj.getDate(), 23, 59, 59, 999).getTime();
+        }
         
         const filtered = allApplicants.filter(app => {
+            const name = (app.customerName || '').toLowerCase();
+            const village = (app.villageName || '').toLowerCase();
+            const mobile = String(app.mobileNumber || '').toLowerCase();
+            const rowText = String(app.row || '').toLowerCase();
+
             const passesBasicFilter = 
-                (app.customerName?.toLowerCase().includes(searchTerm) || app.villageName?.toLowerCase().includes(searchTerm) || '') && 
-                (!unit || app.Unit === unit) && 
-                (!staffName || app.fieldOfficerName === staffName) && 
+                (!searchTerm || name.includes(searchTerm) || village.includes(searchTerm) || mobile.includes(searchTerm) || rowText.includes(searchTerm)) &&
+                (!unit || app.Unit === unit) &&
+                (!staffName || app.fieldOfficerName === staffName) &&
                 (!status || app.ManagerApprovalStatus === status);
 
             if (!passesBasicFilter) return false;
@@ -453,6 +728,8 @@
             return true;
         });
         
+        updateKpis(filtered);
+        updateFilterSummary(filtered.length);
         renderApplicantList(filtered);
     }
 
@@ -468,7 +745,7 @@
         ui.applicantListContainer.innerHTML = ''; // Clear fast
         
         if (applicants.length === 0) {
-            ui.applicantListContainer.innerHTML = '<p style="text-align:center; padding:30px; color:#7f8c8d;">यादीत एकही अर्ज सापडला नाही.</p>';
+            ui.applicantListContainer.innerHTML = '<p style="text-align:center; padding:30px; color:#7f8c8d;">या filter मध्ये अर्ज सापडला नाही. तारीख, युनिट किंवा स्टेटस filter तपासा.</p>';
             return;
         }
 
@@ -504,6 +781,7 @@
         
         // Scroll details panel to top
         ui.detailsMainPanel.scrollTop = 0;
+        if (window.innerWidth >= 769) window.scrollTo({ top: 0, behavior: 'smooth' });
 
         const income = parseInt(app.familyTotalIncome || 0);
         const expenseH = parseInt(app.expenseHousehold || 0); const expenseE = parseInt(app.expenseEducation || 0);
