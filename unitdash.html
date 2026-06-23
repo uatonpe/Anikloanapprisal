@@ -1,6 +1,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -259,6 +261,63 @@
         .remark-meta { margin-top: 5px; color: #64748b; font-size: .78rem; font-weight: 700; }
         .decision-inline { margin-left: 8px; vertical-align: middle; display: inline-flex; }
         .empty-state { text-align: center; padding: 30px; color: #64748b; }
+
+
+        /* =========================================================
+           SMART STAFF PERFORMANCE + PP UNLOCK UI
+           Score logic runs on current filtered data. No GS change needed.
+        ========================================================= */
+        .staff-performance-section { margin: 0 0 20px 0; }
+        .staff-section-head { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; }
+        .pp-rule-badge { display:inline-flex; align-items:center; gap:8px; padding:9px 13px; border-radius:999px; background:#ecfdf3; color:#15803d; border:1px solid #bbf7d0; font-weight:900; font-size:.86rem; }
+        .staff-performance-summary { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:12px; margin:16px 0; }
+        .staff-mini-card { background:#fff; border:1px solid #e4edf9; border-radius:16px; padding:13px 14px; box-shadow:0 8px 20px rgba(15,52,96,.06); }
+        .staff-mini-card span { display:block; color:#64748b; font-weight:800; font-size:.78rem; }
+        .staff-mini-card strong { display:block; color:#0f172a; font-size:1.35rem; margin-top:2px; }
+        .staff-performance-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:14px; }
+        .staff-card { background:#fff; border:1px solid #e4edf9; border-radius:20px; padding:16px; box-shadow:0 10px 24px rgba(15,52,96,.08); cursor:pointer; transition:.2s; position:relative; overflow:hidden; }
+        .staff-card:hover { transform:translateY(-3px); box-shadow:0 16px 34px rgba(11,99,206,.16); border-color:#b7d4ff; }
+        .staff-card.selected { border-color:#0b63ce; box-shadow:0 0 0 4px rgba(11,99,206,.12), 0 16px 34px rgba(11,99,206,.12); }
+        .staff-card::after { content:""; position:absolute; right:-32px; top:-36px; width:116px; height:116px; border-radius:50%; background:#eaf4ff; }
+        .staff-topline { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; position:relative; z-index:1; }
+        .staff-name { font-weight:900; color:#0f172a; line-height:1.25; }
+        .staff-unit { color:#64748b; font-size:.78rem; margin-top:3px; }
+        .score-ring { width:70px; height:70px; border-radius:50%; display:grid; place-items:center; background:conic-gradient(#0b63ce calc(var(--score) * 1%), #eef2f7 0); flex:0 0 auto; }
+        .score-ring span { width:54px; height:54px; border-radius:50%; background:#fff; display:grid; place-items:center; font-weight:950; color:#0f172a; font-size:1rem; box-shadow:inset 0 0 0 1px #e2e8f0; }
+        .score-ring.good { background:conic-gradient(#16a34a calc(var(--score) * 1%), #eef2f7 0); }
+        .score-ring.watch { background:conic-gradient(#f59e0b calc(var(--score) * 1%), #eef2f7 0); }
+        .score-ring.bad { background:conic-gradient(#dc2626 calc(var(--score) * 1%), #eef2f7 0); }
+        .pp-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-weight:900; font-size:.75rem; margin-top:10px; }
+        .pp-unlocked { color:#15803d; background:#dcfce7; border:1px solid #bbf7d0; }
+        .pp-locked { color:#b91c1c; background:#fee2e2; border:1px solid #fecaca; }
+        .staff-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:13px; position:relative; z-index:1; }
+        .staff-stat { background:#f8fbff; border:1px solid #e4edf9; border-radius:12px; padding:8px; text-align:center; }
+        .staff-stat strong { display:block; color:#0f172a; font-size:1.04rem; }
+        .staff-stat span { display:block; color:#64748b; font-size:.7rem; font-weight:800; }
+        .staff-performance-detail { margin-top:18px; }
+        .staff-detail-panel { background:#fff; border:1px solid #dce9fb; border-radius:22px; overflow:hidden; box-shadow:0 14px 34px rgba(15,52,96,.09); }
+        .staff-detail-head { background:linear-gradient(135deg,#081a33,#0b63ce); color:#fff; padding:18px 20px; display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; }
+        .staff-detail-head h3 { margin:0; font-size:1.35rem; }
+        .staff-detail-head p { margin:4px 0 0; color:rgba(255,255,255,.78); }
+        .staff-detail-body { padding:18px 20px; background:#f8fbff; }
+        .staff-note { background:#fff; border-left:5px solid #0b63ce; border-radius:15px; padding:14px 15px; color:#334155; box-shadow:0 8px 18px rgba(15,52,96,.06); margin-bottom:16px; }
+        .staff-note strong { color:#0f172a; }
+        .staff-metric-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:16px; }
+        .metric-box { background:#fff; border:1px solid #e4edf9; border-radius:16px; padding:13px; }
+        .metric-box span { display:block; color:#64748b; font-size:.78rem; font-weight:800; }
+        .metric-box strong { display:block; color:#0f172a; font-size:1.35rem; margin-top:2px; }
+        .score-breakdown { background:#fff; border:1px solid #e4edf9; border-radius:16px; overflow:hidden; margin:14px 0; }
+        .score-breakdown table { width:100%; border-collapse:collapse; }
+        .score-breakdown th, .score-breakdown td { padding:10px 12px; border-bottom:1px solid #e8eef7; text-align:left; font-size:.9rem; }
+        .score-breakdown th { background:#f1f7ff; color:#0f172a; font-weight:900; }
+        .quality-table-wrap { overflow:auto; border:1px solid #e4edf9; border-radius:16px; background:#fff; }
+        .quality-table { width:100%; min-width:850px; border-collapse:collapse; }
+        .quality-table th, .quality-table td { padding:10px 12px; border-bottom:1px solid #eef2f7; text-align:left; font-size:.86rem; vertical-align:top; }
+        .quality-table th { background:#0b63ce; color:#fff; font-weight:800; position:sticky; top:0; }
+        .reason-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+        .reason-pill { padding:7px 10px; border-radius:999px; background:#fff; border:1px solid #e4edf9; color:#334155; font-weight:800; font-size:.78rem; }
+        .staff-empty { text-align:center; padding:22px; color:#64748b; background:#fff; border:1px dashed #b7cbe6; border-radius:16px; }
+
         @media (max-width: 800px) {
             .dashboard-hero { align-items: flex-start; flex-direction: column; }
             .hero-badges { justify-content: flex-start; }
@@ -314,6 +373,20 @@
             <h2>अर्ज प्रोसेस ट्रॅकर</h2>
             <p class="section-help">Flow आता Field/Staff → Manager/BM → Verifier → Final Status असा आहे. ManagerApprovalStatus / ManagerRemarks भरले की manager stage clear दिसेल. Manager/BM ने reject केले तर अर्ज तिथेच थांबेल, Rejected count मध्ये येईल आणि ManagerRemarks स्पष्ट दिसतील.</p>
             <div class="pipeline-grid" id="process-overview-grid"></div>
+        </section>
+
+
+        <section class="grid-card grid-card-full staff-performance-section" id="staff-performance-section">
+            <div class="staff-section-head">
+                <div>
+                    <h2>Staff Wise Performance Score & PP Unlock</h2>
+                    <p class="section-help">कर्मचारी निवडल्यावर त्या FX/Staff चे एकूण काम, case quality, reject कारणे, pending कुठे आहे आणि Performance Pay status स्पष्ट दिसेल.</p>
+                </div>
+                <div class="pp-rule-badge"><i class="fas fa-lock-open"></i> Score ≥ 95% = PP Unlock</div>
+            </div>
+            <div id="staff-performance-summary" class="staff-performance-summary"></div>
+            <div id="staff-performance-grid" class="staff-performance-grid"></div>
+            <div id="staff-performance-detail" class="staff-performance-detail"></div>
         </section>
 
         <section class="grid-card grid-card-full" id="customer-insights-section">
@@ -426,7 +499,7 @@
             };
         }
 
-        function applyFiltersAndRender() { const s = ui.customerSearch.value.toLowerCase(), u = ui.unitFilter.value, f = ui.staffFilter.value, dF = ui.dateFrom.value ? parseDate(ui.dateFrom.value) : null, dT = ui.dateTo.value ? parseDate(ui.dateTo.value) : null; if (dT) dT.setHours(23, 59, 59, 999); if (dF) dF.setHours(0, 0, 0, 0); filteredData = allData.filter(d => (!s || (d.customerName && d.customerName.toLowerCase().includes(s))) && (!u || d.Unit === u) && (!f || d.fieldOfficerName === f) && (!dF || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() >= dF.getTime())) && (!dT || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() <= dT.getTime()))); updateKPIs(); renderProcessOverview(); renderCharts(); generateApprovedCustomerInsights(); }
+        function applyFiltersAndRender() { const s = ui.customerSearch.value.toLowerCase(), u = ui.unitFilter.value, f = ui.staffFilter.value, dF = ui.dateFrom.value ? parseDate(ui.dateFrom.value) : null, dT = ui.dateTo.value ? parseDate(ui.dateTo.value) : null; if (dT) dT.setHours(23, 59, 59, 999); if (dF) dF.setHours(0, 0, 0, 0); filteredData = allData.filter(d => (!s || (d.customerName && d.customerName.toLowerCase().includes(s))) && (!u || d.Unit === u) && (!f || d.fieldOfficerName === f) && (!dF || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() >= dF.getTime())) && (!dT || (parseDate(d.actualTime) && parseDate(d.actualTime).getTime() <= dT.getTime()))); updateKPIs(); renderProcessOverview(); renderStaffPerformance(); renderCharts(); generateApprovedCustomerInsights(); }
         function escapeHTML(value) {
             return String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
         }
@@ -680,6 +753,240 @@
             showApplicantsListModal(g.title, filteredData.filter(g.filter));
         }
         
+
+
+        /* =========================================================
+           STAFF WISE PERFORMANCE SCORE - NEW SMART FUNCTION
+           Formula out of 100:
+           Data Quality 25 + Case Acceptance 25 + Rejection Control 20 + Process Movement 20 + Pending Control 10
+           PP unlock only when score >= 95.
+        ========================================================= */
+        function getStaffName(row) {
+            return getPersonName(row, ['fieldOfficerName','FieldOfficerName','StaffName','staffName','FOName','CreatedBy','createdBy'], 'Staff माहिती नाही');
+        }
+        function percent(n, d) {
+            if (!d) return 0;
+            return Math.round((Number(n || 0) / Number(d || 1)) * 100);
+        }
+        function safeScore(n) { return Math.max(0, Math.min(100, Math.round(Number(n || 0)))); }
+        function hasPhotoOrDocs(row, field) {
+            const raw = pickValue(row, [field]);
+            return hasValue(raw) && String(raw).split(/[\s,]+/).filter(Boolean).length > 0;
+        }
+        function rowDataQuality(row) {
+            const checks = [
+                hasValue(row.customerName),
+                hasValue(row.mobileNumber) && String(row.mobileNumber).replace(/\D/g,'').length >= 10,
+                hasValue(row.aadhaarNumber) || hasValue(row.panNumber),
+                hasValue(row.villageName),
+                hasValue(row.taluka),
+                hasValue(row.loanAmountRequested),
+                hasValue(row.loanPurpose),
+                hasValue(row.familyTotalIncome) || hasValue(row.primaryIncomeSource),
+                hasPhotoOrDocs(row, 'photoLinks'),
+                hasPhotoOrDocs(row, 'supportdoc') || hasValue(row.gpsLatitude) || hasValue(row.googleMapsLink)
+            ];
+            return percent(checks.filter(Boolean).length, checks.length);
+        }
+        function classifyRejectionReason(row) {
+            const meta = getProcessMeta(row);
+            const raw = [meta.latestRemark, meta.managerRemark, meta.verifierRemark, meta.blocker, meta.rejectedRemarkText, row.remarks, row.RejectRemarks, row.RejectedRemarks].filter(Boolean).join(' ').toLowerCase();
+            if (!raw.trim()) return 'Remark उपलब्ध नाही';
+            const has = (arr) => arr.some(k => raw.includes(k));
+            if (has(['aadhaar','adhar','आधार','pan','पॅन','kyc'])) return 'KYC / आधार-पॅन समस्या';
+            if (has(['mobile','मोबाईल','phone','फोन','contact','संपर्क','call','कॉल'])) return 'मोबाईल / संपर्क समस्या';
+            if (has(['gps','map','location','address','पत्ता','लोकेशन','गाव','village'])) return 'GPS / पत्ता mismatch';
+            if (has(['photo','फोटो','image','document','doc','कागदपत्र','पेपर','support'])) return 'फोटो / Document missing';
+            if (has(['income','उत्पन्न','emi','ईएमआय','कर्जबाजारी','repayment','परतफेड','क्षमता'])) return 'उत्पन्न / EMI risk';
+            if (has(['purpose','उद्देश','business','व्यवसाय','use','वापर'])) return 'कर्ज उद्देश अस्पष्ट';
+            if (has(['manager','bm','unit manager'])) return 'Manager quality rejection';
+            if (has(['verifier','verification','video','व्हिडिओ','पडताळणी'])) return 'Verifier quality objection';
+            return 'इतर / Manual remark';
+        }
+        function getStaffStats(staffName, sourceData) {
+            const rows = sourceData.filter(row => getStaffName(row) === staffName);
+            const total = rows.length;
+            const approved = rows.filter(row => getProcessMeta(row).status === 'Approved').length;
+            const rejected = rows.filter(row => getProcessMeta(row).status === 'Rejected').length;
+            const pending = rows.filter(row => getProcessMeta(row).status === 'Pending').length;
+            const managerPending = rows.filter(row => { const m = getProcessMeta(row); return m.status === 'Pending' && m.currentStage.includes('Manager'); }).length;
+            const verifierPending = rows.filter(row => { const m = getProcessMeta(row); return m.status === 'Pending' && m.currentStage.includes('Verifier'); }).length;
+            const rework = rows.filter(row => { const m = getProcessMeta(row); return m.status === 'Pending' && m.currentStage.includes('Correction'); }).length;
+            const movedPastManager = rows.filter(row => { const m = getProcessMeta(row); return m.hasManagerReview || m.hasFinalVerification || m.status === 'Approved' || m.status === 'Rejected'; }).length;
+            const closed = approved + rejected;
+            const qualityAverage = total ? Math.round(rows.reduce((sum, row) => sum + rowDataQuality(row), 0) / total) : 0;
+            const dataQualityScore = Math.round(qualityAverage * 0.25);
+            const acceptanceScore = closed ? Math.round((approved / closed) * 25) : 0;
+            const rejectionControlScore = total ? Math.round((1 - rejected / total) * 20) : 0;
+            const movementScore = total ? Math.round((movedPastManager / total) * 20) : 0;
+            const pendingControlScore = total ? Math.round((1 - pending / total) * 10) : 0;
+            const score = safeScore(dataQualityScore + acceptanceScore + rejectionControlScore + movementScore + pendingControlScore);
+            const reasonCounts = {};
+            rows.filter(row => getProcessMeta(row).status === 'Rejected' || getProcessMeta(row).currentStage.includes('Correction')).forEach(row => {
+                const reason = classifyRejectionReason(row);
+                reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
+            });
+            const reasons = Object.entries(reasonCounts).sort((a,b) => b[1] - a[1]).map(([reason,count]) => ({ reason, count }));
+            const units = [...new Set(rows.map(row => row.Unit).filter(Boolean))].join(', ') || '-';
+            return { staffName, rows, total, approved, rejected, pending, managerPending, verifierPending, rework, movedPastManager, closed, qualityAverage, dataQualityScore, acceptanceScore, rejectionControlScore, movementScore, pendingControlScore, score, reasons, units };
+        }
+        function getScoreClass(score) {
+            if (score >= 95) return 'good';
+            if (score >= 80) return 'good';
+            if (score >= 70) return 'watch';
+            return 'bad';
+        }
+        function getGradeText(score) {
+            if (score >= 95) return 'Excellent - PP Unlock';
+            if (score >= 90) return 'Strong पण PP साठी 95% हवे';
+            if (score >= 80) return 'Good पण सुधारणा गरजेची';
+            if (score >= 70) return 'Watch List';
+            return 'Correction Required';
+        }
+        function getStaffNote(stats) {
+            if (!stats.total) return 'या filter मध्ये या staff चा data उपलब्ध नाही.';
+            const ppText = stats.score >= 95 ? 'Performance Pay unlock आहे.' : 'Performance Pay lock आहे कारण score 95% पेक्षा कमी आहे.';
+            const reasonText = stats.reasons.length ? stats.reasons.slice(0,2).map(r => `${r.reason} (${r.count})`).join(', ') : 'मोठे rejection कारण दिसत नाही.';
+            const pendingText = stats.pending ? `Pending ${stats.pending} आहेत - Manager कडे ${stats.managerPending}, Verifier कडे ${stats.verifierPending}, Rework ${stats.rework}.` : 'Pending नाहीत किंवा अत्यल्प आहेत.';
+            const qualityText = stats.qualityAverage >= 90 ? 'data quality मजबूत आहे' : stats.qualityAverage >= 75 ? 'data quality ठीक आहे पण काही fields/documents सुधारावेत' : 'data quality कमजोर आहे, KYC/photo/docs/amount/purpose तपासणे गरजेचे आहे';
+            return `${stats.staffName} यांचे एकूण ${stats.total} cases आहेत. Score ${stats.score}/100 आहे. ${ppText} Case quality: ${qualityText}. Reject/Rework कारणे: ${reasonText}. ${pendingText}`;
+        }
+        function renderStaffPerformance() {
+            const summaryEl = document.getElementById('staff-performance-summary');
+            const gridEl = document.getElementById('staff-performance-grid');
+            const detailEl = document.getElementById('staff-performance-detail');
+            if (!summaryEl || !gridEl || !detailEl) return;
+            const selectedStaff = ui.staffFilter.value;
+            const staffNames = [...new Set(filteredData.map(getStaffName).filter(Boolean))].sort();
+            const statsList = staffNames.map(name => getStaffStats(name, filteredData)).sort((a,b) => b.score - a.score || b.total - a.total);
+            const totalStaff = statsList.length;
+            const avgScore = totalStaff ? Math.round(statsList.reduce((sum, s) => sum + s.score, 0) / totalStaff) : 0;
+            const ppUnlocked = statsList.filter(s => s.score >= 95).length;
+            const totalReject = statsList.reduce((sum, s) => sum + s.rejected, 0);
+            const totalPending = statsList.reduce((sum, s) => sum + s.pending, 0);
+            summaryEl.innerHTML = `
+                <div class="staff-mini-card"><span>एकूण Staff / FX</span><strong>${totalStaff}</strong></div>
+                <div class="staff-mini-card"><span>Average Score</span><strong>${avgScore}/100</strong></div>
+                <div class="staff-mini-card"><span>PP Unlock Staff</span><strong>${ppUnlocked}</strong></div>
+                <div class="staff-mini-card"><span>Total Reject</span><strong>${totalReject}</strong></div>
+                <div class="staff-mini-card"><span>Total Pending</span><strong>${totalPending}</strong></div>`;
+            if (!statsList.length) {
+                gridEl.innerHTML = `<div class="staff-empty">या filter मध्ये staff-wise data नाही.</div>`;
+                detailEl.innerHTML = '';
+                return;
+            }
+            const cardsToShow = selectedStaff ? statsList : statsList.slice(0, 12);
+            gridEl.innerHTML = cardsToShow.map(stats => {
+                const ppClass = stats.score >= 95 ? 'pp-unlocked' : 'pp-locked';
+                const ppIcon = stats.score >= 95 ? 'fa-lock-open' : 'fa-lock';
+                const ppText = stats.score >= 95 ? 'PP UNLOCK' : 'NO PP';
+                const selectedClass = selectedStaff === stats.staffName ? ' selected' : '';
+                return `<div class="staff-card${selectedClass}" data-staff-name="${escapeHTML(stats.staffName)}">
+                    <div class="staff-topline">
+                        <div>
+                            <div class="staff-name">${escapeHTML(stats.staffName)}</div>
+                            <div class="staff-unit"><i class="fas fa-building"></i> ${escapeHTML(stats.units)}</div>
+                            <span class="pp-chip ${ppClass}"><i class="fas ${ppIcon}"></i> ${ppText}</span>
+                        </div>
+                        <div class="score-ring ${getScoreClass(stats.score)}" style="--score:${stats.score}"><span>${stats.score}</span></div>
+                    </div>
+                    <div class="staff-stat-row">
+                        <div class="staff-stat"><strong>${stats.total}</strong><span>Total</span></div>
+                        <div class="staff-stat"><strong>${stats.approved}</strong><span>Approved</span></div>
+                        <div class="staff-stat"><strong>${stats.rejected}</strong><span>Reject</span></div>
+                        <div class="staff-stat"><strong>${stats.pending}</strong><span>Pending</span></div>
+                    </div>
+                </div>`;
+            }).join('');
+            gridEl.querySelectorAll('.staff-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    ui.staffFilter.value = card.dataset.staffName;
+                    applyFiltersAndRender();
+                    document.getElementById('staff-performance-section')?.scrollIntoView({ behavior:'smooth', block:'start' });
+                });
+            });
+            if (selectedStaff) {
+                const selectedStats = getStaffStats(selectedStaff, filteredData);
+                detailEl.innerHTML = buildStaffDetailHTML(selectedStats);
+                detailEl.querySelectorAll('.process-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const applicantData = getApplicantByRow(btn.dataset.row);
+                        if (applicantData) showProcessDetailsModal(applicantData);
+                    });
+                });
+            } else {
+                detailEl.innerHTML = `<div class="staff-empty"><strong>Staff निवडा:</strong> वरच्या staff card वर click करा किंवा filter मधून कर्मचारी निवडा. मग त्या FX/Staff ची smart performance note, reject reasons आणि PP status दिसेल.</div>`;
+            }
+        }
+        function buildStaffDetailHTML(stats) {
+            const ppClass = stats.score >= 95 ? 'pp-unlocked' : 'pp-locked';
+            const ppText = stats.score >= 95 ? 'PP UNLOCKED' : 'NO PP - Score below 95%';
+            const ppIcon = stats.score >= 95 ? 'fa-lock-open' : 'fa-lock';
+            const badRows = stats.rows.filter(row => {
+                const m = getProcessMeta(row);
+                return m.status === 'Rejected' || m.currentStage.includes('Correction') || m.currentStage.includes('Manager / BM कडे Pending') || m.currentStage.includes('Verifier कडे Pending');
+            }).slice(0, 12);
+            const reasonHTML = stats.reasons.length
+                ? `<div class="reason-list">${stats.reasons.map(r => `<span class="reason-pill"><i class="fas fa-triangle-exclamation"></i> ${escapeHTML(r.reason)}: ${r.count}</span>`).join('')}</div>`
+                : `<div class="reason-list"><span class="reason-pill"><i class="fas fa-check-circle"></i> Rejection reason दिसत नाही</span></div>`;
+            const tableRows = badRows.length ? badRows.map(row => {
+                const m = getProcessMeta(row);
+                return `<tr>
+                    <td><strong>${escapeHTML(row.customerName || 'N/A')}</strong><br><small>${escapeHTML(row.villageName || '')}</small></td>
+                    <td>${statusChip(m.status)}</td>
+                    <td>${escapeHTML(m.currentStage)}</td>
+                    <td>${escapeHTML(m.pendingWith)}</td>
+                    <td>${escapeHTML(m.blocker || m.latestRemark || '-')}</td>
+                    <td><button class="row-action-btn process-btn" data-row="${escapeHTML(row.row)}"><i class="fas fa-route"></i> Process</button></td>
+                </tr>`;
+            }).join('') : `<tr><td colspan="6" class="empty-state">या staff साठी reject/rework/pending problem cases नाहीत.</td></tr>`;
+            return `<div class="staff-detail-panel">
+                <div class="staff-detail-head">
+                    <div>
+                        <h3>${escapeHTML(stats.staffName)} - Smart Performance Note</h3>
+                        <p>${escapeHTML(stats.units)} • ${stats.total} cases • Grade: ${escapeHTML(getGradeText(stats.score))}</p>
+                    </div>
+                    <div>
+                        <div class="score-ring ${getScoreClass(stats.score)}" style="--score:${stats.score}; margin-left:auto;"><span>${stats.score}</span></div>
+                        <span class="pp-chip ${ppClass}"><i class="fas ${ppIcon}"></i> ${ppText}</span>
+                    </div>
+                </div>
+                <div class="staff-detail-body">
+                    <div class="staff-note"><strong>Auto Note:</strong> ${escapeHTML(getStaffNote(stats))}</div>
+                    <div class="staff-metric-grid">
+                        <div class="metric-box"><span>Total Cases</span><strong>${stats.total}</strong></div>
+                        <div class="metric-box"><span>Approved</span><strong>${stats.approved}</strong></div>
+                        <div class="metric-box"><span>Rejected</span><strong>${stats.rejected}</strong></div>
+                        <div class="metric-box"><span>Pending</span><strong>${stats.pending}</strong></div>
+                        <div class="metric-box"><span>Manager Pending</span><strong>${stats.managerPending}</strong></div>
+                        <div class="metric-box"><span>Verifier Pending</span><strong>${stats.verifierPending}</strong></div>
+                        <div class="metric-box"><span>Rework / Correction</span><strong>${stats.rework}</strong></div>
+                        <div class="metric-box"><span>Data Quality Avg</span><strong>${stats.qualityAverage}%</strong></div>
+                    </div>
+                    <div class="score-breakdown">
+                        <table>
+                            <thead><tr><th>Score Component</th><th>Points</th><th>Meaning</th></tr></thead>
+                            <tbody>
+                                <tr><td>Data Quality</td><td>${stats.dataQualityScore}/25</td><td>KYC, mobile, loan purpose, income, photo/docs/GPS completeness</td></tr>
+                                <tr><td>Case Acceptance</td><td>${stats.acceptanceScore}/25</td><td>Closed cases पैकी approved ratio</td></tr>
+                                <tr><td>Rejection Control</td><td>${stats.rejectionControlScore}/20</td><td>Reject कमी असतील तर score जास्त</td></tr>
+                                <tr><td>Process Movement</td><td>${stats.movementScore}/20</td><td>Cases Manager/Verifier stage पर्यंत व्यवस्थित पुढे गेल्या का</td></tr>
+                                <tr><td>Pending Control</td><td>${stats.pendingControlScore}/10</td><td>Pending कमी ठेवणे</td></tr>
+                                <tr><th>Total</th><th>${stats.score}/100</th><th>${stats.score >= 95 ? 'Performance Pay Unlock' : 'Performance Pay Locked'}</th></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="remarks-panel" style="margin-bottom:14px;"><h3><i class="fas fa-bug"></i> Reject / Rework का होतो?</h3>${reasonHTML}</div>
+                    <div class="quality-table-wrap">
+                        <table class="quality-table">
+                            <thead><tr><th>Customer</th><th>Status</th><th>Current Stage</th><th>Pending / Decision By</th><th>Remark / Blocker</th><th>Action</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+        }
+
         function renderCharts() {['loanTypeChart', 'talukaChart'].forEach((id, i) => { if (chartInstances[id]) chartInstances[id].destroy(); const ctx = document.getElementById(id)?.getContext('2d'); if (!ctx) return; const field = i === 0 ? 'loanProductType' : 'taluka'; const counts = filteredData.reduce((a, item) => { const k = item[field] || 'माहिती नाही'; a[k] = (a[k] || 0) + 1; return a; }, {}); const colors = ['#0078d4', '#28a745', '#ffb900', '#e81123', '#17a2b8', '#6c757d', '#512da8']; chartInstances[id] = new Chart(ctx, { type: i === 0 ? 'doughnut' : 'bar', data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: Object.keys(counts).map((_, idx) => colors[idx % colors.length]) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: i === 0, position: 'bottom' } }, scales: i === 1 ? { y: { beginAtZero: true } } : {} } }); }); }
         
         function generateApprovedCustomerInsights() { 
