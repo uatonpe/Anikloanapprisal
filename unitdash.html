@@ -3,6 +3,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -519,22 +521,28 @@
             const compact = s.replace(/\s+/g, ' ');
             const noSpace = compact.replace(/\s+/g, '');
 
-            const hasAny = (arr) => arr.some(x => compact.includes(x) || noSpace.includes(String(x).replace(/\s+/g, '')));
+            const clean = (x) => String(x).toLowerCase().trim();
+            const cleanNoSpace = (x) => clean(x).replace(/\s+/g, '');
+            const hasAny = (arr) => arr.some(x => compact.includes(clean(x)) || noSpace.includes(cleanNoSpace(x)));
+            const equalsAny = (arr) => arr.some(x => compact === clean(x) || noSpace === cleanNoSpace(x));
 
             if (hasAny(['rework','correction','दुरुस्ती','पुन्हा तपासा','resubmit','re submit'])) return 'Rework';
 
+            // Strong rejection words first. This avoids English strings like "not approved" becoming Approved.
             if (hasAny([
                 'rejected','reject','rejectd','rejet','rejct','rject','rejected success','reject success','rejection',
-                'not approved','failed','fail','declined','deny','denied','नामंजूर','नाकारले','नाकार','नकार','रिजेक्ट',
+                'not approved','not approve','failed','fail','declined','deny','denied','नामंजूर','नाकारले','नाकार','नकार','रिजेक्ट',
                 'अपात्र','योग्य नाही','हरकत आहे','कर्ज देऊ नये','कर्ज देऊ नका','देऊ नये','देऊ नका','रद्द'
             ])) return 'Rejected';
 
+            // Positive Marathi remarks like "कर्ज देण्यात हरकत नाही" must be treated as Approved, not Rejected.
             if (hasAny([
-                'approved','approve','approval','approve success','success','successful','done','completed','ok','accepted',
-                'recommended','recommend','recommendation','मंजूर','manjur','मान्य','योग्य आहे','पात्र','हरकत नाही','देण्यात हरकत नाही'
-            ])) return 'Approved';
+                'loan approved','approved','approve','approve success','success','successful','done','completed','ok','accepted',
+                'recommended','recommend','recommendation','मंजूर','manjur','मान्य','योग्य आहे','हरकत नाही','देण्यात हरकत नाही',
+                'कर्ज देण्यात हरकत नाही','कर्ज द्यावे','कर्ज देता येईल','देऊ शकतो','देऊ शकता'
+            ]) || equalsAny(['पात्र','eligible'])) return 'Approved';
 
-            if (hasAny(['pending','hold','waiting','प्रलंबित','बाकी','wait'])) return 'Pending';
+            if (hasAny(['pending','hold','waiting','open','प्रलंबित','बाकी','wait'])) return 'Pending';
             return '';
         }
         function normalizeStatus(input) {
@@ -568,7 +576,17 @@
             ]);
             const rejectedRemarkDecision = statusWord(rejectedRemark);
 
-            if (managerStatus === 'Rejected' || managerRemarkDecision === 'Rejected' || rejectedRemarkDecision === 'Rejected' || hasValue(rejectedRemark)) {
+            const managerApprovedExplicit = managerStatus === 'Approved';
+            const managerRejectedExplicit =
+                managerStatus === 'Rejected' ||
+                (managerRemarkDecision === 'Rejected' && !managerApprovedExplicit) ||
+                (rejectedRemarkDecision === 'Rejected' && !managerApprovedExplicit);
+
+            // IMPORTANT FIX:
+            // Earlier, any non-empty RejectRemarks/RejectReason column made the case Rejected.
+            // Now it becomes Rejected only when the actual status/remark contains a rejection word.
+            // ManagerApprovalStatus = Approved + ManagerRemarks = "हरकत नाही" will not be shown as Rejected.
+            if (managerRejectedExplicit) {
                 return { status: 'Rejected', finalStatus: finalStatus || 'Pending', managerStatus: 'Rejected', managerApprovalStatusValue };
             }
 
