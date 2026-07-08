@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -233,10 +235,15 @@
                 document.getElementById('visitDate').valueAsDate = new Date();
                 elements.submitButton.innerHTML = `<i class="fas fa-paper-plane"></i>फॉर्म सबमिट करा`;
                 fetchStaffNames('fieldOfficerName');
-                initCameraOnce().then(initializeGeolocation).catch(err => {
-                    console.error(err);
-                    alert("ॲप वापरण्यासाठी कॅमेरा आणि लोकेशनची परवानगी आवश्यक आहे. कृपया परवानगी द्या.");
-                });
+                // Camera fail झाला तरी form थांबणार नाही; location background मध्ये प्रयत्न करत राहील.
+                initCameraOnce()
+                    .catch(err => {
+                        console.warn('Camera not started:', err);
+                        elements.gpsStatusDiv.innerHTML = "⚠️ कॅमेरा सुरू झाला नाही; तरीही लोकेशन घेण्याचा प्रयत्न सुरू आहे.";
+                        elements.gpsStatusDiv.style.backgroundColor = '#ff9800';
+                        elements.gpsStatusDiv.style.color = 'white';
+                    })
+                    .finally(() => initializeGeolocation());
             }
             window.scrollTo(0, 0);
         }
@@ -366,10 +373,11 @@
                         elements.gpsStatusDiv.style.color = 'white';
                         elements.captureButton.disabled = false;
                     } else {
-                        elements.gpsStatusDiv.textContent = "या रेकॉर्डसाठी मूळ लोकेशन उपलब्ध नाही.";
-                        elements.gpsStatusDiv.style.backgroundColor = 'var(--light-text)';
+                        elements.gpsStatusDiv.textContent = "या रेकॉर्डसाठी मूळ लोकेशन नाही; नवीन/backup लोकेशन घेण्याचा प्रयत्न सुरू आहे.";
+                        elements.gpsStatusDiv.style.backgroundColor = '#ff9800';
                         elements.gpsStatusDiv.style.color = 'white';
-                        elements.captureButton.disabled = true;
+                        elements.captureButton.disabled = false;
+                        initializeGeolocation();
                     }
 
                     if (data.photoLinks) {
@@ -393,80 +401,264 @@
             }
         }
         
-        // *** START: IMPROVED GEOLOCATION LOGIC ***
-        function initializeGeolocation() {
-            elements.captureButton.disabled = true;
+        // *** START: ALWAYS-SUBMIT GEOLOCATION LOGIC ***
+        const LOCATION_CACHE_KEY = 'anik_last_good_location_v2';
+        let locationWatchId = null;
 
-            if (!navigator.geolocation) {
-                elements.gpsStatusDiv.textContent = "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही.";
-                elements.gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
-                elements.gpsStatusDiv.style.color = 'white';
-                return;
+        function setGpsStatus(html, bg = '#ffc107', color = 'white') {
+            elements.gpsStatusDiv.innerHTML = html;
+            elements.gpsStatusDiv.style.backgroundColor = bg;
+            elements.gpsStatusDiv.style.color = color;
+        }
+
+        function normalizeLocation(loc = {}) {
+            const latNum = loc.lat !== undefined && loc.lat !== null && loc.lat !== '' ? Number(loc.lat) : null;
+            const lonNum = loc.lon !== undefined && loc.lon !== null && loc.lon !== '' ? Number(loc.lon) : null;
+            return {
+                lat: Number.isFinite(latNum) ? latNum : null,
+                lon: Number.isFinite(lonNum) ? lonNum : null,
+                accuracy: loc.accuracy || '',
+                address: loc.address || 'पत्ता उपलब्ध नाही',
+                source: loc.source || 'UNKNOWN',
+                note: loc.note || '',
+                capturedAt: loc.capturedAt || new Date().toISOString()
+            };
+        }
+
+        function hasCoords(loc) { return !!(loc && loc.lat !== null && loc.lat !== undefined && loc.lon !== null && loc.lon !== undefined); }
+
+        function saveLastGoodLocation(loc) {
+            if (!hasCoords(loc)) return;
+            try { localStorage.setItem(LOCATION_CACHE_KEY, JSON.stringify(loc)); } catch(e) {}
+        }
+
+        function getCachedLocation() {
+            try {
+                const raw = localStorage.getItem(LOCATION_CACHE_KEY);
+                if (!raw) return null;
+                const loc = normalizeLocation(JSON.parse(raw));
+                loc.source = 'CACHED_LAST_GOOD_LOCATION';
+                loc.note = 'मोबाईल/ब्राउझरमध्ये आधी मिळालेले शेवटचे location वापरले.';
+                return hasCoords(loc) ? loc : null;
+            } catch(e) { return null; }
+        }
+
+        async function reverseGeocode(lat, lon) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+                const data = await res.json();
+                return data.display_name || 'पत्ता उपलब्ध नाही';
+            } catch(e) {
+                return 'पत्ता मिळवता आला नाही';
+            }
+        }
+
+        function getBrowserPosition(options) {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) return reject({ code: 0, message: 'Geolocation not supported' });
+                navigator.geolocation.getCurrentPosition(resolve, reject, options);
+            });
+        }
+
+        function watchPositionOnce(maxWaitMs = 12000) {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) return reject({ code: 0, message: 'Geolocation not supported' });
+                let done = false;
+                const finish = (fn, value) => {
+                    if (done) return;
+                    done = true;
+                    if (locationWatchId !== null) {
+                        navigator.geolocation.clearWatch(locationWatchId);
+                        locationWatchId = null;
+                    }
+                    fn(value);
+                };
+                locationWatchId = navigator.geolocation.watchPosition(
+                    pos => finish(resolve, pos),
+                    err => finish(reject, err),
+                    { enableHighAccuracy: true, maximumAge: 0, timeout: maxWaitMs }
+                );
+                setTimeout(() => finish(reject, { code: 3, message: 'Watch timeout' }), maxWaitMs);
+            });
+        }
+
+        async function locationFromPosition(position, source) {
+            const { latitude, longitude, accuracy } = position.coords;
+            const loc = normalizeLocation({
+                lat: latitude,
+                lon: longitude,
+                accuracy: accuracy ? `${Math.round(accuracy)} मीटर` : '',
+                address: 'पत्ता लोड होत आहे...',
+                source
+            });
+            currentLocationData = loc;
+            setGpsStatus(`✅ लोकेशन मिळाले!<br><small>Source: ${source} | अचूकता: ${loc.accuracy || 'NA'}</small>`, 'var(--success-color)');
+            loc.address = await reverseGeocode(latitude, longitude);
+            currentLocationData = loc;
+            saveLastGoodLocation(loc);
+            elements.captureButton.disabled = false;
+            setGpsStatus(`✅ लोकेशन मिळाले!<br><small>${loc.address}<br>Source: ${source} | अचूकता: ${loc.accuracy || 'NA'}</small>`, 'var(--success-color)');
+            return loc;
+        }
+
+        async function getIpApproxLocation() {
+            const urls = [
+                'https://ipapi.co/json/',
+                'https://ipwho.is/'
+            ];
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    const lat = data.latitude ?? data.lat;
+                    const lon = data.longitude ?? data.lon;
+                    if (lat && lon) {
+                        const address = [data.city, data.region, data.country_name || data.country].filter(Boolean).join(', ');
+                        return normalizeLocation({
+                            lat,
+                            lon,
+                            accuracy: 'Approx / IP based',
+                            address: address || 'IP based approximate location',
+                            source: 'IP_APPROX_LOCATION',
+                            note: 'GPS उपलब्ध नसल्यामुळे network/IP वर आधारित अंदाजे location घेतले.'
+                        });
+                    }
+                } catch(e) {}
+            }
+            return null;
+        }
+
+        function buildFormAddressText() {
+            const customer = document.getElementById('customerName')?.value || '';
+            const village = document.getElementById('villageName')?.value || '';
+            const taluka = document.getElementById('taluka')?.value || '';
+            const district = document.getElementById('district')?.value || 'धाराशिव';
+            const branch = document.getElementById('branchName')?.value || '';
+            const officer = document.getElementById('fieldOfficerName')?.value || '';
+            return [customer, village, taluka, district, branch ? `Branch: ${branch}` : '', officer ? `Officer: ${officer}` : ''].filter(Boolean).join(', ');
+        }
+
+        async function getFormAddressLocation() {
+            const text = buildFormAddressText();
+            const query = [document.getElementById('villageName')?.value, document.getElementById('taluka')?.value, document.getElementById('district')?.value || 'Dharashiv', 'Maharashtra', 'India'].filter(Boolean).join(', ');
+            if (query.trim().length > 10) {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`);
+                    const arr = await res.json();
+                    if (Array.isArray(arr) && arr.length > 0) {
+                        return normalizeLocation({
+                            lat: arr[0].lat,
+                            lon: arr[0].lon,
+                            accuracy: 'Approx / address geocoded',
+                            address: `Form address geocoded: ${arr[0].display_name || text || query}`,
+                            source: 'FORM_ADDRESS_GEOCODED',
+                            note: 'GPS/IP location मिळाले नाही म्हणून form मधील गाव/तालुका/जिल्हा वरून अंदाजे location घेतले.'
+                        });
+                    }
+                } catch(e) {}
+            }
+            return normalizeLocation({
+                lat: null,
+                lon: null,
+                accuracy: 'No coordinates',
+                address: `Form address fallback: ${text || 'ग्राहक/गाव माहिती उपलब्ध नाही'}`,
+                source: 'FORM_ADDRESS_TEXT_ONLY',
+                note: 'Device GPS, cached आणि IP location मिळाले नाही; त्यामुळे form address text save केला.'
+            });
+        }
+
+        async function ensureBestLocation(showFinalStatus = true) {
+            // 1) आधी current exact/backup location असेल तर ते वापरा.
+            if (currentLocationData && (hasCoords(currentLocationData) || currentLocationData.address)) return currentLocationData;
+
+            // 2) High accuracy GPS
+            try {
+                setGpsStatus('GPS लोकेशन मिळवले जात आहे...', '#ffc107');
+                const pos = await getBrowserPosition({ enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+                return await locationFromPosition(pos, 'GPS_HIGH_ACCURACY');
+            } catch (e1) {
+                console.warn('High accuracy GPS failed:', e1);
             }
 
-            const handleSuccess = (position) => {
-                const { latitude, longitude, accuracy } = position.coords;
-                currentLocationData = { lat: latitude, lon: longitude, address: "पत्ता लोड होत आहे..." };
+            // 3) Low accuracy/network geolocation
+            try {
+                setGpsStatus('GPS सिग्नल कमजोर आहे. Network location वापरून प्रयत्न करत आहे...', '#ff9800');
+                const pos = await getBrowserPosition({ enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 });
+                return await locationFromPosition(pos, 'NETWORK_LOW_ACCURACY');
+            } catch (e2) {
+                console.warn('Low accuracy location failed:', e2);
+            }
 
-                elements.gpsStatusDiv.innerHTML = `✅ लोकेशन मिळाले!<br><small>अचूकता: ${accuracy.toFixed(0)} मीटर</small>`;
-                elements.gpsStatusDiv.style.backgroundColor = 'var(--success-color)';
-                elements.gpsStatusDiv.style.color = 'white';
+            // 4) watchPosition एकदा try
+            try {
+                setGpsStatus('Location अजून मिळत आहे; live GPS watch सुरू आहे...', '#ff9800');
+                const pos = await watchPositionOnce(10000);
+                return await locationFromPosition(pos, 'GPS_WATCH_POSITION');
+            } catch (e3) {
+                console.warn('watchPosition failed:', e3);
+            }
+
+            // 5) Cached last successful location
+            const cached = getCachedLocation();
+            if (cached) {
+                currentLocationData = cached;
                 elements.captureButton.disabled = false;
+                if (showFinalStatus) setGpsStatus(`⚠️ Current GPS नाही; शेवटचे मिळालेले location वापरले.<br><small>${cached.address}</small>`, '#ff9800');
+                return cached;
+            }
 
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
-                    .then(res => res.json())
-                    .then(data => { currentLocationData.address = data.display_name || "पत्ता उपलब्ध नाही"; })
-                    .catch(() => { currentLocationData.address = "पत्ता मिळवता आला नाही"; });
-            };
+            // 6) IP based approximate location
+            const ipLoc = await getIpApproxLocation();
+            if (ipLoc) {
+                currentLocationData = ipLoc;
+                elements.captureButton.disabled = false;
+                if (showFinalStatus) setGpsStatus(`⚠️ GPS नाही; IP/Network approximate location घेतले.<br><small>${ipLoc.address}</small>`, '#ff9800');
+                return ipLoc;
+            }
 
-            const finalErrorHandler = (error) => {
-                let message = "त्रुटी: लोकेशन मिळवणे शक्य झाले नाही. नेटवर्क आणि GPS सेटिंग तपासा.";
-                if (error.code === 1) { // PERMISSION_DENIED
-                    message = "त्रुटी: लोकेशनसाठी परवानगी नाकारली आहे. कृपया ब्राउझर सेटिंग्जमध्ये परवानगी द्या.";
-                } else if (error.code === 2) { // POSITION_UNAVAILABLE
-                    message = "त्रुटी: सध्या लोकेशन उपलब्ध नाही. कृपया मोकळ्या जागेत प्रयत्न करा.";
-                }
-                elements.gpsStatusDiv.textContent = message;
-                elements.gpsStatusDiv.style.backgroundColor = 'var(--danger-color)';
-                elements.gpsStatusDiv.style.color = 'white';
-            };
-            
-            const tryLowAccuracy = () => {
-                elements.gpsStatusDiv.textContent = "GPS सिग्नल कमजोर आहे. नेटवर्क लोकेशन वापरून प्रयत्न करत आहे...";
-                elements.gpsStatusDiv.style.backgroundColor = '#ff9800'; // Orange color for trying again
-                navigator.geolocation.getCurrentPosition(handleSuccess, finalErrorHandler, {
-                    enableHighAccuracy: false,
-                    timeout: 10000,
-                    maximumAge: 300000
-                });
-            };
-
-            elements.gpsStatusDiv.textContent = "GPS लोकेशन मिळवले जात आहे...";
-            elements.gpsStatusDiv.style.backgroundColor = '#ffc107';
-            navigator.geolocation.getCurrentPosition(
-                handleSuccess,
-                tryLowAccuracy,
-                {
-                    enableHighAccuracy: true,
-                    timeout: 15000,
-                    maximumAge: 60000
-                }
-            );
+            // 7) Form address fallback - form थांबणार नाही आणि location field रिकामे राहणार नाही.
+            const formLoc = await getFormAddressLocation();
+            currentLocationData = formLoc;
+            elements.captureButton.disabled = false;
+            if (showFinalStatus) setGpsStatus(`⚠️ Exact GPS मिळाले नाही; form address fallback save होईल.<br><small>${formLoc.address}</small>`, '#ff9800');
+            return formLoc;
         }
-        // *** END: IMPROVED GEOLOCATION LOGIC ***
+
+        function initializeGeolocation() {
+            elements.captureButton.disabled = false; // form/photo थांबू नये; capture वेळी fallback watermark येईल.
+            ensureBestLocation(true);
+        }
+
+        async function getLocationForSubmit() {
+            if (formMode === 'update' && originalLocationData?.lat) return originalLocationData;
+            if (currentLocationData?.source === 'FORM_ADDRESS_TEXT_ONLY' || currentLocationData?.source === 'FORM_ADDRESS_GEOCODED') {
+                // Submit वेळी form fields भरलेले असतात, म्हणून fallback address fresh करा.
+                currentLocationData = await getFormAddressLocation();
+                return currentLocationData;
+            }
+            if (currentLocationData && (hasCoords(currentLocationData) || currentLocationData.address)) return currentLocationData;
+            return await ensureBestLocation(false);
+        }
+        // *** END: ALWAYS-SUBMIT GEOLOCATION LOGIC ***
         
         function updatePhotoGallery() { elements.photoGalleryCard.style.display = capturedPhotos.length > 0 ? 'block' : 'none'; elements.photoGallery.innerHTML = ''; capturedPhotos.forEach((photo, index) => { const container = document.createElement('div'); container.className = 'thumbnail-container'; const img = document.createElement('img'); img.src = photo; img.className = 'thumbnail'; const deleteBtn = document.createElement('button'); deleteBtn.type = 'button'; deleteBtn.innerHTML = '&times;'; deleteBtn.className = 'delete-btn'; deleteBtn.onclick = () => { capturedPhotos.splice(index, 1); updatePhotoGallery(); }; container.append(img, deleteBtn); elements.photoGallery.appendChild(container); }); }
         
         async function createWatermarkedImage(canvas) { 
-            const locationForWatermark = formMode === 'update' ? originalLocationData : currentLocationData;
-            
-            if (!locationForWatermark || !locationForWatermark.lat) {
-                throw new Error("वॉटरमार्कसाठी लोकेशन डेटा उपलब्ध नाही.");
+            let locationForWatermark = formMode === 'update' && originalLocationData?.lat ? originalLocationData : currentLocationData;
+            if (!locationForWatermark || !locationForWatermark.address) {
+                locationForWatermark = await ensureBestLocation(false);
             }
-
+            if (locationForWatermark?.source === 'FORM_ADDRESS_TEXT_ONLY' || locationForWatermark?.source === 'FORM_ADDRESS_GEOCODED') {
+                // User ने नंतर गाव/ग्राहक माहिती भरली असल्यास latest form address watermark मध्ये घ्या.
+                locationForWatermark = await getFormAddressLocation();
+                currentLocationData = locationForWatermark;
+            }
+            const hasLatLon = hasCoords(locationForWatermark);
+            const coordsText = hasLatLon ? `${Number(locationForWatermark.lat).toFixed(6)}, ${Number(locationForWatermark.lon).toFixed(6)}` : 'Coordinates उपलब्ध नाहीत';
             const now = new Date(); 
             const dateTime = `${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US', { hour12: true })}`; 
-            elements.watermarkOverlay.innerHTML = `<p style="margin: 4px 0; font-size: 10px; font-weight: 300;">${locationForWatermark.address}</p><p style="margin: 4px 0; font-size: 10px;"><b>Coords:</b> ${locationForWatermark.lat.toFixed(6)}, ${locationForWatermark.lon.toFixed(6)}</p><p style="margin: 4px 0; font-size: 10px;"><b>वेळ:</b> ${dateTime}</p>`; 
+            elements.watermarkOverlay.innerHTML = `<p style="margin: 4px 0; font-size: 10px; font-weight: 300;">${locationForWatermark.address || 'Location fallback saved'}</p><p style="margin: 4px 0; font-size: 10px;"><b>Coords:</b> ${coordsText}</p><p style="margin: 4px 0; font-size: 10px;"><b>Source:</b> ${locationForWatermark.source || 'NA'} | <b>Accuracy:</b> ${locationForWatermark.accuracy || 'NA'}</p><p style="margin: 4px 0; font-size: 10px;"><b>वेळ:</b> ${dateTime}</p>`; 
             elements.watermarkOverlay.style.cssText = `position: absolute; left: -9999px; width: 500px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 12px; font-family: 'Poppins', Arial, sans-serif; border-radius: 6px; text-shadow: 2px 2px 4px #000;`; 
             const watermarkCanvas = await html2canvas(elements.watermarkOverlay, { backgroundColor: null, scale: 3 }); 
             const context = canvas.getContext('2d'); 
@@ -477,18 +669,17 @@
         }
 
         async function handleCaptureClick() { 
-            const locationCheck = formMode === 'update' ? originalLocationData : currentLocationData;
-            if (!locationCheck || !locationCheck.lat) { 
-                alert("लोकेशनची माहिती उपलब्ध नाही, कृपया थांबा."); return; 
-            } 
             const button = elements.captureButton; 
             const originalHTML = button.innerHTML; 
             button.innerHTML = '<div class="spinner"></div> कॅप्चर करत आहे...'; 
             button.disabled = true; 
             try { 
+                if (!currentLocationData && !(formMode === 'update' && originalLocationData?.lat)) {
+                    await ensureBestLocation(false); // location नसले तरी fallback तयार करतो; फोटो थांबवत नाही.
+                }
                 const canvas = elements.hiddenCanvas; 
-                canvas.width = elements.video.videoWidth; 
-                canvas.height = elements.video.videoHeight; 
+                canvas.width = elements.video.videoWidth || 1280; 
+                canvas.height = elements.video.videoHeight || 720; 
                 canvas.getContext('2d').drawImage(elements.video, 0, 0, canvas.width, canvas.height); 
                 const watermarkedImageDataUrl = await createWatermarkedImage(canvas); 
                 capturedPhotos.push(watermarkedImageDataUrl); 
@@ -542,15 +733,14 @@
             data.photos = existingPhotoLinks.concat(capturedPhotos); 
             data.supportdoc = existingDocLinks.concat(fileDataUrls); 
             
-            if (formMode === 'update') {
-                data.gpsLatitude = originalLocationData?.lat || '';
-                data.gpsLongitude = originalLocationData?.lon || '';
-                data.gpsAddress = originalLocationData?.address || '';
-            } else {
-                data.gpsLatitude = currentLocationData?.lat || '';
-                data.gpsLongitude = currentLocationData?.lon || '';
-                data.gpsAddress = currentLocationData?.address || '';
-            }
+            const bestSubmitLocation = await getLocationForSubmit();
+            data.gpsLatitude = bestSubmitLocation?.lat ?? '';
+            data.gpsLongitude = bestSubmitLocation?.lon ?? '';
+            data.gpsAddress = bestSubmitLocation?.address || 'Location fallback not available';
+            data.gpsLocationSource = bestSubmitLocation?.source || '';
+            data.gpsAccuracy = bestSubmitLocation?.accuracy || '';
+            data.gpsNote = bestSubmitLocation?.note || '';
+            data.gpsCapturedAt = bestSubmitLocation?.capturedAt || new Date().toISOString();
             
             lastSubmittedData = data; 
             try { 
