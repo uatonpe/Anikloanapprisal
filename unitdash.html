@@ -1,10 +1,12 @@
 
+
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>युनिट डॅशबोर्ड - अनिक फायनान्शियल सर्व्हिसेस</title>
+    <title>FX Balanced Performance Score Dashboard - ANIK</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -301,6 +303,31 @@
         .score-breakdown table { width:100%; border-collapse:collapse; }
         .score-breakdown th, .score-breakdown td { padding:10px 12px; border-bottom:1px solid #e8eef7; text-align:left; font-size:.9rem; }
         .score-breakdown th { background:#f1f7ff; color:#0f172a; font-weight:900; }
+        .score-explain-note { margin:14px 0; padding:13px 15px; border-radius:15px; background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a5f; font-weight:700; line-height:1.5; }
+        .deduction-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; margin:16px 0; }
+        .deduction-card { background:#fff; border:1px solid #e4edf9; border-radius:18px; overflow:hidden; box-shadow:0 9px 22px rgba(15,52,96,.07); }
+        .deduction-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 15px; background:#f8fbff; border-bottom:1px solid #e4edf9; }
+        .deduction-head-title { display:flex; align-items:center; gap:9px; color:#0f172a; font-weight:900; }
+        .deduction-score { white-space:nowrap; padding:6px 10px; border-radius:999px; background:#eaf4ff; color:#0b63ce; font-weight:950; }
+        .deduction-score.full { background:#dcfce7; color:#15803d; }
+        .deduction-body { padding:13px 15px; }
+        .deduction-summary { color:#475569; font-size:.86rem; font-weight:700; margin-bottom:10px; }
+        .deduction-list { display:flex; flex-direction:column; gap:9px; }
+        .deduction-item { border-left:4px solid #f59e0b; background:#fffbeb; border-radius:11px; padding:9px 10px; }
+        .deduction-item-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+        .deduction-item strong { color:#78350f; font-size:.86rem; }
+        .deduction-loss { white-space:nowrap; color:#b45309; font-weight:950; font-size:.82rem; }
+        .deduction-reason { margin-top:4px; color:#6b7280; font-size:.79rem; line-height:1.4; }
+        .deduction-ok { display:flex; align-items:center; gap:8px; color:#15803d; font-weight:850; padding:8px 0; }
+        .case-score-wrap { overflow:auto; border:1px solid #e4edf9; border-radius:16px; background:#fff; margin-top:14px; }
+        .case-score-table { width:100%; min-width:1120px; border-collapse:collapse; }
+        .case-score-table th,.case-score-table td { padding:9px 10px; border-bottom:1px solid #eef2f7; text-align:left; font-size:.82rem; vertical-align:top; }
+        .case-score-table th { background:#0b63ce; color:#fff; position:sticky; top:0; z-index:1; font-weight:900; }
+        .case-score-table .score-low { color:#b91c1c; font-weight:950; }
+        .case-score-table .score-mid { color:#b45309; font-weight:950; }
+        .case-score-table .score-high { color:#15803d; font-weight:950; }
+        .case-reasons { max-width:400px; color:#475569; line-height:1.4; }
+        .case-reasons span { display:block; margin-bottom:3px; }
         .quality-table-wrap { overflow:auto; border:1px solid #e4edf9; border-radius:16px; background:#fff; }
         .quality-table { width:100%; min-width:850px; border-collapse:collapse; }
         .quality-table th, .quality-table td { padding:10px 12px; border-bottom:1px solid #eef2f7; text-align:left; font-size:.86rem; vertical-align:top; }
@@ -329,6 +356,21 @@
             .stepper { grid-template-columns: 1fr; }
             #modal-table { min-width: 1100px; }
         }
+
+        .data-status-bar { display:none; margin:-6px 0 18px; padding:11px 14px; border-radius:14px; font-weight:800; font-size:.88rem; border:1px solid #bfdbfe; background:#eff6ff; color:#1e40af; }
+        .data-status-bar.show { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+        .data-status-bar.warn { background:#fffbeb; border-color:#fde68a; color:#92400e; }
+        .data-status-bar.error { background:#fff1f2; border-color:#fecaca; color:#b91c1c; }
+        .status-retry-btn, .summary-action-btn { border:0; border-radius:10px; padding:7px 11px; font-family:inherit; font-weight:900; cursor:pointer; background:#0b63ce; color:#fff; }
+        .summary-action-btn { background:#eef4ff; color:#0b63ce; border:1px solid #cfe0ff; }
+        .filter-btn:disabled { opacity:.55; cursor:not-allowed; }
+        .chip-rework { color:#9a3412; background:#ffedd5; }
+        .chip-inconsistent { color:#7f1d1d; background:#fee2e2; border:1px dashed #ef4444; }
+        .pp-provisional { color:#92400e; background:#fef3c7; border:1px solid #fde68a; }
+        .modal-load-more-wrap { display:flex; justify-content:center; padding:14px; position:sticky; bottom:0; background:linear-gradient(180deg,rgba(255,255,255,.72),#fff 45%); }
+        .modal-load-more { border:0; border-radius:12px; padding:10px 18px; background:#0b63ce; color:#fff; font-family:inherit; font-weight:900; cursor:pointer; }
+        .small-muted { color:#64748b; font-size:.78rem; font-weight:700; }
+        .score-na { background:#eef2f7 !important; }
     </style>
 </head>
 <body>
@@ -340,13 +382,13 @@
                 <div class="hero-logo-wrap"><img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Logo"></div>
                 <div>
                     <h1>युनिट परफॉर्मन्स डॅशबोर्ड</h1>
-                    <p class="hero-subtitle">Smart Verification Tracker • Pending Flow • Customer-wise Remarks</p>
+                    <p class="hero-subtitle">स्मार्ट पडताळणी ट्रॅकर • प्रलंबित काम • ग्राहकनिहाय शेरा</p>
                 </div>
             </div>
             <div class="hero-badges">
-                <span class="hero-badge"><i class="fas fa-route"></i> Manager → Verifier Flow</span>
-                <span class="hero-badge"><i class="fas fa-user-clock"></i> Pending With</span>
-                <span class="hero-badge"><i class="fas fa-comments"></i> Rejection Remarks</span>
+                <span class="hero-badge"><i class="fas fa-route"></i> व्यवस्थापक → पडताळणीकर्ता</span>
+                <span class="hero-badge"><i class="fas fa-user-clock"></i> काम कोणाकडे प्रलंबित</span>
+                <span class="hero-badge"><i class="fas fa-comments"></i> नामंजुरीचे कारण</span>
             </div>
         </header>
 
@@ -359,6 +401,7 @@
             <div class="filter-group"><label>&nbsp;</label><button type="button" id="load-date-data-btn" class="filter-btn"><i class="fas fa-search"></i> तारीखेनुसार डेटा लोड करा</button></div>
             <div class="filter-group"><label>&nbsp;</label><button type="button" id="load-current-month-btn" class="filter-btn secondary"><i class="fas fa-calendar-day"></i> चालू महिना</button></div>
         </section>
+        <div id="data-status-bar" class="data-status-bar" role="status" aria-live="polite"></div>
 
         <section class="kpi-container">
             <div class="kpi-card clickable" id="kpi-total" data-status="Total"><div class="kpi-icon"><i class="fas fa-file-alt"></i></div><div class="kpi-content"><h3 id="total-count">0</h3><p>एकूण अर्ज</p></div></div>
@@ -370,17 +413,17 @@
 
         <section class="grid-card grid-card-full process-workflow-section" id="process-workflow-section">
             <h2>अर्ज प्रोसेस ट्रॅकर</h2>
-            <p class="section-help"><strong>Fix Applied:</strong> Field/Staff remark आता Manager decision म्हणून वापरला जाणार नाही. ManagerApprovalStatus = Pending असेल तर अर्ज Manager/BM कडे Pending दिसेल, Rejected मध्ये जाणार नाही.</p>
+            <p class="section-help"><strong>अचूक प्रक्रिया:</strong> कर्मचारी नोंद → व्यवस्थापक/BM निर्णय → पडताळणीकर्ता → अंतिम स्थिती. प्रत्येक टप्प्याचा निर्णय स्वतंत्रपणे मोजला जातो.</p>
             <div class="pipeline-grid" id="process-overview-grid"></div>
         </section>
 
         <section class="grid-card grid-card-full staff-performance-section" id="staff-performance-section">
             <div class="staff-section-head">
                 <div>
-                    <h2>Staff Wise Performance Score & PP Unlock</h2>
-                    <p class="section-help">कर्मचारी निवडल्यावर त्या FX/Staff चे एकूण काम, case quality, reject कारणे, pending कुठे आहे आणि Performance Pay status स्पष्ट दिसेल.</p>
+                    <h2>कर्मचारीनिहाय कामगिरी गुण आणि PP पात्रता</h2>
+                    <p class="section-help">FX Score सरळ पाच घटकांवर आहे: Data Quality 25, Case Acceptance 25, Rejection Control 20, Process Movement 20 आणि Pending Control 10. एकूण 90+ गुण असल्यास PP पात्रता.</p>
                 </div>
-                <div class="pp-rule-badge"><i class="fas fa-lock-open"></i> Score ≥ 95% = PP Unlock</div>
+                <div class="pp-rule-badge"><i class="fas fa-lock-open"></i> Data Quality 25 + Acceptance 25 + Rejection 20 + Movement 20 + Pending 10 • 90+ = PP पात्र</div>
             </div>
             <div id="staff-performance-summary" class="staff-performance-summary"></div>
             <div id="staff-performance-grid" class="staff-performance-grid"></div>
@@ -388,8 +431,8 @@
         </section>
 
         <section class="grid-card grid-card-full" id="customer-insights-section">
-            <h2>मंजूर अर्जदारांचे विशेष विश्लेषण (Approved Customer Insights)</h2>
-            <p>खालील कार्ड्स फक्त मंजूर झालेल्या अर्जांमधून तयार केलेले मुख्य ग्राहक अंतर्दृष्टी (Insights) दर्शवतात.</p>
+            <h2>मंजूर अर्जदारांचे विशेष विश्लेषण</h2>
+            <p>खालील कार्ड्स फक्त पूर्ण पडताळणीसह मंजूर झालेल्या अर्जांचे मुख्य विश्लेषण दर्शवतात.</p>
             <div class="dynamic-kpi-container insights-grid" id="approved-insights-container" style="margin-top: 20px;"></div>
         </section>
 
@@ -431,164 +474,275 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpqr11pG1WIM6mhcltwUFM9lktbueurVSRUVzKjnEp0RCJY-Qmi_FEcew00wYcpWM/exec';
+        const PAGE_SIZE = 1500;
+        const MAX_PAGES = 50;
+        const MODAL_BATCH_SIZE = 250;
+        const MIN_FINAL_CASES_FOR_PP = 10;
+        const PP_SCORE_THRESHOLD = 90;
 
         const MARATHI_LABELS = {
             actualTime: "अर्जाची वेळ/तारीख", timestamp: "अर्जाची वेळ/तारीख", customerName: "नाव", applicantAge: "वय",
             applicantGender: "लिंग", mobileNumber: "मोबाईल क्रमांक", aadhaarNumber: "आधार क्रमांक", panNumber: "पॅन क्रमांक",
-            villageName: "गावाचे नांव", taluka: "तालुका", district: "जिल्हा", centerName: "केंद्राचे नाव/कोड",
+            villageName: "गावाचे नाव", taluka: "तालुका", district: "जिल्हा", centerName: "केंद्राचे नाव/कोड",
             gpsLatitude: "GPS अक्षांश", gpsLongitude: "GPS रेखांश", gpsAddress: "GPS नुसार पत्ता", googleMapsLink: "Google Maps लिंक",
             coApplicantName: "सहकर्जदार/पती/पत्नीचे नाव", coApplicantAadhaar: "सहकर्जदार आधार नंबर", coApplicantPan: "सहकर्जदार पॅन नंबर",
             isExistingCustomer: "सध्या अनिकचे ग्राहक आहात?", existingAccountNumber: "सध्याचा खाते क्रमांक", branchName: "शाखेचे नाव",
             familyTotalMembers: "घरातील एकूण सदस्य", familyEarningMembers: "कमावणारे सदस्य", familyTotalIncome: "एकूण मासिक उत्पन्न",
             expenseHousehold: "घर खर्च", expenseEducation: "शिक्षण खर्च", expenseMedical: "वैद्यकीय खर्च", expenseOther: "इतर खर्च", expenseTotal: "एकूण मासिक खर्च",
             primaryIncomeSource: "प्राथमिक उत्पन्न स्रोत", primaryIncomeTypeDetails: "प्राथमिक उत्पन्नाचा तपशील", secondaryIncomeSource: "दुय्यम उत्पन्न स्रोत", secondaryIncomeAmount: "दुय्यम मासिक उत्पन्न",
-            assetLandAcres: "जमीन (एकर)", assetLandType: "जमीनीचा प्रकार", assetHouseType: "घराचा प्रकार", assetPlots: "प्लॉट्स/Shopes",
+            assetLandAcres: "जमीन (एकर)", assetLandType: "जमिनीचा प्रकार", assetHouseType: "घराचा प्रकार", assetPlots: "प्लॉट्स/दुकाने",
             cows: "गायी", buffaloes: "म्हशी", goats: "बकऱ्या/मेंढ्या", bulls: "बैलजोडी", pigs: "वराह पालन", poultry: "कोंबड्या",
             milkProductionLiters: "दुग्धउत्पादन (लिटर)", assetEquipmentFarm: "शेतीसाठीची उपकरणे", assetEquipmentBusiness: "व्यवसायासाठीची उपकरणे", assetVehicle: "वाहन",
             savingsBankAccount: "बँक खाते क्रमांक", ifsccode: "IFSC CODE", savingsPigmy: "पिग्मी खाते", savingsInsurancePolicy: "विमा पॉलिसी", savingsInsuranceType: "विमा प्रकार", savingsOther: "इतर बचत/गुंतवणूक",
             loanAmountRequested: "मागितलेली रक्कम", previousLoanSource: "यापूर्वी कुठून कर्ज घेतले?", loanPurpose: "कर्जाचा उद्देश", previousLoanDetails: "मागील कर्ज तपशील", repaymentPeriod: "परतफेड कालावधी (महिने)", guarantorDetails: "हमीदाराची माहिती", loanCycle: "कर्ज सायकल", loanProductType: "कर्ज प्रकार",
-            maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", existingEMI: "इतर कर्जाचा चालू EMI", VerificationStatus: "सद्यस्थिती (Status)", fieldOfficerName: "क्षेत्र अधिकारी", Unit: "युनिट", remarks: "शेरा (Remarks)", visitDate: "भेटीची तारीख",
+            maritalStatus: "वैवाहिक स्थिती", educationLevel: "शिक्षण", existingEMI: "इतर कर्जाचा चालू EMI", VerificationStatus: "सद्यस्थिती", fieldOfficerName: "क्षेत्र अधिकारी", Unit: "युनिट", remarks: "कर्मचारी शेरा", visitDate: "भेटीची तारीख",
             IsInfoCorrect: "माहिती बरोबर आहे का?", IsVideoCallDone: "व्हिडिओ कॉल झाला का?", ApprovedLoanAmount: "मंजूर कर्ज रक्कम",
             VerifierRemarks: "पडताळणी शेरा", VerifierName: "पडताळणी करणाऱ्याचे नाव", VerificationTimestamp: "पडताळणीची वेळ",
-            photoLinks: "फोटो लिंक्स", supportdoc: "जोडलेली कागदपत्रे", ManagerName: "Manager / BM नाव", ManagerRemarks: "Manager / BM शेरा", BMName: "BM नाव", BMRemarks: "BM शेरा", FinalVerifierRemarks: "Final Verifier शेरा", ManagerApprovalStatus: "Manager Approval Status", managerApprovalStatus: "Manager Approval Status", ManagerStatus: "Manager Status", BMStatus: "BM Status", ManagerDecision: "Manager Decision", BMDecision: "BM Decision"
+            photoLinks: "फोटो लिंक्स", supportdoc: "जोडलेली कागदपत्रे", ManagerName: "व्यवस्थापक/BM नाव", ManagerRemarks: "व्यवस्थापक/BM शेरा", BMName: "BM नाव", BMRemarks: "BM शेरा", FinalVerifierRemarks: "अंतिम पडताळणी शेरा", ManagerApprovalStatus: "व्यवस्थापक निर्णय", managerApprovalStatus: "व्यवस्थापक निर्णय", ManagerStatus: "व्यवस्थापक स्थिती", BMStatus: "BM स्थिती", ManagerDecision: "व्यवस्थापक निर्णय", BMDecision: "BM निर्णय"
         };
 
         const INSIGHT_KPIS = [
-            { key: 'highIncome', label: 'उच्च मासिक उत्पन्न (>रु 30K)', icon: 'fas fa-sack-dollar', filter: (d) => parseNumber(d.familyTotalIncome) >= 30000 },
-            { key: 'bagayatiLand', label: 'बागायती जमीन असलेले ग्राहक', icon: 'fas fa-seedling', filter: (d) => d.assetLandType && String(d.assetLandType).includes('बागायती') },
-            { key: 'milkingCows', label: 'गाई असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseNumber(d.cows) > 0 },
-            { key: 'buffaloes', label: 'म्हशी असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseNumber(d.buffaloes) > 0 },
-            { key: 'goats', label: 'बकरी असलेले ग्राहक', icon: 'fas fa-cow', filter: (d) => parseNumber(d.goats) > 0 },
-            { key: 'poultry', label: 'कोंबडया असलेले ग्राहक', icon: 'fas fa-bird', filter: (d) => parseNumber(d.poultry) > 0 },
-            { key: 'pigmyAccount', label: 'पिग्मी खाते असलेले ग्राहक', icon: 'fas fa-piggy-bank', filter: (d) => normalizeText(d.savingsPigmy) === 'होय' || normalizeText(d.savingsPigmy) === 'yes' },
-            { key: 'businessLoan', label: 'व्यवसायासाठी कर्ज मागणारे', icon: 'fas fa-store', filter: (d) => d.loanPurpose && String(d.loanPurpose).includes('व्यवसाय') },
-            { key: 'highLoanCycle', label: 'पुनरावृत्ती (Repeat) कर्जदार (>= 3 सायकल)', icon: 'fas fa-redo-alt', filter: (d) => parseNumber(d.loanCycle) >= 3 },
-            { key: 'assetHouseType', label: 'घराचा प्रकार नमूद केलेले (मंजूर)', icon: 'fas fa-home', filter: (d) => hasValue(d.assetHouseType) },
-            { key: 'maxLoanAmount', label: 'मोठी कर्ज मागणी (>रु 1 लाख)', icon: 'fas fa-hand-holding-usd', filter: (d) => parseNumber(d.loanAmountRequested) > 100000 }
+            { key:'highIncome', label:'उच्च मासिक उत्पन्न (> रु. 30,000)', icon:'fas fa-sack-dollar', filter:d => parseNumber(d.familyTotalIncome) >= 30000 },
+            { key:'bagayatiLand', label:'बागायती जमीन असलेले ग्राहक', icon:'fas fa-seedling', filter:d => normalizeText(d.assetLandType).includes('बागायती') },
+            { key:'milkingCows', label:'गायी असलेले ग्राहक', icon:'fas fa-cow', filter:d => parseNumber(d.cows) > 0 },
+            { key:'buffaloes', label:'म्हशी असलेले ग्राहक', icon:'fas fa-cow', filter:d => parseNumber(d.buffaloes) > 0 },
+            { key:'goats', label:'बकऱ्या असलेले ग्राहक', icon:'fas fa-paw', filter:d => parseNumber(d.goats) > 0 },
+            { key:'poultry', label:'कोंबड्या असलेले ग्राहक', icon:'fas fa-dove', filter:d => parseNumber(d.poultry) > 0 },
+            { key:'pigmyAccount', label:'पिग्मी खाते असलेले ग्राहक', icon:'fas fa-piggy-bank', filter:d => yesValue(d.savingsPigmy) },
+            { key:'businessLoan', label:'व्यवसायासाठी कर्ज मागणारे', icon:'fas fa-store', filter:d => normalizeText(d.loanPurpose).includes('व्यवसाय') },
+            { key:'highLoanCycle', label:'पुनरावृत्ती कर्जदार (≥ 3 सायकल)', icon:'fas fa-redo-alt', filter:d => parseNumber(d.loanCycle) >= 3 },
+            { key:'assetHouseType', label:'घराचा प्रकार नमूद केलेले', icon:'fas fa-home', filter:d => hasValue(d.assetHouseType) },
+            { key:'maxLoanAmount', label:'मोठी कर्ज मागणी (> रु. 1 लाख)', icon:'fas fa-hand-holding-usd', filter:d => parseNumber(d.loanAmountRequested) > 100000 }
         ];
 
         let allData = [];
         let filteredData = [];
         let chartInstances = {};
-        let listenersAdded = false;
-        const FAST_PAGE_SIZE = 1500;
+        let applicantIndex = new Map();
+        let loadController = null;
+        let searchTimer = null;
+        let renderVersion = 0;
+        let showAllStaff = false;
+        let lastStaffStatsList = [];
+        let modalState = { data:[], rendered:0 };
 
         const ui = {
             loader: document.getElementById('loader'),
+            statusBar: document.getElementById('data-status-bar'),
             customerSearch: document.getElementById('customer-search'),
             unitFilter: document.getElementById('unit-filter'),
             staffFilter: document.getElementById('staff-filter'),
             dateFrom: document.getElementById('date-from'),
             dateTo: document.getElementById('date-to'),
+            loadDateDataBtn: document.getElementById('load-date-data-btn'),
+            loadCurrentMonthBtn: document.getElementById('load-current-month-btn'),
             kpi: {
-                total: document.getElementById('total-count'),
-                pending: document.getElementById('pending-count'),
-                approved: document.getElementById('approved-count'),
-                approvedSum: document.getElementById('approved-sum-value'),
-                rejected: document.getElementById('rejected-count')
+                total: document.getElementById('total-count'), pending: document.getElementById('pending-count'),
+                approved: document.getElementById('approved-count'), rejected: document.getElementById('rejected-count'),
+                approvedSum: document.getElementById('approved-sum-value')
             },
             approvedInsightsContainer: document.getElementById('approved-insights-container'),
             applicantModal: document.getElementById('applicant-modal'),
             modalTitle: document.getElementById('modal-title'),
             applicantModalCloseBtn: document.querySelector('.applicant-modal-close'),
+            modalTable: document.getElementById('modal-table'),
+            modalTableContainer: document.getElementById('modal-table-container'),
             printArea: document.getElementById('print-area'),
             fileModal: document.getElementById('file-modal'),
             fileModalTitle: document.getElementById('file-modal-title'),
             fileModalBody: document.getElementById('file-modal-body'),
             fileModalCloseBtns: document.querySelectorAll('.file-modal-close'),
             openLinksBtn: document.getElementById('open-links-btn'),
-            loadDateDataBtn: document.getElementById('load-date-data-btn'),
-            loadCurrentMonthBtn: document.getElementById('load-current-month-btn'),
             processOverviewGrid: document.getElementById('process-overview-grid'),
             processModal: document.getElementById('process-modal'),
             processModalBody: document.getElementById('process-modal-body'),
             processModalTitle: document.getElementById('process-modal-title'),
             processModalSubtitle: document.getElementById('process-modal-subtitle'),
-            processModalCloseBtn: document.querySelector('.process-modal-close')
+            processModalCloseBtn: document.querySelector('.process-modal-close'),
+            staffSummary: document.getElementById('staff-performance-summary'),
+            staffGrid: document.getElementById('staff-performance-grid'),
+            staffDetail: document.getElementById('staff-performance-detail')
         };
 
         window.addEventListener('load', () => {
             setCurrentMonthFilters();
+            setupEventListeners();
             initializeDashboard();
         });
 
         function getTodayISO() {
             const d = new Date();
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+        function getMonthStartISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`; }
+        function setCurrentMonthFilters() { ui.dateFrom.value = getMonthStartISO(); ui.dateTo.value = getTodayISO(); }
+
+        function showStatus(message, type='info', withRetry=false) {
+            ui.statusBar.className = `data-status-bar show${type === 'warn' ? ' warn' : type === 'error' ? ' error' : ''}`;
+            ui.statusBar.innerHTML = `<span>${escapeHTML(message)}</span>${withRetry ? '<button type="button" class="status-retry-btn" id="status-retry-btn"><i class="fas fa-rotate-right"></i> पुन्हा प्रयत्न करा</button>' : ''}`;
+            if (withRetry) document.getElementById('status-retry-btn')?.addEventListener('click', () => initializeDashboard(true));
+        }
+        function hideStatus() { ui.statusBar.className = 'data-status-bar'; ui.statusBar.innerHTML = ''; }
+        function setLoading(isLoading) {
+            ui.loader.style.display = isLoading ? 'flex' : 'none';
+            ui.loadDateDataBtn.disabled = isLoading;
+            ui.loadCurrentMonthBtn.disabled = isLoading;
         }
 
-        function getMonthStartISO() {
-            const d = new Date();
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+        function validateDateRange() {
+            if (!ui.dateFrom.value || !ui.dateTo.value) return { ok:false, message:'कृपया सुरुवातीची आणि शेवटची तारीख निवडा.' };
+            const from = parseDate(ui.dateFrom.value), to = parseDate(ui.dateTo.value);
+            if (!from || !to) return { ok:false, message:'निवडलेली तारीख योग्य नाही.' };
+            if (from.getTime() > to.getTime()) return { ok:false, message:'सुरुवातीची तारीख शेवटच्या तारखेपेक्षा पुढे असू शकत नाही.' };
+            return { ok:true };
         }
 
-        function setCurrentMonthFilters() {
-            ui.dateFrom.value = getMonthStartISO();
-            ui.dateTo.value = getTodayISO();
+        function buildDataUrl(page=1, offset=0, cursor='') {
+            const params = new URLSearchParams({ action:'getData', pageSize:String(PAGE_SIZE), page:String(page), offset:String(offset) });
+            if (ui.dateFrom.value) params.set('dateFrom', ui.dateFrom.value);
+            if (ui.dateTo.value) params.set('dateTo', ui.dateTo.value);
+            if (cursor) params.set('cursor', cursor);
+            return `${SCRIPT_URL}?${params.toString()}`;
         }
 
-        function buildFastDataUrl() {
-            const df = ui.dateFrom.value;
-            const dt = ui.dateTo.value;
-            let url = `${SCRIPT_URL}?action=getData&pageSize=${FAST_PAGE_SIZE}`;
-            if (df || dt) url += `&dateFrom=${encodeURIComponent(df)}&dateTo=${encodeURIComponent(dt)}`;
-            else url += '&currentMonth=1';
-            return url;
+        function rawUniqueKey(row, fallbackIndex=0) {
+            const explicit = pickValue(row, ['applicationId','ApplicationId','ApplicationID','id','ID','UUID','uuid','FormResponseId','responseId']);
+            if (hasValue(explicit)) return `id:${explicit}`;
+            return ['row', row.row ?? '', row.Unit ?? '', row.actualTime ?? row.timestamp ?? row.visitDate ?? '', row.mobileNumber ?? '', row.customerName ?? '', fallbackIndex].join('|');
         }
 
-        async function initializeDashboard() {
-            ui.loader.style.display = 'flex';
-            try {
-                const response = await fetch(buildFastDataUrl());
-                if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
+        async function fetchAllPages(signal) {
+            const rows = [];
+            const unique = new Set();
+            const pageSignatures = new Set();
+            let page = 1, offset = 0, cursor = '', serverTotal = null, backendPaginationWarning = false;
+
+            while (page <= MAX_PAGES) {
+                const response = await fetch(buildDataUrl(page, offset, cursor), { signal, cache:'no-store' });
+                if (!response.ok) throw new Error(`Network error: ${response.status} ${response.statusText}`);
                 const result = await response.json();
-                if (result.status !== 'success') throw new Error(result.message || 'डेटा मिळाला नाही');
+                if (result.status && normalizeText(result.status) !== 'success') throw new Error(result.message || 'डेटा मिळाला नाही');
 
-                allData = (result.data || []).map(row => ({
-                    ...row,
-                    actualTime: row.actualTime || row.timestamp || row.visitDate,
-                    VerificationStatus: row.VerificationStatus || row.FinalStatus || row.status || 'Pending'
-                })).sort((a, b) => {
-                    const dateA = parseDate(a.actualTime);
-                    const dateB = parseDate(b.actualTime);
-                    return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
+                const batch = Array.isArray(result.data) ? result.data : Array.isArray(result.rows) ? result.rows : Array.isArray(result.items) ? result.items : [];
+                serverTotal = Number(result.totalRecords ?? result.total ?? result.count ?? serverTotal);
+                const signature = batch.length ? `${rawUniqueKey(batch[0])}::${rawUniqueKey(batch[batch.length-1])}::${batch.length}` : `empty-${page}`;
+                if (pageSignatures.has(signature)) {
+                    backendPaginationWarning = batch.length >= PAGE_SIZE || Boolean(result.hasMore || result.has_more || result.nextCursor || result.nextPage);
+                    break;
+                }
+                pageSignatures.add(signature);
+
+                let added = 0;
+                batch.forEach((row, index) => {
+                    const key = rawUniqueKey(row, offset + index);
+                    if (!unique.has(key)) { unique.add(key); rows.push(row); added++; }
                 });
 
+                const nextCursor = result.nextCursor ?? result.next_cursor ?? '';
+                const nextPage = Number(result.nextPage ?? result.next_page ?? 0);
+                const explicitHasMore = Boolean(result.hasMore ?? result.has_more ?? nextCursor ?? nextPage);
+                const totalHasMore = Number.isFinite(serverTotal) && rows.length < serverTotal;
+                const probableHasMore = batch.length >= PAGE_SIZE;
+                if (!batch.length || !added || !(explicitHasMore || totalHasMore || probableHasMore)) break;
+
+                cursor = nextCursor || cursor;
+                page = nextPage > page ? nextPage : page + 1;
+                offset += batch.length;
+            }
+            return { rows, serverTotal, backendPaginationWarning, pages:pageSignatures.size };
+        }
+
+        async function initializeDashboard(force=false) {
+            const valid = validateDateRange();
+            if (!valid.ok) { showStatus(valid.message, 'warn'); return; }
+            if (loadController) loadController.abort();
+            loadController = new AbortController();
+            setLoading(true);
+            showStatus('निवडलेल्या कालावधीचा डेटा जलद गतीने लोड होत आहे…');
+            const started = performance.now();
+            try {
+                const result = await fetchAllPages(loadController.signal);
+                prepareData(result.rows);
                 setupFilters();
-                if (!listenersAdded) {
-                    setupEventListeners();
-                    listenersAdded = true;
-                }
                 applyFiltersAndRender();
+                const seconds = ((performance.now() - started) / 1000).toFixed(1);
+                let msg = `${allData.length.toLocaleString('en-IN')} अर्ज ${seconds} सेकंदांत लोड झाले.`;
+                if (Number.isFinite(result.serverTotal) && result.serverTotal > allData.length) msg += ` सर्व्हरवर एकूण ${result.serverTotal.toLocaleString('en-IN')} नोंदी आहेत.`;
+                if (result.backendPaginationWarning) showStatus(`${msg} पुढील पानांसाठी Backend pagination तपासणे आवश्यक आहे.`, 'warn');
+                else showStatus(msg, 'info');
             } catch (error) {
-                console.error('Initialization Error:', error);
-                document.body.innerHTML = `<p style="text-align:center; padding:20px; color:red; font-weight:700;">डॅशबोर्ड लोड करताना त्रुटी आली: ${escapeHTML(error.message)}</p>`;
+                if (error.name === 'AbortError') return;
+                console.error('Dashboard Load Error:', error);
+                showStatus(`डेटा लोड करताना त्रुटी आली: ${error.message}`, 'error', true);
+                if (allData.length) applyFiltersAndRender();
             } finally {
-                ui.loader.style.display = 'none';
+                setLoading(false);
             }
         }
 
+        function prepareData(rows) {
+            applicantIndex = new Map();
+            allData = (rows || []).map((source, index) => {
+                const row = { ...source };
+                row.actualTime = pickValue(row, ['actualTime','timestamp','visitDate','Timestamp','VisitDate']);
+                row._id = rawUniqueKey(row, index);
+                row._dateObj = parseDate(row.actualTime);
+                row._dateMs = row._dateObj ? row._dateObj.getTime() : 0;
+                row._staff = getStaffName(row);
+                row._searchName = normalizeText(row.customerName);
+                row._meta = getProcessMeta(row);
+                row._scoreAudit = buildCaseScoreAudit(row);
+                row._quality = row._scoreAudit.data.percent;
+                applicantIndex.set(String(row._id), row);
+                return row;
+            }).sort((a,b) => b._dateMs - a._dateMs);
+        }
+
         function setupEventListeners() {
-            [ui.customerSearch, ui.unitFilter, ui.staffFilter].forEach(el => el.addEventListener('input', applyFiltersAndRender));
-            [ui.dateFrom, ui.dateTo].forEach(el => el.addEventListener('input', applyFiltersAndRender));
-            ui.loadDateDataBtn.addEventListener('click', initializeDashboard);
-            ui.loadCurrentMonthBtn.addEventListener('click', () => { setCurrentMonthFilters(); initializeDashboard(); });
-            document.querySelectorAll('.kpi-card.clickable').forEach(c => c.addEventListener('click', () => showStatusApplicantsModal(c.dataset.status)));
+            ui.customerSearch.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(applyFiltersAndRender, 160);
+            });
+            ui.unitFilter.addEventListener('change', applyFiltersAndRender);
+            ui.staffFilter.addEventListener('change', () => { showAllStaff = false; applyFiltersAndRender(); });
+            [ui.dateFrom, ui.dateTo].forEach(el => el.addEventListener('change', () => showStatus('तारीख बदलली आहे. नवीन कालावधीचा डेटा पाहण्यासाठी “तारीखेनुसार डेटा लोड करा” दाबा.', 'warn')));
+            ui.loadDateDataBtn.addEventListener('click', () => initializeDashboard(true));
+            ui.loadCurrentMonthBtn.addEventListener('click', () => { setCurrentMonthFilters(); initializeDashboard(true); });
+            document.querySelectorAll('.kpi-card.clickable').forEach(card => card.addEventListener('click', () => showStatusApplicantsModal(card.dataset.status)));
             ui.applicantModalCloseBtn.onclick = () => ui.applicantModal.style.display = 'none';
             ui.fileModalCloseBtns.forEach(btn => btn.onclick = () => ui.fileModal.style.display = 'none');
             if (ui.processModalCloseBtn) ui.processModalCloseBtn.onclick = () => ui.processModal.style.display = 'none';
-            window.onclick = (e) => {
+            window.addEventListener('click', e => {
                 if (e.target === ui.applicantModal) ui.applicantModal.style.display = 'none';
                 if (e.target === ui.fileModal) ui.fileModal.style.display = 'none';
                 if (e.target === ui.processModal) ui.processModal.style.display = 'none';
-            };
+            });
+            ui.processOverviewGrid.addEventListener('click', e => {
+                const card = e.target.closest('[data-process-group]');
+                if (card) showProcessGroupModal(card.dataset.processGroup);
+            });
+            ui.staffGrid.addEventListener('click', e => {
+                const card = e.target.closest('[data-staff-name]');
+                if (!card) return;
+                ui.staffFilter.value = card.dataset.staffName;
+                showAllStaff = false;
+                applyFiltersAndRender();
+                document.getElementById('staff-performance-section')?.scrollIntoView({ behavior:'smooth', block:'start' });
+            });
+            ui.staffSummary.addEventListener('click', e => {
+                const btn = e.target.closest('#toggle-all-staff');
+                if (!btn) return;
+                showAllStaff = !showAllStaff;
+                renderStaffPerformance(lastStaffStatsList);
+            });
+            ui.staffDetail.addEventListener('click', e => handleApplicantAction(e));
+            ui.modalTable.addEventListener('click', e => handleApplicantAction(e));
         }
 
         function setupFilters() {
-            const oldUnit = ui.unitFilter.value;
-            const oldStaff = ui.staffFilter.value;
-            const units = [...new Set(allData.map(d => d.Unit).filter(Boolean))].sort();
-            const staff = [...new Set(allData.map(d => d.fieldOfficerName || d.FieldOfficerName || d.StaffName).filter(Boolean))].sort();
+            const oldUnit = ui.unitFilter.value, oldStaff = ui.staffFilter.value;
+            const units = [...new Set(allData.map(d => String(d.Unit || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'mr'));
+            const staff = [...new Set(allData.map(d => d._staff).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'mr'));
             ui.unitFilter.innerHTML = '<option value="">सर्व युनिट</option>' + units.map(i => `<option value="${escapeHTML(i)}">${escapeHTML(i)}</option>`).join('');
             ui.staffFilter.innerHTML = '<option value="">सर्व कर्मचारी</option>' + staff.map(i => `<option value="${escapeHTML(i)}">${escapeHTML(i)}</option>`).join('');
             if (oldUnit && units.includes(oldUnit)) ui.unitFilter.value = oldUnit;
@@ -596,896 +750,793 @@
         }
 
         function applyFiltersAndRender() {
-            const search = ui.customerSearch.value.toLowerCase();
+            const search = normalizeText(ui.customerSearch.value);
             const unit = ui.unitFilter.value;
             const staff = ui.staffFilter.value;
-            const dateFrom = ui.dateFrom.value ? parseDate(ui.dateFrom.value) : null;
-            const dateTo = ui.dateTo.value ? parseDate(ui.dateTo.value) : null;
-            if (dateFrom) dateFrom.setHours(0, 0, 0, 0);
-            if (dateTo) dateTo.setHours(23, 59, 59, 999);
+            const from = parseDate(ui.dateFrom.value), to = parseDate(ui.dateTo.value);
+            const fromMs = from ? new Date(from.getFullYear(), from.getMonth(), from.getDate()).getTime() : -Infinity;
+            const toMs = to ? new Date(to.getFullYear(), to.getMonth(), to.getDate(), 23,59,59,999).getTime() : Infinity;
+            filteredData = allData.filter(d => (!search || d._searchName.includes(search)) && (!unit || String(d.Unit || '').trim() === unit) && (!staff || d._staff === staff) && (d._dateMs > 0 && d._dateMs >= fromMs && d._dateMs <= toMs));
+            renderDashboard();
+        }
 
-            filteredData = allData.filter(d => {
-                const rowDate = parseDate(d.actualTime);
-                const rowStaff = d.fieldOfficerName || d.FieldOfficerName || d.StaffName || '';
-                return (!search || (d.customerName && String(d.customerName).toLowerCase().includes(search))) &&
-                    (!unit || d.Unit === unit) &&
-                    (!staff || rowStaff === staff) &&
-                    (!dateFrom || (rowDate && rowDate.getTime() >= dateFrom.getTime())) &&
-                    (!dateTo || (rowDate && rowDate.getTime() <= dateTo.getTime()));
+        function renderDashboard() {
+            const version = ++renderVersion;
+            const summary = summarizeRows(filteredData);
+            updateKPIs(summary);
+            renderProcessOverview(summary);
+            const statsList = buildStaffStatsList(filteredData);
+            lastStaffStatsList = statsList;
+            renderStaffPerformance(statsList);
+            const deferred = () => { if (version !== renderVersion) return; renderCharts(); generateApprovedCustomerInsights(); };
+            if ('requestIdleCallback' in window) requestIdleCallback(deferred, { timeout:250 }); else requestAnimationFrame(deferred);
+        }
+
+        function summarizeRows(rows) {
+            const s = { total:rows.length, pending:0, approved:0, rejected:0, approvedSum:0, stages:{} };
+            rows.forEach(row => {
+                const m = metaOf(row);
+                s[m.status.toLowerCase()]++;
+                s.stages[m.stageKey] = (s.stages[m.stageKey] || 0) + 1;
+                if (m.status === 'Approved') s.approvedSum += parseNumber(row.ApprovedLoanAmount || row.approvedLoanAmount);
             });
-
-            updateKPIs();
-            renderProcessOverview();
-            renderStaffPerformance();
-            renderCharts();
-            generateApprovedCustomerInsights();
+            return s;
         }
 
-        function parseDate(d) {
-            if (!d) return null;
-            if (d instanceof Date && !isNaN(d.getTime())) return d;
-            const raw = String(d).trim();
-            let m = raw.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(.*)?$/);
-            if (m) {
-                const iso = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
-                const time = m[4] ? m[4].trim().replace(/^,/, '') : '';
-                let D = new Date(time ? `${iso} ${time}` : iso);
-                if (!isNaN(D.getTime())) return D;
-            }
-            const D = new Date(raw);
-            return !isNaN(D.getTime()) ? D : null;
+        function parseDate(value) {
+            if (!value) return null;
+            if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+            const raw = String(value).trim();
+            let m = raw.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})(?:[T\s,]+(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?\s*(AM|PM)?)?/i);
+            if (m) return makeLocalDate(+m[1], +m[2], +m[3], m[4], m[5], m[6], m[7]);
+            m = raw.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})(?:[T\s,]+(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?\s*(AM|PM)?)?/i);
+            if (m) return makeLocalDate(+m[3], +m[2], +m[1], m[4], m[5], m[6], m[7]);
+            const d = new Date(raw);
+            return isNaN(d.getTime()) ? null : d;
         }
-
-        function formatDate(d) {
-            const D = parseDate(d);
-            return D ? D.toLocaleDateString('en-GB').replace(/\//g, '-') : 'N/A';
+        function makeLocalDate(y, mo, d, h=0, mi=0, s=0, ap='') {
+            let hour = Number(h || 0); const ampm = String(ap || '').toUpperCase();
+            if (ampm === 'PM' && hour < 12) hour += 12; if (ampm === 'AM' && hour === 12) hour = 0;
+            const date = new Date(y, mo-1, d, hour, Number(mi||0), Number(s||0));
+            return date.getFullYear() === y && date.getMonth() === mo-1 && date.getDate() === d ? date : null;
         }
+        function formatDate(d) { const x=parseDate(d); return x ? x.toLocaleDateString('en-GB').replace(/\//g,'-') : 'N/A'; }
+        function parseNumber(v) { const m=String(v ?? '').replace(/,/g,'').match(/-?\d+(?:\.\d+)?/); const n=m?Number(m[0]):0; return Number.isFinite(n)?n:0; }
+        function escapeHTML(value) { return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
+        function pickValue(obj, keys) { for (const key of keys) if (obj && obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== '') return obj[key]; return ''; }
+        function normalizeText(v) { return String(v ?? '').trim().toLowerCase().replace(/\s+/g,' '); }
+        function hasValue(v) { return v !== undefined && v !== null && String(v).trim() !== ''; }
+        function yesValue(v) { return new Set(['yes','true','1','होय','हो','झाले','पूर्ण','completed','done']).has(normalizeText(v).replace(/[.!]/g,'')); }
+        function noValue(v) { return new Set(['no','false','0','नाही','नाहि','नाय','झाले नाही','not done','incorrect','wrong']).has(normalizeText(v).replace(/[.!]/g,'')); }
+        function formatINR(num) { return '₹ ' + Math.round(parseNumber(num)).toLocaleString('en-IN'); }
+        function getPersonName(data, keys, fallback) { return pickValue(data, keys) || fallback || 'माहिती नाही'; }
 
-        function parseNumber(v) {
-            const n = parseFloat(String(v || '').replace(/,/g, '').replace(/₹/g, '').trim());
-            return isNaN(n) ? 0 : n;
-        }
-
-        function escapeHTML(value) {
-            return String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
-        }
-
-        function pickValue(obj, keys) {
-            for (const key of keys) {
-                if (obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== '') return obj[key];
-            }
-            return '';
-        }
-
-        function normalizeText(v) {
-            return String(v === undefined || v === null ? '' : v).trim().toLowerCase();
-        }
-
-        function hasValue(v) {
-            return v !== undefined && v !== null && String(v).trim() !== '';
-        }
-
-        function yesValue(v) {
-            const s = normalizeText(v);
-            return ['yes', 'y', 'true', 'done', 'completed', 'होय', 'झाले', 'ok'].some(x => s.includes(x));
-        }
-
-        function formatINR(num) {
-            return '₹ ' + Math.round(parseNumber(num)).toLocaleString('en-IN');
-        }
-
-        function getPersonName(data, keys, fallback) {
-            const val = pickValue(data, keys);
-            return val || fallback || 'माहिती नाही';
-        }
-
-        function statusWord(v) {
-            const s = normalizeText(v);
+        function statusWord(value) {
+            const s = normalizeText(value);
             if (!s) return '';
-
-            const compact = s.replace(/\s+/g, ' ');
-            const noSpace = compact.replace(/\s+/g, '');
-
-            const hasAny = (arr) => arr.some(x => {
-                const y = String(x).toLowerCase().trim();
-                const yNoSpace = y.replace(/\s+/g, '');
-                return compact.includes(y) || noSpace.includes(yNoSpace);
-            });
-            const hasEnglishWord = (words) => words.some(w => new RegExp(`\\b${String(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(compact));
-
-            if (hasAny([
-                'rework', 'correction', 'दुरुस्ती', 'पुन्हा तपासा',
-                'resubmit', 're submit', 'again submit', 'update required'
-            ])) return 'Rework';
-
-            // FIRST check no-objection positive phrases.
-            // Roman Marathi "denyas" contains English letters "deny". त्यामुळे "deny" word मुळे चुकीचा Reject होऊ नये.
-            if (hasAny([
-                'हरकत नाही', 'हरकत नाहि', 'हर्कत नाही', 'देण्यात हरकत नाही',
-                'कर्ज देण्यात हरकत नाही', 'कर्ज द्यावे', 'कर्ज देता येईल',
-                'kahi harakat nahi', 'kahi harkat nahi', 'kahi hrakat nahi', 'kahi hrkat nahi', 'kahi hrkt nahi',
-                'harakat nahi', 'harkat nahi', 'hrakat nahi', 'hrkat nahi', 'hrkt nahi',
-                'karj denyas kahi harakat nahi', 'karj denyas kahi harkat nahi', 'karj denyas kahi hrkat nahi',
-                'karj denyas harakat nahi', 'karj denyas harkat nahi', 'karj denyat harakat nahi',
-                'loan denyas kahi harakat nahi', 'loan denyas kahi harkat nahi', 'loan denyas harakat nahi',
-                'no objection', 'nothing objection'
-            ])) return 'Approved';
-
-            // Strong negative only. Plain "nahi" किंवा roman Marathi "denyas" reject नाही.
-            if (hasAny([
-                'not approved', 'not approve', 'not eligible',
-                'reject', 'rejected', 'rejection', 'rejectd', 'rejct', 'rject',
-                'failed', 'fail', 'declined', 'denied',
-                'नामंजूर', 'नाकारले', 'नाकार', 'नकार', 'रिजेक्ट',
-                'अपात्र', 'योग्य नाही',
-                'कर्ज देऊ नये', 'कर्ज देऊ नका', 'देऊ नये', 'देऊ नका',
-                'karj deu naye', 'karj deu naka', 'loan deu naye', 'loan deu naka',
-                'deu naye', 'deu naka',
-                'namanjur', 'namanzur', 'na manjur'
-            ]) || hasEnglishWord(['deny'])) return 'Rejected';
-
-            if (hasAny([
-                'approved', 'approve', 'loan approved', 'success', 'successful',
-                'done', 'completed', 'ok', 'okay', 'accepted',
-                'recommended', 'recommend', 'eligible',
-                'मंजूर', 'मान्य', 'पात्र', 'योग्य आहे'
-            ])) return 'Approved';
-
-            if (hasAny(['pending', 'hold', 'waiting', 'open', 'प्रलंबित', 'बाकी', 'wait'])) return 'Pending';
+            const compact = s.replace(/[.,;:()\[\]]/g,' ').replace(/\s+/g,' ').trim();
+            const exact = arr => arr.includes(compact);
+            const contains = arr => arr.some(x => compact.includes(x));
+            if (exact(['rework','correction','resubmit','re-submit','दुरुस्ती','पुन्हा तपासा','पुन्हा सादर']) || contains(['update required','again submit','correction required','दुरुस्ती आवश्यक'])) return 'Rework';
+            if (contains(['not approved','not eligible','rejected','rejection','reject ',' reject','declined','denied','नामंजूर','नाकारले','नकार','रिजेक्ट','अपात्र','योग्य नाही','कर्ज देऊ नये','कर्ज देऊ नका','karj deu naye','karj deu naka','yogya nahi','patra nahi','eligible nahi','namanjur','namanzur'])) return 'Rejected';
+            if (contains(['हरकत नाही','हर्कत नाही','कर्ज देण्यात हरकत नाही','कर्ज द्यावे','कर्ज देता येईल','kahi harakat nahi','kahi harkat nahi','harakat nahi','harkat nahi','karj denyas kahi harakat nahi','karj denyas kahi harkat nahi','karj denyas harakat nahi','karj denyas harkat nahi','loan denyas kahi harakat nahi','loan denyas kahi harkat nahi','loan denyas harakat nahi','no objection'])) return 'Approved';
+            if (exact(['approved','approve','success','successful','completed','done','ok','okay','accepted','recommended','eligible','मंजूर','मान्य','पात्र','योग्य आहे'])) return 'Approved';
+            if (exact(['rejected','reject','failed','fail','denied','declined','नामंजूर','नाकारले','अपात्र','रिजेक्ट'])) return 'Rejected';
+            if (exact(['pending','hold','waiting','open','प्रलंबित','बाकी','wait','in process','process'])) return 'Pending';
             return '';
         }
 
-        function normalizeStatus(input) {
-            if (input && typeof input === 'object') return getRowStatus(input).status;
-            return statusWord(input) || 'Pending';
-        }
-
-        function getRowStatus(data) {
-            const finalStatusValue = pickValue(data, [
-                'VerificationStatus', 'verificationStatus', 'Verification Status', 'FinalStatus', 'Final Status',
-                'FinalDecision', 'Final Decision', 'ApplicationStatus', 'Application Status', 'Status', 'status'
-            ]);
-            const finalStatus = statusWord(finalStatusValue);
-
-            const managerApprovalStatusValue = pickValue(data, [
-                'ManagerApprovalStatus', 'managerApprovalStatus', 'Manager Approval Status', 'ManagerApproval Status',
-                'ManagerStatus', 'BMStatus', 'ManagerDecision', 'BMDecision', 'ApprovalStatus', 'ApproverStatus',
-                'ManagerApproval', 'BMApproval', 'managerStatus', 'bmStatus', 'Manager Result', 'BM Result'
-            ]);
-            const managerStatus = statusWord(managerApprovalStatusValue);
-
-            // मुख्य FIX: generic remarks / Field remarks येथे वापरलेले नाहीत.
-            const managerRemarkText = pickValue(data, [
-                'ManagerRemarks', 'ManagerRemark', 'BMRemarks', 'BMRemark', 'ApproverRemarks', 'ApprovalRemarks', 'ManagerComment', 'BMComment'
-            ]);
-            const managerRemarkDecision = statusWord(managerRemarkText);
-
-            const rejectedRemark = pickValue(data, [
-                'ManagerRejectRemarks', 'BMRejectRemarks', 'RejectedRemarks', 'RejectRemarks', 'RejectionRemarks',
-                'RejectReason', 'RejectionReason', 'Reject Remark', 'Rejected Remark'
-            ]);
-            const rejectedRemarkDecision = statusWord(rejectedRemark);
-
-            if (managerStatus === 'Rejected' || managerRemarkDecision === 'Rejected' || rejectedRemarkDecision === 'Rejected') {
-                return { status: 'Rejected', finalStatus: finalStatus || 'Pending', managerStatus: 'Rejected', managerApprovalStatusValue };
-            }
-
-            if (finalStatus === 'Approved' || finalStatus === 'Rejected') {
-                return { status: finalStatus, finalStatus, managerStatus: managerStatus || managerRemarkDecision || '', managerApprovalStatusValue };
-            }
-
-            return { status: 'Pending', finalStatus: finalStatus || 'Pending', managerStatus: managerStatus || managerRemarkDecision || '', managerApprovalStatusValue };
-        }
+        function getStaffName(row) { return getPersonName(row, ['fieldOfficerName','FieldOfficerName','StaffName','staffName','FOName','CreatedBy','createdBy'], 'Staff माहिती नाही'); }
+        function metaOf(row) { return row?._meta || getProcessMeta(row || {}); }
+        function normalizeStatus(input) { return input && typeof input === 'object' ? metaOf(input).status : (statusWord(input) || 'Pending'); }
+        function getRowStatus(data) { const m=metaOf(data); return { status:m.status, finalStatus:m.finalDecisionStatus || 'Pending', managerStatus:m.managerDecisionStatus || '', managerApprovalStatusValue:m.managerApprovalStatusRaw }; }
 
         function getProcessMeta(data) {
-            const rowStatus = getRowStatus(data);
-            const status = rowStatus.status;
+            const fieldOfficer = getPersonName(data, ['fieldOfficerName','FieldOfficerName','StaffName','staffName','FOName','CreatedBy','createdBy'], 'Field/Staff');
+            const manager = getPersonName(data, ['ManagerName','BMName','UnitManager','BranchManager','ApproverName','ApprovedBy'], 'Unit Manager / BM');
+            const verifier = getPersonName(data, ['VerifierName','verifierName','VerificationBy','VerifiedBy'], 'Verifier');
+            const fieldRemark = pickValue(data, ['FieldRemarks','StaffRemarks','FieldRemark','StaffRemark','FORemarks','FORemark','FieldOfficerRemarks','StaffComment','remarks','Remark','remark']);
+            const managerApprovalStatusRaw = pickValue(data, ['ManagerApprovalStatus','managerApprovalStatus','Manager Approval Status','ManagerApproval Status','ManagerStatus','BMStatus','ManagerDecision','BMDecision','ApprovalStatus','ApproverStatus','ManagerApproval','BMApproval','Manager Result','BM Result']);
+            const managerRemark = pickValue(data, ['ManagerRemarks','ManagerRemark','BMRemarks','BMRemark','ApproverRemarks','ApprovalRemarks','ManagerComment','BMComment']);
+            const managerRejectRemark = pickValue(data, ['ManagerRejectRemarks','BMRejectRemarks']);
+            const managerTimestamp = pickValue(data, ['ManagerTimestamp','BMTimestamp','ApprovalTimestamp','ApproverTimestamp','ManagerTime','BMTime']);
+            const finalStatusRaw = pickValue(data, ['VerificationStatus','verificationStatus','Verification Status','FinalStatus','Final Status','FinalDecision','Final Decision','ApplicationStatus','Application Status','Status','status','VerifierStatus','VerifierDecision']);
+            const verifierRemark = pickValue(data, ['VerifierRemarks','VerificationRemarks','FinalVerifierRemarks','VerifierRemark','VerificationRemark']);
+            const finalRejectRemark = pickValue(data, ['RejectedRemarks','RejectRemarks','RejectionRemarks','RejectReason','RejectionReason','FinalRemarks']);
+            const verificationTimestamp = pickValue(data, ['VerificationTimestamp','VerifierTimestamp','VerifiedTimestamp']);
+            const isInfoCorrect = pickValue(data, ['IsInfoCorrect','isInfoCorrect']);
+            const isVideoDone = pickValue(data, ['IsVideoCallDone','isVideoCallDone']);
 
-            const fieldOfficer = getPersonName(data, ['fieldOfficerName', 'FieldOfficerName', 'StaffName', 'staffName', 'FOName', 'CreatedBy', 'createdBy'], 'Field/Staff');
-            const manager = getPersonName(data, ['ManagerName', 'BMName', 'UnitManager', 'BranchManager', 'ApproverName', 'approverName', 'ApprovedBy', 'approvedBy'], 'Unit Manager / BM');
-            const verifier = getPersonName(data, ['VerifierName', 'verifierName', 'VerificationBy', 'VerifiedBy', 'verifiedBy'], 'Verifier');
+            const managerStatusDecision = statusWord(managerApprovalStatusRaw);
+            const managerRemarkDecision = statusWord(managerRemark);
+            const managerRejectDecision = statusWord(managerRejectRemark);
+            const managerDecisionStatus = managerStatusDecision || (!hasValue(managerApprovalStatusRaw) ? managerRemarkDecision : '');
+            const managerRejected = managerDecisionStatus === 'Rejected' || managerRejectDecision === 'Rejected' || (hasValue(managerRejectRemark) && managerRejectDecision !== 'Approved');
+            const managerApproved = managerDecisionStatus === 'Approved';
+            const managerRework = managerDecisionStatus === 'Rework';
+            const hasManagerReview = managerRejected || managerApproved || managerRework;
 
-            const latestRemarkOnly = pickValue(data, ['LatestRemark', 'latestRemark']);
-            const fieldRemark = pickValue(data, ['FieldRemarks', 'StaffRemarks', 'FieldRemark', 'StaffRemark', 'FORemarks', 'FORemark', 'FieldOfficerRemarks', 'StaffComment', 'remarks', 'Remark', 'remark']);
-            const managerApprovalStatusRaw = pickValue(data, [
-                'ManagerApprovalStatus', 'managerApprovalStatus', 'Manager Approval Status', 'ManagerApproval Status',
-                'ManagerStatus', 'BMStatus', 'ManagerDecision', 'BMDecision', 'ApprovalStatus', 'ApproverStatus',
-                'ManagerApproval', 'BMApproval', 'Manager Result', 'BM Result'
-            ]);
+            const verifierDecision = statusWord(finalStatusRaw);
+            const verifierRemarkDecision = statusWord(verifierRemark);
+            const infoWrong = noValue(isInfoCorrect);
+            const verifierRework = verifierDecision === 'Rework' || verifierRemarkDecision === 'Rework' || infoWrong;
+            const hasVerifierEvidence = ['Approved','Rejected','Rework'].includes(verifierDecision) || (hasValue(verificationTimestamp) && (hasValue(pickValue(data,['VerifierName','verifierName'])) || hasValue(verifierRemark) || hasValue(isInfoCorrect) || hasValue(isVideoDone)));
 
-            // MAIN FIX: Field remark fallback पूर्ण काढला आहे.
-            const managerRemark = pickValue(data, ['ManagerRemarks', 'ManagerRemark', 'BMRemarks', 'BMRemark', 'ApproverRemarks', 'ApprovalRemarks', 'ManagerComment', 'BMComment']);
-            const verifierRemark = pickValue(data, ['VerifierRemarks', 'VerificationRemarks', 'FinalVerifierRemarks', 'VerifierRemark', 'VerificationRemark']);
-            const rejectedRemarkText = pickValue(data, ['ManagerRejectRemarks', 'BMRejectRemarks', 'RejectedRemarks', 'RejectRemarks', 'RejectionRemarks', 'RejectReason', 'RejectionReason']);
-
-            const managerStatusOnly = statusWord(managerApprovalStatusRaw);
-            const managerRemarkOnlyStatus = statusWord(managerRemark);
-            const rejectRemarkStatus = statusWord(rejectedRemarkText);
-
-            const isInfoCorrect = pickValue(data, ['IsInfoCorrect', 'isInfoCorrect']);
-            const isVideoDone = pickValue(data, ['IsVideoCallDone', 'isVideoCallDone']);
-            const managerTimestamp = pickValue(data, ['ManagerTimestamp', 'BMTimestamp', 'ApprovalTimestamp', 'ApproverTimestamp', 'ManagerTime', 'BMTime']);
-            const verificationTimestamp = pickValue(data, ['VerificationTimestamp', 'VerifierTimestamp', 'VerifiedTimestamp']);
-            const approvedAmount = pickValue(data, ['ApprovedLoanAmount', 'approvedLoanAmount']);
-            const approvedAmountNumber = parseNumber(approvedAmount);
-
-            const hasFinalVerification = hasValue(verificationTimestamp) || hasValue(data.VerifierName) || hasValue(verifierRemark) || yesValue(isInfoCorrect) || yesValue(isVideoDone);
-            const managerRejected = rowStatus.managerStatus === 'Rejected' || managerStatusOnly === 'Rejected' || managerRemarkOnlyStatus === 'Rejected' || rejectRemarkStatus === 'Rejected';
-            const managerStatusIsPending = managerStatusOnly === 'Pending';
-
-            // ManagerApprovalStatus = Pending असेल तर manager clear नाही.
-            // Field/Staff remark manager review count करणार नाही.
-            const managerApproved = !managerRejected && !managerStatusIsPending && (
-                managerStatusOnly === 'Approved' ||
-                managerRemarkOnlyStatus === 'Approved' ||
-                (hasValue(managerRemark) && managerRemarkOnlyStatus !== 'Pending' && managerRemarkOnlyStatus !== 'Rework') ||
-                hasValue(managerTimestamp) ||
-                approvedAmountNumber > 0 ||
-                status === 'Approved' ||
-                hasFinalVerification
-            );
-
-            const hasManagerReview = managerRejected || managerApproved;
-            const hasFinalDecision = status === 'Approved' || status === 'Rejected';
-
-            const managerBlockerText = [
-                hasValue(managerApprovalStatusRaw) ? `ManagerApprovalStatus: ${managerApprovalStatusRaw}` : '',
-                hasValue(managerRemark) ? `ManagerRemarks: ${managerRemark}` : '',
-                hasValue(rejectedRemarkText) ? `RejectRemarks: ${rejectedRemarkText}` : ''
-            ].filter(Boolean).join(' | ');
-
-            const latestRemark = (
-                managerRejected ? (rejectedRemarkText || managerRemark || managerApprovalStatusRaw) :
-                status === 'Rejected' ? (rejectedRemarkText || verifierRemark || managerRemark || latestRemarkOnly || fieldRemark) :
-                (verifierRemark || managerRemark || latestRemarkOnly || fieldRemark)
-            ) || 'Remark उपलब्ध नाही';
-
-            let currentStage = 'Field/Staff Entry';
-            let pendingWith = fieldOfficer;
-            let blocker = 'Field/Staff कडून अर्ज पूर्ण submit होणे बाकी आहे.';
-            let stageIndex = 0;
-            let rejectedBy = '';
-            let managerActionLabel = hasManagerReview ? 'Manager Review Done' : 'Manager Pending';
-
-            const infoWrong = normalizeText(isInfoCorrect).includes('नाही') || normalizeText(isInfoCorrect) === 'no';
-            const reworkFlag = managerStatusOnly === 'Rework' || managerRemarkOnlyStatus === 'Rework';
-            const managerDecisionText = managerApprovalStatusRaw || (managerApproved ? 'Manager Success' : (managerRejected ? 'Manager Rejected' : 'Pending'));
-            const managerDecisionStatus = managerStatusOnly || managerRemarkOnlyStatus;
+            let status = 'Pending', stageKey = 'FIELD', currentStage = 'कर्मचारी नोंद', pendingWith = fieldOfficer;
+            let blocker = 'कर्मचारीकडून ग्राहकाची संपूर्ण नोंद पूर्ण होणे बाकी आहे.';
+            let stageIndex = 0, rejectedBy = '', inconsistent = false, inconsistencyReason = '';
 
             if (managerRejected) {
-                currentStage = 'Manager / BM Rejected';
-                pendingWith = manager;
-                stageIndex = 1;
-                rejectedBy = pickValue(data, ['RejectedBy', 'RejectBy', 'ManagerName', 'BMName', 'ApproverName']) || manager;
-                blocker = managerBlockerText || 'Manager/BM ने अर्ज reject केला आहे. त्यामुळे process Verifier कडे जाणार नाही.';
-                managerActionLabel = 'Manager Rejected';
-            } else if (status === 'Rejected') {
-                if (hasFinalVerification) {
-                    currentStage = 'Rejected by Verifier';
-                    pendingWith = verifier;
-                    stageIndex = 2;
-                } else if (hasManagerReview) {
-                    currentStage = 'Rejected at Manager / BM Review';
-                    pendingWith = manager;
-                    stageIndex = 1;
+                status='Rejected'; stageKey='MANAGER_REJECTED'; currentStage='व्यवस्थापक / BM यांनी नामंजूर केले'; pendingWith=manager; stageIndex=1; rejectedBy=manager;
+                blocker = managerRejectRemark || managerRemark || managerApprovalStatusRaw || 'व्यवस्थापक/BM यांनी अर्ज नामंजूर केला आहे.';
+                if (verifierDecision === 'Approved') { inconsistent=true; inconsistencyReason='व्यवस्थापक निर्णय नामंजूर आहे; पण अंतिम स्थिती मंजूर दिसत आहे.'; }
+            } else if (managerRework) {
+                stageKey='REWORK'; currentStage='दुरुस्ती / पुनःसादरीकरण प्रलंबित'; pendingWith=fieldOfficer; stageIndex=0;
+                blocker = managerRemark || managerApprovalStatusRaw || 'व्यवस्थापक/BM यांनी दुरुस्ती सांगितली आहे.';
+            } else if (verifierRework) {
+                stageKey='REWORK'; currentStage='पडताळणीनंतर दुरुस्ती प्रलंबित'; pendingWith=fieldOfficer; stageIndex=0;
+                blocker = verifierRemark || finalStatusRaw || 'पडताळणीकर्त्याने माहिती दुरुस्त करण्यास सांगितली आहे.';
+            } else if (verifierDecision === 'Approved') {
+                if (managerApproved && hasVerifierEvidence) {
+                    status='Approved'; stageKey='APPROVED'; currentStage='पूर्ण / मंजूर'; pendingWith='-'; stageIndex=3;
+                    blocker='व्यवस्थापक/BM निर्णय आणि अंतिम पडताळणी पूर्ण झाली आहे.';
                 } else {
-                    currentStage = 'Rejected at Field/Staff Review';
-                    pendingWith = fieldOfficer;
-                    stageIndex = 0;
+                    stageKey='INCONSISTENT'; currentStage='डेटा विसंगती – मंजुरी तपासा'; pendingWith=!managerApproved ? manager : verifier; stageIndex=!managerApproved?1:2; inconsistent=true;
+                    inconsistencyReason=!managerApproved ? 'अंतिम स्थिती मंजूर आहे; पण स्पष्ट ManagerApprovalStatus/Manager निर्णय उपलब्ध नाही.' : 'मंजुरी आहे; पण पडताळणीचा पुरावा अपुरा आहे.';
+                    blocker=inconsistencyReason;
                 }
-                rejectedBy = pickValue(data, ['RejectedBy', 'RejectBy', 'VerifierName', 'ManagerName', 'BMName', 'ApproverName', 'fieldOfficerName']) || pendingWith;
-                blocker = latestRemark;
-                managerActionLabel = stageIndex >= 1 ? 'Manager Review Done' : 'Manager Pending';
-            } else if (status === 'Approved') {
-                currentStage = 'Completed / Approved';
-                pendingWith = '-';
-                blocker = 'Manager/BM review आणि Verifier पडताळणी पूर्ण होऊन अर्ज मंजूर झाला आहे.';
-                stageIndex = 3;
-                managerActionLabel = 'Manager Success';
+            } else if (verifierDecision === 'Rejected') {
+                if (managerApproved && hasVerifierEvidence) {
+                    status='Rejected'; stageKey='VERIFIER_REJECTED'; currentStage='पडताळणीकर्त्याने नामंजूर केले'; pendingWith=verifier; stageIndex=2; rejectedBy=verifier;
+                    blocker=finalRejectRemark || verifierRemark || finalStatusRaw || 'पडताळणीकर्त्याने अर्ज नामंजूर केला आहे.';
+                } else {
+                    stageKey='INCONSISTENT'; currentStage='डेटा विसंगती – नामंजुरी तपासा'; pendingWith=!managerApproved ? manager : verifier; stageIndex=!managerApproved?1:2; inconsistent=true;
+                    inconsistencyReason=!managerApproved ? 'अंतिम स्थिती नामंजूर आहे; पण व्यवस्थापकाचा स्पष्ट निर्णय उपलब्ध नाही.' : 'नामंजुरी आहे; पण पडताळणीचा पुरावा अपुरा आहे.';
+                    blocker=inconsistencyReason;
+                }
+            } else if (!hasValue(data.customerName) && !hasValue(pickValue(data,['fieldOfficerName','FieldOfficerName','StaffName']))) {
+                stageKey='FIELD'; currentStage='कर्मचारी नोंद अपूर्ण'; pendingWith=fieldOfficer; stageIndex=0;
+            } else if (!managerApproved) {
+                stageKey='MANAGER_PENDING'; currentStage='व्यवस्थापक / BM कडे प्रलंबित'; pendingWith=manager; stageIndex=1;
+                blocker = managerApprovalStatusRaw || managerRemark || 'व्यवस्थापक/BM कडून स्पष्ट मंजूर, नामंजूर किंवा दुरुस्ती निर्णय बाकी आहे.';
+            } else if (!hasVerifierEvidence) {
+                stageKey='VERIFIER_PENDING'; currentStage='पडताळणीकर्त्याकडे प्रलंबित'; pendingWith=verifier; stageIndex=2;
+                blocker='व्यवस्थापक मंजुरी पूर्ण आहे. अंतिम पडताळणी, व्हिडिओ कॉल किंवा पडताळणी शेरा बाकी आहे.';
             } else {
-                if (!hasValue(data.fieldOfficerName) && !hasValue(data.customerName)) {
-                    currentStage = 'Field/Staff Entry';
-                    pendingWith = fieldOfficer;
-                    blocker = 'Field/Staff कडून customer entry पूर्ण होणे बाकी आहे.';
-                    stageIndex = 0;
-                } else if (infoWrong || reworkFlag) {
-                    currentStage = 'Correction / Rework Pending';
-                    pendingWith = fieldOfficer;
-                    blocker = latestRemark !== 'Remark उपलब्ध नाही' ? latestRemark : 'Manager/BM किंवा Verifier यांनी माहिती दुरुस्ती सांगितली आहे. Field/Staff correction pending आहे.';
-                    stageIndex = 0;
-                } else if (!hasManagerReview) {
-                    currentStage = 'Manager / BM कडे Pending';
-                    pendingWith = manager;
-                    blocker = managerBlockerText || 'Manager/BM कडून ManagerApprovalStatus किंवा ManagerRemarks update बाकी आहे.';
-                    stageIndex = 1;
-                } else if (!hasFinalVerification) {
-                    currentStage = 'Verifier कडे Pending';
-                    pendingWith = verifier;
-                    blocker = managerBlockerText || 'Manager review complete आहे. Verifier कडून final verification / video call / remarks update बाकी आहे.';
-                    stageIndex = 2;
-                    managerActionLabel = 'Manager Success';
-                } else if (!hasFinalDecision) {
-                    currentStage = 'Final Status Update Pending';
-                    pendingWith = verifier;
-                    blocker = 'Verifier कडून Approved / Rejected final status sheet मध्ये update करणे बाकी आहे.';
-                    stageIndex = 3;
-                    managerActionLabel = 'Manager Success';
-                }
+                stageKey='FINAL_PENDING'; currentStage='अंतिम स्थिती अद्ययावत करणे बाकी'; pendingWith=verifier; stageIndex=3;
+                blocker='पडताळणी पूर्ण आहे; पण Approved/Rejected अंतिम स्थिती अद्ययावत करणे बाकी आहे.';
             }
 
+            const latestRemark = (managerRejected ? (managerRejectRemark || managerRemark || managerApprovalStatusRaw) : status==='Rejected' ? (finalRejectRemark || verifierRemark || managerRemark || fieldRemark) : (verifierRemark || managerRemark || fieldRemark)) || 'शेरा उपलब्ध नाही';
             return {
-                status, fieldOfficer, manager, verifier, latestRemark, fieldRemark, managerRemark, verifierRemark,
-                currentStage, pendingWith, blocker, stageIndex, hasManagerReview, hasFinalVerification, hasFinalDecision,
-                rejectedBy, managerRejected, managerApproved, managerActionLabel, managerApprovalStatusRaw, managerDecisionText,
-                managerDecisionStatus, rejectedRemarkText
+                status, stageKey, currentStage, pendingWith, blocker, stageIndex, fieldOfficer, manager, verifier,
+                fieldRemark, managerRemark, verifierRemark, managerRejectRemark, finalRejectRemark, latestRemark,
+                managerApprovalStatusRaw, managerDecisionStatus, managerApproved, managerRejected, managerRework, hasManagerReview,
+                finalStatusRaw, finalDecisionStatus:verifierDecision, hasFinalVerification:hasVerifierEvidence,
+                hasFinalDecision:status==='Approved'||status==='Rejected', verifierRework, rejectedBy,
+                managerTimestamp, verificationTimestamp, isInfoCorrect, isVideoDone, inconsistent, inconsistencyReason
             };
         }
 
-        function statusChip(status) {
-            const st = normalizeStatus(status);
-            if (st === 'Approved') return `<span class="status-chip chip-approved"><i class="fas fa-check-circle"></i> मंजूर</span>`;
-            if (st === 'Rejected') return `<span class="status-chip chip-rejected"><i class="fas fa-ban"></i> नामंजूर</span>`;
-            return `<span class="status-chip chip-pending"><i class="fas fa-hourglass-half"></i> प्रलंबित</span>`;
+        function statusChip(status, meta=null) {
+            if (meta?.inconsistent) return '<span class="status-chip chip-inconsistent"><i class="fas fa-triangle-exclamation"></i> विसंगती</span>';
+            const st=normalizeStatus(status);
+            if (st==='Approved') return '<span class="status-chip chip-approved"><i class="fas fa-check-circle"></i> मंजूर</span>';
+            if (st==='Rejected') return '<span class="status-chip chip-rejected"><i class="fas fa-ban"></i> नामंजूर</span>';
+            if (st==='Rework') return '<span class="status-chip chip-rework"><i class="fas fa-rotate-left"></i> दुरुस्ती</span>';
+            return '<span class="status-chip chip-pending"><i class="fas fa-hourglass-half"></i> प्रलंबित</span>';
         }
 
-        function updateKPIs() {
-            ui.kpi.total.textContent = filteredData.length;
-            ui.kpi.pending.textContent = filteredData.filter(d => getProcessMeta(d).status === 'Pending').length;
-            ui.kpi.approved.textContent = filteredData.filter(d => getProcessMeta(d).status === 'Approved').length;
-            ui.kpi.rejected.textContent = filteredData.filter(d => getProcessMeta(d).status === 'Rejected').length;
-            const totalApprovedAmount = filteredData.filter(d => getProcessMeta(d).status === 'Approved').reduce((sum, item) => sum + parseNumber(item.ApprovedLoanAmount), 0);
-            ui.kpi.approvedSum.textContent = '₹ ' + Math.round(totalApprovedAmount).toLocaleString('en-IN');
+        function updateKPIs(summary) {
+            ui.kpi.total.textContent=summary.total.toLocaleString('en-IN');
+            ui.kpi.pending.textContent=summary.pending.toLocaleString('en-IN');
+            ui.kpi.approved.textContent=summary.approved.toLocaleString('en-IN');
+            ui.kpi.rejected.textContent=summary.rejected.toLocaleString('en-IN');
+            ui.kpi.approvedSum.textContent='₹ '+Math.round(summary.approvedSum).toLocaleString('en-IN');
         }
 
-        function renderProcessOverview() {
-            const groups = [
-                { key:'allPending', title:'एकूण Pending Flow', sub:'सर्व pending अर्ज', icon:'fas fa-stream', tone:'tone-blue', filter:d => getProcessMeta(d).status === 'Pending' },
-                { key:'managerPending', title:'Manager / BM कडे Pending', sub:'Manager review / amount recommendation बाकी', icon:'fas fa-user-tie', tone:'tone-purple', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Manager') },
-                { key:'verifierPending', title:'Verifier कडे Pending', sub:'Final verification / video call बाकी', icon:'fas fa-user-check', tone:'tone-amber', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Verifier') },
-                { key:'finalStatusPending', title:'Final Status Update Pending', sub:'Verifier final status update बाकी', icon:'fas fa-clipboard-check', tone:'tone-blue', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Final Status') },
-                { key:'correctionPending', title:'Correction / Rework', sub:'Staff correction मुळे काम अडले', icon:'fas fa-rotate-left', tone:'tone-red', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Correction') },
-                { key:'rejected', title:'Rejected with Remarks', sub:'कोणी काय remark दिला ते पहा', icon:'fas fa-comment-slash', tone:'tone-red', filter:d => getProcessMeta(d).status === 'Rejected' },
-                { key:'approved', title:'Completed / Approved', sub:'Manager + Verifier verification पूर्ण', icon:'fas fa-circle-check', tone:'tone-green', filter:d => getProcessMeta(d).status === 'Approved' }
-            ];
-            ui.processOverviewGrid.innerHTML = groups.map(g => {
-                const count = filteredData.filter(g.filter).length;
-                return `<div class="pipeline-card ${g.tone}" data-process-group="${g.key}">
-                    <div class="pipeline-top"><div class="pipeline-icon"><i class="${g.icon}"></i></div><div class="pipeline-count">${count}</div></div>
-                    <div class="pipeline-title">${g.title}</div><p class="pipeline-sub">${g.sub}</p>
-                </div>`;
+        const PROCESS_GROUPS = [
+            { key:'allPending', title:'एकूण प्रलंबित प्रवाह', sub:'सर्व अपूर्ण अर्ज', icon:'fas fa-stream', tone:'tone-blue', match:m=>m.status==='Pending' },
+            { key:'managerPending', title:'व्यवस्थापक / BM कडे', sub:'स्पष्ट निर्णय बाकी', icon:'fas fa-user-tie', tone:'tone-purple', match:m=>m.stageKey==='MANAGER_PENDING' },
+            { key:'verifierPending', title:'पडताळणीकर्त्याकडे', sub:'अंतिम पडताळणी बाकी', icon:'fas fa-user-check', tone:'tone-amber', match:m=>m.stageKey==='VERIFIER_PENDING' },
+            { key:'finalStatusPending', title:'अंतिम स्थिती बाकी', sub:'Approved/Rejected अपडेट बाकी', icon:'fas fa-clipboard-check', tone:'tone-blue', match:m=>m.stageKey==='FINAL_PENDING' },
+            { key:'correctionPending', title:'दुरुस्ती / Rework', sub:'कर्मचाऱ्याकडून सुधारणा बाकी', icon:'fas fa-rotate-left', tone:'tone-red', match:m=>m.stageKey==='REWORK' },
+            { key:'inconsistent', title:'डेटा विसंगती', sub:'स्थिती आणि process जुळत नाही', icon:'fas fa-triangle-exclamation', tone:'tone-red', match:m=>m.stageKey==='INCONSISTENT' },
+            { key:'rejected', title:'नामंजूर अर्ज', sub:'निर्णय आणि कारणासह', icon:'fas fa-comment-slash', tone:'tone-red', match:m=>m.status==='Rejected' },
+            { key:'approved', title:'पूर्ण / मंजूर', sub:'दोन्ही पडताळण्या पूर्ण', icon:'fas fa-circle-check', tone:'tone-green', match:m=>m.status==='Approved' }
+        ];
+
+        function renderProcessOverview(summary) {
+            const counts={}; PROCESS_GROUPS.forEach(g=>counts[g.key]=0);
+            filteredData.forEach(row=>{ const m=metaOf(row); PROCESS_GROUPS.forEach(g=>{ if(g.match(m)) counts[g.key]++; }); });
+            ui.processOverviewGrid.innerHTML=PROCESS_GROUPS.map(g=>`<div class="pipeline-card ${g.tone}" data-process-group="${g.key}"><div class="pipeline-top"><div class="pipeline-icon"><i class="${g.icon}"></i></div><div class="pipeline-count">${counts[g.key].toLocaleString('en-IN')}</div></div><div class="pipeline-title">${g.title}</div><p class="pipeline-sub">${g.sub}</p></div>`).join('');
+        }
+        function showProcessGroupModal(key) { const g=PROCESS_GROUPS.find(x=>x.key===key)||PROCESS_GROUPS[0]; showApplicantsListModal(g.title, filteredData.filter(row=>g.match(metaOf(row)))); }
+        function showStatusApplicantsModal(status) { const data=status==='Total'?filteredData:filteredData.filter(d=>metaOf(d).status===status); const label=status==='Total'?'एकूण':status==='Pending'?'प्रलंबित':status==='Approved'?'मंजूर':'नामंजूर'; showApplicantsListModal(`${label} अर्जदारांची यादी`,data); }
+        function getApplicantById(id) { return applicantIndex.get(String(id)); }
+
+        function showApplicantsListModal(title,data) {
+            ui.modalTitle.textContent=`${title} (${data.length.toLocaleString('en-IN')})`;
+            ui.modalTable.innerHTML=`<thead><tr><th>ग्राहक</th><th>गाव</th><th>मोबाईल</th><th>अर्ज तारीख</th><th>स्थिती</th><th>व्यवस्थापक निर्णय</th><th>व्यवस्थापक शेरा</th><th>कर्मचारी शेरा</th><th>सध्याचा टप्पा</th><th>काम कोणाकडे?</th><th>कारण / अडथळा</th><th>कर्ज मागणी</th><th>मंजूर रक्कम</th><th style="width:260px">कृती</th></tr></thead><tbody></tbody>`;
+            modalState={data,rendered:0}; renderNextModalBatch(); ui.applicantModal.style.display='block';
+        }
+        function renderNextModalBatch() {
+            const tbody=ui.modalTable.querySelector('tbody');
+            if (!modalState.data.length) { tbody.innerHTML='<tr><td colspan="14" class="empty-state">या गटात एकही अर्ज नाही.</td></tr>'; updateModalLoadMore(); return; }
+            const end=Math.min(modalState.rendered+MODAL_BATCH_SIZE,modalState.data.length);
+            const html=modalState.data.slice(modalState.rendered,end).map(item=>{
+                const m=metaOf(item), st=m.status, id=escapeHTML(item._id), hasPhotos=hasPhotoOrDocs(item,'photoLinks'), hasDocs=hasPhotoOrDocs(item,'supportdoc');
+                const managerDisplay=m.managerApprovalStatusRaw?`${escapeHTML(m.managerApprovalStatusRaw)} ${statusChip(m.managerDecisionStatus||'Pending')}`:(m.managerRejected?statusChip('Rejected'):m.managerApproved?statusChip('Approved'):m.managerRework?statusChip('Rework'):statusChip('Pending'));
+                let actions=`<div class="action-btn-group"><button class="row-action-btn process-btn" data-app-id="${id}"><i class="fas fa-route"></i> Process</button>`;
+                if(st==='Approved') actions+=`<button class="row-action-btn print-btn" data-app-id="${id}" title="प्रिंट"><i class="fas fa-print"></i></button><button class="row-action-btn excel-btn" data-app-id="${id}" title="एक्सेल"><i class="fas fa-file-excel"></i></button><button class="row-action-btn photos-btn" data-app-id="${id}" ${!hasPhotos?'disabled':''}><i class="fas fa-camera"></i></button><button class="row-action-btn docs-btn" data-app-id="${id}" ${!hasDocs?'disabled':''}><i class="fas fa-file-alt"></i></button>`;
+                else if(st==='Rejected') actions+=`<button class="row-action-btn print-btn" data-app-id="${id}" title="प्रिंट"><i class="fas fa-print"></i></button>`;
+                actions+='</div>';
+                return `<tr><td><strong>${escapeHTML(item.customerName||'N/A')}</strong><br><small>${escapeHTML(item.Unit||'')}</small></td><td>${escapeHTML(item.villageName||'N/A')}</td><td>${escapeHTML(item.mobileNumber||'N/A')}</td><td>${formatDate(item.actualTime)}</td><td>${statusChip(st,m)}</td><td class="remark-cell">${managerDisplay}</td><td class="remark-cell">${escapeHTML(m.managerRemark||'-')}</td><td class="remark-cell">${escapeHTML(m.fieldRemark||'-')}</td><td><span class="process-pill" data-app-id="${id}"><i class="fas fa-location-dot"></i>${escapeHTML(m.currentStage)}</span></td><td>${escapeHTML(m.pendingWith)}</td><td class="blocker-cell">${escapeHTML(m.blocker)}</td><td>${formatINR(item.loanAmountRequested||0)}</td><td>${formatINR(item.ApprovedLoanAmount||0)}</td><td>${actions}</td></tr>`;
             }).join('');
-            ui.processOverviewGrid.querySelectorAll('.pipeline-card').forEach(card => card.addEventListener('click', () => showProcessGroupModal(card.dataset.processGroup)));
+            tbody.insertAdjacentHTML('beforeend',html); modalState.rendered=end; updateModalLoadMore();
+        }
+        function updateModalLoadMore() {
+            document.getElementById('modal-load-more-wrap')?.remove();
+            if(modalState.rendered>=modalState.data.length) return;
+            const wrap=document.createElement('div'); wrap.id='modal-load-more-wrap'; wrap.className='modal-load-more-wrap';
+            wrap.innerHTML=`<button type="button" class="modal-load-more">पुढील ${Math.min(MODAL_BATCH_SIZE,modalState.data.length-modalState.rendered)} अर्ज दाखवा</button>`;
+            wrap.querySelector('button').addEventListener('click',renderNextModalBatch); ui.modalTableContainer.appendChild(wrap);
+        }
+        function handleApplicantAction(e) {
+            const button=e.target.closest('[data-app-id]'); if(!button) return;
+            const data=getApplicantById(button.dataset.appId); if(!data) return;
+            if(button.classList.contains('print-btn')) printReport(data);
+            else if(button.classList.contains('excel-btn')) exportDataToExcel([data],`Applicant_${data.customerName||'Report'}`);
+            else if(button.classList.contains('photos-btn')) showFilesModal(data,'photoLinks','फोटो');
+            else if(button.classList.contains('docs-btn')) showFilesModal(data,'supportdoc','कागदपत्रे');
+            else showProcessDetailsModal(data);
         }
 
-        function showProcessGroupModal(groupKey) {
-            const groupMap = {
-                allPending: { title:'एकूण Pending Flow', filter:d => getProcessMeta(d).status === 'Pending' },
-                managerPending: { title:'Manager / BM कडे Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Manager') },
-                verifierPending: { title:'Verifier कडे Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Verifier') },
-                finalStatusPending: { title:'Final Status Update Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Final Status') },
-                correctionPending: { title:'Correction / Rework Pending', filter:d => getProcessMeta(d).status === 'Pending' && getProcessMeta(d).currentStage.includes('Correction') },
-                rejected: { title:'Rejected अर्ज व Remarks', filter:d => getProcessMeta(d).status === 'Rejected' },
-                approved: { title:'Completed / Approved अर्ज', filter:d => getProcessMeta(d).status === 'Approved' }
-            };
-            const g = groupMap[groupKey] || groupMap.allPending;
-            showApplicantsListModal(g.title, filteredData.filter(g.filter));
-        }
-
-        function showStatusApplicantsModal(status) {
-            let data;
-            let statusMarathi;
-            if (status === 'Total') {
-                data = filteredData;
-                statusMarathi = 'एकूण';
-            } else {
-                data = filteredData.filter(d => getProcessMeta(d).status === status);
-                statusMarathi = status === 'Pending' ? 'प्रोसेस / प्रलंबित' : status === 'Approved' ? 'मंजूर' : 'नामंजूर';
-            }
-            showApplicantsListModal(`${statusMarathi} अर्जदारांची यादी`, data);
-        }
-
-        function getApplicantByRow(rowId) {
-            return allData.find(d => String(d.row) === String(rowId)) || filteredData.find(d => String(d.row) === String(rowId));
-        }
-
-        function showApplicantsListModal(title, data) {
-            ui.modalTitle.textContent = `${title} (${data.length})`;
-            const modalTable = document.getElementById('modal-table');
-            modalTable.innerHTML = `<thead><tr>
-                <th>ग्राहक</th><th>गाव</th><th>मोबाईल</th><th>अर्ज तारीख</th><th>स्थिती</th>
-                <th>ManagerApprovalStatus</th><th>ManagerRemarks</th><th>Field/Staff Remark</th>
-                <th>सध्याचा Stage</th><th>Pending / Decision कोणाकडे?</th><th>काम का थांबले / Reject Remark</th>
-                <th>कर्ज मागणी</th><th>मंजूर रक्कम</th><th style="width: 260px;">कृती</th>
-            </tr></thead><tbody></tbody>`;
-            const tbody = modalTable.querySelector('tbody');
-
-            if (!data.length) {
-                tbody.innerHTML = `<tr><td colspan="14" class="empty-state">या गटात एकही अर्ज नाही.</td></tr>`;
-            } else {
-                tbody.innerHTML = data.map(item => {
-                    const meta = getProcessMeta(item);
-                    const st = meta.status;
-                    const hasPhotos = hasValue(item.photoLinks);
-                    const hasDocs = hasValue(item.supportdoc);
-                    const managerDecisionDisplay = meta.managerApprovalStatusRaw
-                        ? `${escapeHTML(meta.managerApprovalStatusRaw)} ${statusChip(statusWord(meta.managerApprovalStatusRaw) || meta.managerDecisionStatus || 'Pending')}`
-                        : (meta.hasManagerReview ? (meta.managerRejected ? statusChip('Rejected') : statusChip('Approved')) : statusChip('Pending'));
-
-                    let actionCellHTML = `<div class="action-btn-group"><button class="row-action-btn process-btn" title="Process Trail पहा" data-row="${escapeHTML(item.row)}"><i class="fas fa-route"></i> Process</button>`;
-                    if (st === 'Approved') {
-                        actionCellHTML += `<button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${escapeHTML(item.row)}"><i class="fas fa-print"></i></button><button class="row-action-btn excel-btn" title="एक्सेलमध्ये एक्सपोर्ट करा" data-row="${escapeHTML(item.row)}"><i class="fas fa-file-excel"></i></button><button class="row-action-btn photos-btn" title="फोटो पहा" data-row="${escapeHTML(item.row)}" ${!hasPhotos ? 'disabled' : ''}><i class="fas fa-camera"></i></button><button class="row-action-btn docs-btn" title="कागदपत्रे पहा" data-row="${escapeHTML(item.row)}" ${!hasDocs ? 'disabled' : ''}><i class="fas fa-file-alt"></i></button>`;
-                    } else if (st === 'Rejected') {
-                        actionCellHTML += `<button class="row-action-btn print-btn" title="रिपोर्ट प्रिंट करा" data-row="${escapeHTML(item.row)}"><i class="fas fa-print"></i></button>`;
-                    }
-                    actionCellHTML += '</div>';
-
-                    return `<tr>
-                        <td><strong>${escapeHTML(item.customerName || 'N/A')}</strong><br><small>${escapeHTML(item.Unit || '')}</small></td>
-                        <td>${escapeHTML(item.villageName || 'N/A')}</td>
-                        <td>${escapeHTML(item.mobileNumber || 'N/A')}</td>
-                        <td>${formatDate(item.actualTime)}</td>
-                        <td>${statusChip(st)}</td>
-                        <td class="remark-cell">${managerDecisionDisplay}</td>
-                        <td class="remark-cell">${escapeHTML(meta.managerRemark || '-')}</td>
-                        <td class="remark-cell">${escapeHTML(meta.fieldRemark || '-')}</td>
-                        <td><span class="process-pill" data-row="${escapeHTML(item.row)}"><i class="fas fa-location-dot"></i>${escapeHTML(meta.currentStage)}</span></td>
-                        <td>${escapeHTML(meta.pendingWith)}</td>
-                        <td class="blocker-cell">${escapeHTML(meta.blocker)}</td>
-                        <td>${formatINR(item.loanAmountRequested || 0)}</td>
-                        <td>${formatINR(item.ApprovedLoanAmount || 0)}</td>
-                        <td>${actionCellHTML}</td>
-                    </tr>`;
-                }).join('');
-            }
-
-            ui.applicantModal.style.display = 'block';
-            modalTable.querySelectorAll('.row-action-btn, .process-pill').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const button = e.currentTarget;
-                    const rowId = button.dataset.row;
-                    const applicantData = getApplicantByRow(rowId);
-                    if (!applicantData) return;
-                    if (button.classList.contains('print-btn')) printReport(applicantData);
-                    else if (button.classList.contains('excel-btn')) exportDataToExcel([applicantData], `Applicant_${applicantData.customerName || rowId}`);
-                    else if (button.classList.contains('photos-btn')) showFilesModal(applicantData, 'photoLinks', 'फोटो');
-                    else if (button.classList.contains('docs-btn')) showFilesModal(applicantData, 'supportdoc', 'कागदपत्रे');
-                    else showProcessDetailsModal(applicantData);
-                });
-            });
-        }
-
-        function buildRemarkRows(data, meta) {
-            const rows = [];
-            const add = (stage, label, by, field, text, forceDecision = '') => {
-                if (!hasValue(text)) return;
-                const value = String(text).trim();
-                const duplicate = rows.some(r => r.field === field && String(r.text).trim() === value);
-                if (!duplicate) rows.push({ stage, label, by: by || 'माहिती नाही', field, text: value, forceDecision });
-            };
-
-            add('1. Field / Staff Entry', 'Entry Remark', meta.fieldOfficer, 'remarks / FieldRemarks', meta.fieldRemark);
-            add('1. Field / Staff Entry', 'Submitted By', meta.fieldOfficer, 'fieldOfficerName', pickValue(data, ['fieldOfficerName', 'FieldOfficerName', 'StaffName', 'FOName']));
-
-            add('2. Manager / BM Review', 'ManagerApprovalStatus', meta.manager, 'ManagerApprovalStatus', meta.managerApprovalStatusRaw);
-            add('2. Manager / BM Review', 'ManagerRemarks', meta.manager, 'ManagerRemarks', meta.managerRemark);
-            add('2. Manager / BM Review', 'Manager Reject Remark', meta.manager, 'ManagerRejectRemarks', pickValue(data, ['ManagerRejectRemarks', 'BMRejectRemarks']));
-            add('2. Manager / BM Review', 'Manager Time', meta.manager, 'ManagerTimestamp', pickValue(data, ['ManagerTimestamp', 'BMTimestamp', 'ApprovalTimestamp', 'ApproverTimestamp', 'ManagerTime', 'BMTime']));
-
-            // Verifier stage is skipped when Manager/BM rejected the case.
-            if (!meta.managerRejected) {
-                add('3. Verifier', 'Verifier Remark', meta.verifier, 'VerifierRemarks', meta.verifierRemark);
-                add('3. Verifier', 'Info Correct?', meta.verifier, 'IsInfoCorrect', pickValue(data, ['IsInfoCorrect', 'isInfoCorrect']));
-                add('3. Verifier', 'Video Call?', meta.verifier, 'IsVideoCallDone', pickValue(data, ['IsVideoCallDone', 'isVideoCallDone']));
-                add('3. Verifier', 'Verifier Time', meta.verifier, 'VerificationTimestamp', pickValue(data, ['VerificationTimestamp', 'VerifierTimestamp', 'VerifiedTimestamp']));
-            }
-
-            // IMPORTANT FIX:
-            // Sheet मधील VerificationStatus Pending असला तरी ManagerApprovalStatus Rejected असेल,
-            // dashboard calculated final status Rejected दाखवेल.
-            const rawFinalStatus = pickValue(data, ['VerificationStatus', 'FinalStatus', 'FinalDecision', 'ApplicationStatus', 'Status']);
-            let displayFinalStatus = rawFinalStatus || meta.status;
-            let finalDecisionForce = '';
-
-            if (meta.managerRejected) {
-                displayFinalStatus = 'Rejected by Manager/BM';
-                finalDecisionForce = 'Rejected';
-            } else if (meta.status === 'Rejected') {
-                displayFinalStatus = rawFinalStatus && statusWord(rawFinalStatus) !== 'Pending' ? rawFinalStatus : 'Rejected';
-                finalDecisionForce = 'Rejected';
-            } else if (meta.status === 'Approved') {
-                displayFinalStatus = rawFinalStatus && statusWord(rawFinalStatus) !== 'Pending' ? rawFinalStatus : 'Approved';
-                finalDecisionForce = 'Approved';
-            } else {
-                displayFinalStatus = rawFinalStatus || 'Pending';
-                finalDecisionForce = 'Pending';
-            }
-
-            add('4. Final Status', 'Dashboard Final Status', meta.rejectedBy || meta.pendingWith, 'Calculated Final Status', displayFinalStatus, finalDecisionForce);
-            if (!meta.managerRejected) {
-                add('4. Final Status', 'Final / Reject Remark', meta.rejectedBy || meta.pendingWith, 'RejectedRemarks / FinalRemarks', pickValue(data, ['RejectedRemarks', 'RejectRemarks', 'RejectionRemarks', 'RejectReason', 'RejectionReason', 'FinalRemarks']));
-                add('4. Final Status', 'Latest Remark', meta.rejectedBy || meta.pendingWith, 'LatestRemark', pickValue(data, ['LatestRemark', 'latestRemark']));
-            }
-
-            if (!rows.length) return `<div class="empty-state">या अर्जावर अजून remark उपलब्ध नाही.</div>`;
-            return rows.map(r => {
-                const decision = r.forceDecision || statusWord(r.text);
-                const chip = decision ? `<span class="decision-inline">${statusChip(decision)}</span>` : '';
-                return `<div class="remark-row">
-                    <strong>${escapeHTML(r.stage)} - ${escapeHTML(r.label)} ${chip}</strong>
-                    <div class="remark-meta"><i class="fas fa-user"></i> ${escapeHTML(r.by)} &nbsp; <i class="fas fa-database"></i> ${escapeHTML(r.field)}</div>
-                    <p>${escapeHTML(r.text)}</p>
-                </div>`;
-            }).join('');
+        function buildRemarkRows(data,m) {
+            const rows=[]; const add=(stage,label,by,field,text,decision='')=>{ if(!hasValue(text))return; const value=String(text).trim(); if(!rows.some(r=>r.field===field&&r.text===value))rows.push({stage,label,by:by||'माहिती नाही',field,text:value,decision}); };
+            add('1. कर्मचारी नोंद','कर्मचारी शेरा',m.fieldOfficer,'remarks / FieldRemarks',m.fieldRemark);
+            add('1. कर्मचारी नोंद','नोंद करणारे',m.fieldOfficer,'fieldOfficerName',pickValue(data,['fieldOfficerName','FieldOfficerName','StaffName','FOName']));
+            add('2. व्यवस्थापक / BM','निर्णय',m.manager,'ManagerApprovalStatus',m.managerApprovalStatusRaw,m.managerDecisionStatus);
+            add('2. व्यवस्थापक / BM','शेरा',m.manager,'ManagerRemarks',m.managerRemark);
+            add('2. व्यवस्थापक / BM','नामंजुरी कारण',m.manager,'ManagerRejectRemarks',m.managerRejectRemark,'Rejected');
+            add('2. व्यवस्थापक / BM','वेळ',m.manager,'ManagerTimestamp',m.managerTimestamp);
+            if(!m.managerRejected){ add('3. पडताळणीकर्ता','अंतिम स्थिती',m.verifier,'VerificationStatus',m.finalStatusRaw,m.finalDecisionStatus); add('3. पडताळणीकर्ता','शेरा',m.verifier,'VerifierRemarks',m.verifierRemark); add('3. पडताळणीकर्ता','माहिती बरोबर?',m.verifier,'IsInfoCorrect',m.isInfoCorrect); add('3. पडताळणीकर्ता','व्हिडिओ कॉल?',m.verifier,'IsVideoCallDone',m.isVideoDone); add('3. पडताळणीकर्ता','वेळ',m.verifier,'VerificationTimestamp',m.verificationTimestamp); }
+            add('4. अंतिम निष्कर्ष','Dashboard स्थिती',m.rejectedBy||m.pendingWith,'Calculated Status',m.inconsistent?m.inconsistencyReason:m.status,m.inconsistent?'Pending':m.status);
+            if(m.status==='Rejected') add('4. अंतिम निष्कर्ष','नामंजुरीचे कारण',m.rejectedBy,'Final Reject Remark',m.managerRejected?m.managerRejectRemark:(m.finalRejectRemark||m.verifierRemark),'Rejected');
+            if(!rows.length)return '<div class="empty-state">या अर्जावर अजून शेरा उपलब्ध नाही.</div>';
+            return rows.map(r=>`<div class="remark-row"><strong>${escapeHTML(r.stage)} - ${escapeHTML(r.label)} ${r.decision?`<span class="decision-inline">${statusChip(r.decision)}</span>`:''}</strong><div class="remark-meta"><i class="fas fa-user"></i> ${escapeHTML(r.by)} &nbsp; <i class="fas fa-database"></i> ${escapeHTML(r.field)}</div><p>${escapeHTML(r.text)}</p></div>`).join('');
         }
 
         function showProcessDetailsModal(data) {
-            const meta = getProcessMeta(data);
-            const steps = [
-                { title:'1. Field/Staff Entry', owner: meta.fieldOfficer, hint:'ग्राहक माहिती, फोटो व documents submit', done: true },
-                { title:'2. Manager / BM Review', owner: meta.manager, hint:'Manager/BM review, amount recommendation आणि remarks', done: meta.hasManagerReview || meta.status === 'Approved' || (meta.status === 'Rejected' && meta.stageIndex >= 1), managerStep:true },
-                { title:'3. Verifier', owner: meta.verifier || 'Verifier', hint:'Final verification, video call, अंतिम remarks', done: meta.hasFinalVerification || meta.status === 'Approved' || (meta.status === 'Rejected' && meta.stageIndex >= 2 && !meta.managerRejected), skipped: meta.managerRejected },
-                { title:'4. Final Status', owner: meta.status === 'Approved' ? 'Approved' : (meta.status === 'Rejected' ? 'Rejected' : meta.pendingWith), hint:'Approved / Rejected / Pending close', done: meta.status === 'Approved' || meta.status === 'Rejected', finalStep:true }
+            const m=metaOf(data);
+            const steps=[
+                {title:'1. कर्मचारी नोंद',owner:m.fieldOfficer,hint:'ग्राहक माहिती, फोटो आणि कागदपत्रे',done:true},
+                {title:'2. व्यवस्थापक / BM',owner:m.manager,hint:'स्पष्ट मंजूर / नामंजूर / दुरुस्ती निर्णय',done:m.hasManagerReview,stop:m.managerRejected,current:m.stageKey==='MANAGER_PENDING'},
+                {title:'3. पडताळणीकर्ता',owner:m.verifier,hint:'अंतिम पडताळणी, व्हिडिओ कॉल आणि शेरा',done:m.hasFinalVerification&&!m.managerRejected,skipped:m.managerRejected,current:m.stageKey==='VERIFIER_PENDING'},
+                {title:'4. अंतिम स्थिती',owner:m.status==='Pending'?m.pendingWith:m.status,hint:'मंजूर / नामंजूर निष्कर्ष',done:m.hasFinalDecision,current:['FINAL_PENDING','INCONSISTENT'].includes(m.stageKey)}
             ];
-
-            ui.processModalTitle.textContent = `${data.customerName || 'ग्राहक'} - Process Trail`;
-            ui.processModalSubtitle.textContent = `Flow: Field/Staff → Manager/BM → Verifier → Final Status ${data.villageName ? '• ' + data.villageName : ''} ${data.mobileNumber ? '• ' + data.mobileNumber : ''}`;
-
-            const stepHTML = steps.map((s, idx) => {
-                let cls = 'step-wait';
-                let label = 'Waiting';
-                if (s.done) {
-                    cls = 'step-done';
-                    label = s.managerStep ? (meta.managerRejected ? 'Manager Rejected' : (meta.hasManagerReview ? 'Manager Success' : 'Done')) : 'Done';
-                }
-                if (s.skipped) { cls = 'step-wait'; label = 'Not Required'; }
-                if (meta.status === 'Pending' && idx === meta.stageIndex) { cls = 'step-current'; label = 'Pending Here'; }
-                if (meta.status === 'Rejected' && idx === meta.stageIndex) { cls = 'step-stop'; label = 'Rejected Here'; }
-                if (meta.managerRejected && s.finalStep) { cls = 'step-stop'; label = 'Rejected Counted'; }
-
-                return `<div class="step-item ${cls}">
-                    <div class="step-no">${idx + 1}</div>
-                    <div class="step-title">${escapeHTML(s.title)}</div>
-                    <div class="step-owner"><i class="fas fa-user"></i> ${escapeHTML(s.owner || 'माहिती नाही')}</div>
-                    <div class="step-owner" style="margin-top:5px;">${escapeHTML(s.hint)}</div>
-                    <span class="step-status">${label}</span>
-                </div>`;
-            }).join('');
-
-            ui.processModalBody.innerHTML = `<div class="process-summary-grid">
-                <div class="process-summary-box"><span>सध्याची स्थिती</span><strong>${statusChip(meta.status)}</strong></div>
-                <div class="process-summary-box"><span>सध्याचा Stage</span><strong>${escapeHTML(meta.currentStage)}</strong></div>
-                <div class="process-summary-box"><span>Pending / Decision By</span><strong>${escapeHTML(meta.pendingWith)}</strong></div>
-                <div class="process-summary-box"><span>ManagerApprovalStatus</span><strong>${escapeHTML(meta.managerApprovalStatusRaw || (meta.managerApproved ? 'Manager Success' : (meta.managerRejected ? 'Manager Rejected' : 'Pending')))}</strong></div>
-                <div class="process-summary-box"><span>ManagerRemarks</span><strong>${escapeHTML(meta.managerRemark || '-')}</strong></div>
-                <div class="process-summary-box"><span>Amount</span><strong>मागणी ${formatINR(data.loanAmountRequested || 0)} / मंजूर ${formatINR(data.ApprovedLoanAmount || 0)}</strong></div>
-            </div>
-            <div class="remarks-panel" style="margin-bottom:18px;"><h3><i class="fas fa-route"></i> Correct Flow</h3><p style="margin:0;color:#475569;">Field/Staff → Manager/BM → Verifier → Final Status</p></div>
-            <div class="remarks-panel" style="margin-bottom:18px;"><h3><i class="fas fa-triangle-exclamation"></i> काम कुठे थांबले?</h3><p style="margin:0;color:#475569;">${escapeHTML(meta.blocker)}</p></div>
-            <div class="stepper">${stepHTML}</div>
-            <div class="remarks-panel"><h3><i class="fas fa-comments"></i> Remarks History</h3>${buildRemarkRows(data, meta)}</div>`;
-            ui.processModal.style.display = 'block';
+            const stepHTML=steps.map((s,i)=>{ let cls='step-wait',label='प्रतीक्षा'; if(s.skipped){cls='step-wait';label='लागू नाही';} else if(s.stop){cls='step-stop';label='नामंजूर';} else if(s.done){cls='step-done';label='पूर्ण';} else if(s.current){cls='step-current';label='सध्या येथे';} return `<div class="step-item ${cls}"><div class="step-no">${i+1}</div><div class="step-title">${s.title}</div><div class="step-owner">${escapeHTML(s.owner)}</div><div class="step-owner">${s.hint}</div><span class="step-status">${label}</span></div>`; }).join('');
+            ui.processModalTitle.textContent=`${data.customerName||'ग्राहक'} - संपूर्ण प्रक्रिया`;
+            ui.processModalSubtitle.textContent=`कर्मचारी → व्यवस्थापक/BM → पडताळणीकर्ता → अंतिम स्थिती${data.villageName?' • '+data.villageName:''}`;
+            ui.processModalBody.innerHTML=`<div class="process-summary-grid"><div class="process-summary-box"><span>Dashboard स्थिती</span><strong>${statusChip(m.status,m)}</strong></div><div class="process-summary-box"><span>सध्याचा टप्पा</span><strong>${escapeHTML(m.currentStage)}</strong></div><div class="process-summary-box"><span>काम / निर्णय कोणाकडे?</span><strong>${escapeHTML(m.pendingWith)}</strong></div><div class="process-summary-box"><span>व्यवस्थापक निर्णय</span><strong>${escapeHTML(m.managerApprovalStatusRaw||m.managerDecisionStatus||'Pending')}</strong></div><div class="process-summary-box"><span>व्यवस्थापक शेरा</span><strong>${escapeHTML(m.managerRemark||'-')}</strong></div><div class="process-summary-box"><span>रक्कम</span><strong>मागणी ${formatINR(data.loanAmountRequested||0)} / मंजूर ${formatINR(data.ApprovedLoanAmount||0)}</strong></div></div><div class="remarks-panel" style="margin-bottom:18px"><h3><i class="fas fa-triangle-exclamation"></i> काम कुठे थांबले?</h3><p style="margin:0;color:#475569">${escapeHTML(m.blocker)}</p></div><div class="stepper">${stepHTML}</div><div class="remarks-panel"><h3><i class="fas fa-comments"></i> शेरा इतिहास</h3>${buildRemarkRows(data,m)}</div>`;
+            ui.processModal.style.display='block';
         }
 
         function renderCharts() {
-            ['loanTypeChart', 'talukaChart'].forEach((id, i) => {
-                if (chartInstances[id]) chartInstances[id].destroy();
-                const canvas = document.getElementById(id);
-                if (!canvas || typeof Chart === 'undefined') return;
-                const ctx = canvas.getContext('2d');
-                const field = i === 0 ? 'loanProductType' : 'taluka';
-                const counts = filteredData.reduce((a, item) => {
-                    const k = item[field] || 'माहिती नाही';
-                    a[k] = (a[k] || 0) + 1;
-                    return a;
-                }, {});
-                const colors = ['#0078d4', '#28a745', '#ffb900', '#e81123', '#17a2b8', '#6c757d', '#512da8', '#0f172a'];
-                chartInstances[id] = new Chart(ctx, {
-                    type: i === 0 ? 'doughnut' : 'bar',
-                    data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: Object.keys(counts).map((_, idx) => colors[idx % colors.length]) }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: i === 0, position: 'bottom' } }, scales: i === 1 ? { y: { beginAtZero: true } } : {} }
+            ['loanTypeChart','talukaChart'].forEach((id,i)=>{
+                if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}
+                const canvas=document.getElementById(id); if(!canvas||typeof Chart==='undefined')return;
+                const field=i===0?'loanProductType':'taluka', counts={};
+                filteredData.forEach(item=>{const key=String(item[field]||'माहिती नाही');counts[key]=(counts[key]||0)+1;});
+                const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+                chartInstances[id]=new Chart(canvas.getContext('2d'),{type:i===0?'doughnut':'bar',data:{labels:sorted.map(x=>x[0]),datasets:[{data:sorted.map(x=>x[1]),backgroundColor:sorted.map((_,idx)=>['#0078d4','#28a745','#ffb900','#e81123','#17a2b8','#6c757d','#512da8','#0f172a'][idx%8])}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:180},plugins:{legend:{display:i===0,position:'bottom'}},scales:i===1?{y:{beginAtZero:true}}:{}}});
+            });
+        }
+        function generateApprovedCustomerInsights() {
+            const approved=filteredData.filter(d=>metaOf(d).status==='Approved');
+            ui.approvedInsightsContainer.innerHTML=INSIGHT_KPIS.map(k=>{const count=approved.filter(k.filter).length;return `<div class="kpi-card clickable insights-card" data-insight-key="${k.key}"><div class="kpi-icon"><i class="${k.icon}"></i></div><div class="kpi-content"><h3>${count.toLocaleString('en-IN')}</h3><p>${k.label}</p></div></div>`;}).join('');
+            ui.approvedInsightsContainer.querySelectorAll('[data-insight-key]').forEach(card=>card.addEventListener('click',()=>{const k=INSIGHT_KPIS.find(x=>x.key===card.dataset.insightKey); if(k)showApprovedInsightDetailsModal(k.key,k.label);}));
+        }
+        function showApprovedInsightDetailsModal(key,label) { const k=INSIGHT_KPIS.find(x=>x.key===key); if(!k)return; showApplicantsListModal(label,filteredData.filter(d=>metaOf(d).status==='Approved'&&k.filter(d))); }
+
+        function percent(n,d){return d?Math.round(Number(n||0)/Number(d)*100):0;}
+        function safeScore(n){return Math.max(0,Math.min(100,Math.round(Number(n||0))));}
+        function hasPhotoOrDocs(row,field){const raw=pickValue(row,[field]);return hasValue(raw)&&String(raw).split(/[\s,]+/).filter(Boolean).length>0;}
+        function isValidMobile(v){const d=String(v||'').replace(/\D/g,'');return d.length===10||(d.length===12&&d.startsWith('91'));}
+        function isValidAadhaar(v){const d=String(v||'').replace(/\D/g,'');return d.length===12;}
+        function isValidPAN(v){return /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(String(v||'').trim().toUpperCase());}
+        function isValidIFSC(v){return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(String(v||'').trim().toUpperCase());}
+        function isValidBankAccount(v){const d=String(v||'').replace(/\D/g,'');return d.length>=9&&d.length<=18;}
+        function hasAnyAsset(row){return ['assetLandAcres','assetLandType','assetHouseType','assetPlots','assetVehicle','cows','buffaloes','goats','bulls','pigs','poultry','assetEquipmentFarm','assetEquipmentBusiness'].some(k=>hasValue(row[k])&&String(row[k]).trim()!=='0');}
+        function roundOne(n){ return Math.round(Number(n || 0) * 10) / 10; }
+        function displayScore(n){ const x=roundOne(n); return Number.isInteger(x) ? String(x) : x.toFixed(1); }
+        function auditItem(key,label,max,earned,reason=''){
+            const safeMax=Math.max(0,Number(max||0));
+            const safeEarned=Math.max(0,Math.min(safeMax,Number(earned||0)));
+            return {key,label,max:safeMax,earned:safeEarned,lost:Math.max(0,safeMax-safeEarned),reason};
+        }
+        function finishAudit(items){
+            const exact=items.reduce((sum,item)=>sum+item.earned,0);
+            return {percent:safeScore(exact),exact:roundOne(exact),items};
+        }
+        function dataQualityAudit(row){
+            const items=[];
+            const add=(key,label,max,ok,reason)=>items.push(auditItem(key,label,max,ok?max:0,ok?'':reason));
+            add('customerName','ग्राहकाचे पूर्ण नाव',5,hasValue(row.customerName),'ग्राहकाचे नाव रिकामे आहे.');
+            add('mobile','योग्य मोबाईल क्रमांक',8,isValidMobile(row.mobileNumber),'10 अंकी मोबाईल किंवा 91 सहित 12 अंकी क्रमांक आवश्यक आहे.');
+            add('aadhaar','योग्य आधार क्रमांक',10,isValidAadhaar(row.aadhaarNumber),'12 अंकी आधार क्रमांक उपलब्ध/योग्य नाही.');
+
+            const addressFields=[['गाव',row.villageName],['तालुका',row.taluka],['जिल्हा',row.district]];
+            const addressCount=addressFields.filter(([,v])=>hasValue(v)).length;
+            const missingAddress=addressFields.filter(([,v])=>!hasValue(v)).map(([l])=>l);
+            items.push(auditItem('address','पूर्ण पत्ता: गाव, तालुका, जिल्हा',8,Math.round((addressCount/3)*8),missingAddress.length?`${missingAddress.join(', ')} माहिती भरलेली नाही.`:''));
+
+            add('loanAmount','कर्ज मागणी रक्कम',5,parseNumber(row.loanAmountRequested)>0,'मागितलेली कर्ज रक्कम शून्य/रिकामी आहे.');
+            add('loanPurpose','कर्जाचा स्पष्ट उद्देश',5,hasValue(row.loanPurpose)&&String(row.loanPurpose).trim().length>=3,'कर्जाचा उद्देश रिकामा किंवा खूप लहान आहे.');
+            add('income','कुटुंबाचे मासिक उत्पन्न',8,parseNumber(row.familyTotalIncome)>0,'कुटुंबाचे एकूण मासिक उत्पन्न भरलेले नाही.');
+            add('expense','मासिक खर्च',6,parseNumber(row.expenseTotal)>0||parseNumber(row.expenseHousehold)>0,'मासिक खर्च/घरखर्च भरलेला नाही.');
+            add('incomeSource','प्राथमिक उत्पन्न स्रोत',5,hasValue(row.primaryIncomeSource),'प्राथमिक उत्पन्न स्रोत नमूद केलेला नाही.');
+
+            const profileFields=[['वय',row.applicantAge],['लिंग',row.applicantGender],['वैवाहिक स्थिती',row.maritalStatus]];
+            const profileCount=profileFields.filter(([,v])=>hasValue(v)).length;
+            const missingProfile=profileFields.filter(([,v])=>!hasValue(v)).map(([l])=>l);
+            items.push(auditItem('profile','वैयक्तिक प्रोफाइल: वय, लिंग, वैवाहिक स्थिती',5,Math.round((profileCount/3)*5),missingProfile.length?`${missingProfile.join(', ')} माहिती भरलेली नाही.`:''));
+
+            const bankAccount=pickValue(row,['savingsBankAccount','bankAccountNumber','AccountNumber','accountNumber']);
+            const ifsc=pickValue(row,['ifsccode','IFSC','ifscCode','IFSCCode']);
+            const bankOk=isValidBankAccount(bankAccount),ifscOk=isValidIFSC(ifsc);
+            const bankProblems=[];
+            if(!bankOk)bankProblems.push('9 ते 18 अंकी योग्य बँक खाते क्रमांक नाही');
+            if(!ifscOk)bankProblems.push('योग्य 11 अक्षरी IFSC नाही');
+            add('bank','बँक खाते आणि IFSC',8,bankOk&&ifscOk,bankProblems.join('; ')+'.');
+            add('photo','ग्राहक/व्यवसाय फोटो',8,hasPhotoOrDocs(row,'photoLinks'),'आवश्यक फोटो लिंक उपलब्ध नाही.');
+            add('documents','आधार/कर्ज सहाय्यक कागदपत्रे',8,hasPhotoOrDocs(row,'supportdoc'),'सहाय्यक कागदपत्रांची लिंक उपलब्ध नाही.');
+            const gpsPair=hasValue(row.gpsLatitude)&&hasValue(row.gpsLongitude);
+            add('gps','GPS स्थान / Google Maps लिंक',6,gpsPair||hasValue(row.googleMapsLink),'GPS latitude-longitude किंवा Google Maps लिंक उपलब्ध नाही.');
+            add('assets','मालमत्ता/उपजीविका साधनांची माहिती',3,hasAnyAsset(row),'जमीन, घर, वाहन, पशुधन किंवा व्यवसाय साधनांची माहिती नाही.');
+            add('unit','युनिट/शाखा/केंद्र माहिती',2,hasValue(row.Unit)||hasValue(row.branchName)||hasValue(row.centerName),'युनिट, शाखा किंवा केंद्र माहिती उपलब्ध नाही.');
+            return finishAudit(items);
+        }
+        function rowDataQuality(row){ return row?._scoreAudit?.data?.percent ?? dataQualityAudit(row).percent; }
+
+        function decisionTrailAudit(row){
+            const m=metaOf(row),items=[];
+            items.push(auditItem('managerDecision','व्यवस्थापक/BM चा स्पष्ट निर्णय',20,(m.managerApproved||m.managerRejected)?20:0,'ManagerApprovalStatus मध्ये Approved किंवा Rejected स्पष्ट नाही.'));
+            items.push(auditItem('managerTimestamp','व्यवस्थापक निर्णयाची वेळ',10,hasValue(m.managerTimestamp)?10:0,'Manager/BM decision timestamp उपलब्ध नाही.'));
+            if(m.managerRejected){
+                const rejectText=String(m.managerRejectRemark||m.managerRemark||'').trim();
+                items.push(auditItem('managerRejectReason','व्यवस्थापक नामंजुरीचे स्पष्ट कारण',30,rejectText.length>=8?30:0,'Manager/BM Reject remark किमान 8 अक्षरांचा आणि स्पष्ट असावा.'));
+                items.push(auditItem('managerName','व्यवस्थापक/BM नाव',15,hasValue(pickValue(row,['ManagerName','BMName','ApproverName']))?15:0,'निर्णय घेणाऱ्या Manager/BM चे नाव उपलब्ध नाही.'));
+                items.push(auditItem('managerFinalReject','अंतिम नामंजूर स्थिती',25,m.status==='Rejected'?25:0,'Manager reject असूनही calculated final status Rejected नाही.'));
+            }else{
+                const managerPath=m.managerApproved;
+                items.push(auditItem('finalDecision','अंतिम Approved/Rejected निर्णय',20,managerPath&&['Approved','Rejected'].includes(m.finalDecisionStatus)?20:0,!managerPath?'Manager approval पूर्ण नसल्याने final decision trail ग्राह्य नाही.':'Verifier कडून Approved/Rejected अंतिम निर्णय उपलब्ध नाही.'));
+                items.push(auditItem('verifierName','पडताळणीकर्त्याचे नाव',10,managerPath&&hasValue(pickValue(row,['VerifierName','verifierName','VerificationBy','VerifiedBy']))?10:0,'Verifier चे नाव उपलब्ध नाही.'));
+                items.push(auditItem('verificationTimestamp','पडताळणीची वेळ',10,managerPath&&hasValue(m.verificationTimestamp)?10:0,'Verification timestamp उपलब्ध नाही.'));
+                items.push(auditItem('infoCorrect','माहिती बरोबर आहे का?',10,managerPath&&hasValue(m.isInfoCorrect)?10:0,'IsInfoCorrect उत्तर भरलेले नाही.'));
+                items.push(auditItem('videoCall','व्हिडिओ कॉल पडताळणी',10,managerPath&&hasValue(m.isVideoDone)?10:0,'IsVideoCallDone उत्तर भरलेले नाही.'));
+                const finalEvidence=m.status==='Approved'?parseNumber(row.ApprovedLoanAmount)>0:hasValue(m.finalRejectRemark||m.verifierRemark);
+                items.push(auditItem('finalEvidence','अंतिम निर्णयाचा पुरावा',10,managerPath&&finalEvidence?10:0,m.status==='Approved'?'मंजूर रक्कम उपलब्ध नाही.':'Verifier reject remark/अंतिम कारण उपलब्ध नाही.'));
+            }
+            return finishAudit(items);
+        }
+        function decisionTrailPercent(row){ return row?._scoreAudit?.trail?.percent ?? decisionTrailAudit(row).percent; }
+
+        function finalRemarkAudit(row){
+            const m=metaOf(row),items=[];
+            const managerText=String(m.managerRemark||m.managerRejectRemark||'').trim();
+            const verifierText=String(m.verifierRemark||m.finalRejectRemark||'').trim();
+            if(m.managerRejected){
+                const remarkEarned=managerText.length>=15?70:managerText.length>=8?40:0;
+                const remarkReason=managerText.length>=15?'':managerText.length>=8?'नामंजुरी शेरा 8–14 अक्षरांचा आहे; 15 किंवा अधिक अक्षरांचा स्पष्ट शेरा अपेक्षित आहे.':'Manager/BM नामंजुरी शेरा किमान 8 अक्षरांचा नाही.';
+                items.push(auditItem('managerRejectRemarkQuality','व्यवस्थापक नामंजुरी शेरा गुणवत्ता',70,remarkEarned,remarkReason));
+                items.push(auditItem('managerRejectDecision','नामंजुरी निर्णय स्पष्टता',15,m.managerDecisionStatus==='Rejected'?15:0,'Manager निर्णय स्पष्ट Rejected म्हणून नोंदलेला नाही.'));
+                items.push(auditItem('managerRejectTime','नामंजुरी निर्णयाची वेळ',15,hasValue(m.managerTimestamp)?15:0,'Manager/BM नामंजुरी timestamp उपलब्ध नाही.'));
+            }else{
+                items.push(auditItem('managerRemarkQuality','व्यवस्थापक शेरा',25,managerText.length>=8?25:0,'Manager/BM शेरा किमान 8 अक्षरांचा आणि अर्थपूर्ण नाही.'));
+                const verifierEarned=verifierText.length>=15?45:verifierText.length>=8?25:0;
+                const verifierReason=verifierText.length>=15?'':verifierText.length>=8?'Verifier शेरा 8–14 अक्षरांचा आहे; 15 किंवा अधिक अक्षरांचा स्पष्ट शेरा अपेक्षित आहे.':'Verifier/Final remark किमान 8 अक्षरांचा नाही.';
+                items.push(auditItem('verifierRemarkQuality','पडताळणीकर्त्याचा अंतिम शेरा',45,verifierEarned,verifierReason));
+                items.push(auditItem('remarkFinalDecision','अंतिम निर्णय स्पष्टता',15,['Approved','Rejected'].includes(m.finalDecisionStatus)?15:0,'Final status Approved किंवा Rejected म्हणून स्पष्ट नाही.'));
+                const evidence=m.status==='Approved'?parseNumber(row.ApprovedLoanAmount)>0:hasValue(m.finalRejectRemark||m.verifierRemark);
+                items.push(auditItem('remarkFinalEvidence','अंतिम निर्णय समर्थन',15,evidence?15:0,m.status==='Approved'?'मंजूर रक्कम उपलब्ध नाही.':'नामंजुरीचे स्पष्ट कारण उपलब्ध नाही.'));
+            }
+            return finishAudit(items);
+        }
+        function finalRemarkQualityPercent(row){ return row?._scoreAudit?.remark?.percent ?? finalRemarkAudit(row).percent; }
+
+        function consistencyAudit(row){
+            const m=metaOf(row);
+            return finishAudit([auditItem('statusConsistency','Manager, Verifier आणि Final status सुसंगती',100,m.inconsistent?0:100,m.inconsistencyReason||'Manager, Verifier आणि अंतिम स्थिती एकमेकांशी जुळत नाही.')]);
+        }
+        
+function buildCaseScoreAudit(row){
+            const data=dataQualityAudit(row);
+            const marks={data:roundOne(data.percent*.25)};
+            return {data,marks};
+        }
+        function aggregateStageAudit(rows,stageKey,stageMax){
+            const count=rows.length;
+            if(!count)return {earned:0,max:stageMax,lost:stageMax,details:[],caseCount:0,rawAverage:0};
+            const grouped=new Map(); let rawTotal=0;
+            rows.forEach(row=>{
+                const audit=row._scoreAudit||buildCaseScoreAudit(row),stage=audit[stageKey];
+                rawTotal+=stage.percent;
+                stage.items.forEach(item=>{
+                    if(!grouped.has(item.key))grouped.set(item.key,{key:item.key,label:item.label,max:0,earned:0,affected:0,reasons:new Map()});
+                    const g=grouped.get(item.key);g.max+=item.max;g.earned+=item.earned;
+                    if(item.lost>.001){g.affected++;if(item.reason)g.reasons.set(item.reason,(g.reasons.get(item.reason)||0)+1);}
                 });
             });
+            const rawAverage=rawTotal/count,earned=roundOne(rawAverage*stageMax/100),lost=roundOne(stageMax-earned);
+            const details=[...grouped.values()].map(g=>{
+                const max=roundOne((g.max/count)*stageMax/100),earnedPart=roundOne((g.earned/count)*stageMax/100),lostPart=roundOne(max-earnedPart);
+                const reasons=[...g.reasons.entries()].sort((a,b)=>b[1]-a[1]).map(([reason,n])=>`${reason} (${n} प्रकरणे)`).join(' ');
+                return {key:g.key,label:g.label,max,earned:earnedPart,lost:lostPart,affected:g.affected,reasons};
+            }).filter(d=>d.lost>.04).sort((a,b)=>b.lost-a.lost);
+            return {earned,max:stageMax,lost,details,caseCount:count,rawAverage:roundOne(rawAverage)};
+        }
+        function classifyRejectionReason(row){
+            const m=metaOf(row),raw=[m.latestRemark,m.managerRemark,m.verifierRemark,m.blocker,m.managerRejectRemark,m.finalRejectRemark].filter(Boolean).join(' ').toLowerCase();
+            if(!raw.trim())return 'शेरा उपलब्ध नाही'; const has=a=>a.some(k=>raw.includes(k));
+            if(has(['aadhaar','adhar','आधार','pan','पॅन','kyc']))return 'KYC / आधार-पॅन समस्या';
+            if(has(['mobile','मोबाईल','phone','फोन','contact','संपर्क','call','कॉल']))return 'मोबाईल / संपर्क समस्या';
+            if(has(['gps','map','location','address','पत्ता','लोकेशन','गाव','village']))return 'GPS / पत्ता विसंगती';
+            if(has(['photo','फोटो','image','document','doc','कागदपत्र','पेपर','support']))return 'फोटो / कागदपत्र अपूर्ण';
+            if(has(['income','उत्पन्न','emi','ईएमआय','repayment','परतफेड','क्षमता']))return 'उत्पन्न / EMI जोखीम';
+            if(has(['purpose','उद्देश','business','व्यवसाय','वापर']))return 'कर्ज उद्देश अस्पष्ट';
+            if(has(['manager','bm','व्यवस्थापक']))return 'व्यवस्थापक गुणवत्ता आक्षेप';
+            if(has(['verifier','verification','video','व्हिडिओ','पडताळणी']))return 'पडताळणी आक्षेप';
+            return 'इतर / Manual शेरा';
         }
 
-        function generateApprovedCustomerInsights() {
-            const approvedData = filteredData.filter(d => getProcessMeta(d).status === 'Approved');
-            ui.approvedInsightsContainer.innerHTML = '';
-            INSIGHT_KPIS.forEach(kpi => {
-                const count = approvedData.filter(kpi.filter).length;
-                ui.approvedInsightsContainer.innerHTML += `<div class="kpi-card clickable insights-card" data-kpi-key="${kpi.key}" data-kpi-label="${escapeHTML(kpi.label)}"><div class="kpi-icon"><i class="${kpi.icon}"></i></div><div class="kpi-content"><h3>${count}</h3><p>${escapeHTML(kpi.label)}</p></div></div>`;
+        function buildStaffStatsList(sourceData){
+            const groups=new Map();
+            sourceData.forEach(row=>{
+                const name=row._staff||getStaffName(row);
+                if(!groups.has(name))groups.set(name,[]);
+                groups.get(name).push(row);
             });
-            ui.approvedInsightsContainer.querySelectorAll('.clickable').forEach(card => card.addEventListener('click', (e) => showApprovedInsightDetailsModal(e.currentTarget.dataset.kpiKey, e.currentTarget.dataset.kpiLabel)));
+            return [...groups.entries()]
+                .map(([name,rows])=>getStaffStats(name,rows))
+                .sort((a,b)=>b.score-a.score||b.total-a.total||b.finalCases-a.finalCases);
         }
 
-        function showApprovedInsightDetailsModal(k, l) {
-            const approved = filteredData.filter(d => getProcessMeta(d).status === 'Approved');
-            const kpi = INSIGHT_KPIS.find(i => i.key === k);
-            if (!kpi) return;
-            const data = approved.filter(kpi.filter);
-            ui.modalTitle.textContent = `${l} (${data.length})`;
-            const t = document.getElementById('modal-table');
-            const isHouseType = k === 'assetHouseType';
-            t.innerHTML = `<thead><tr><th>ग्राहक</th><th>गाव</th><th>मोबाईल</th>${isHouseType ? '<th>घराचा प्रकार</th>' : ''}<th>कर्ज मागणी</th></tr></thead><tbody></tbody>`;
-            const tbody = t.querySelector('tbody');
-            if (!data.length) tbody.innerHTML = `<tr><td colspan="${isHouseType ? 5 : 4}" class="empty-state">या गटात मंजूर अर्जदार नाहीत.</td></tr>`;
-            else tbody.innerHTML = data.map(i => `<tr><td>${escapeHTML(i.customerName || 'N/A')}</td><td>${escapeHTML(i.villageName || 'N/A')}</td><td>${escapeHTML(i.mobileNumber || 'N/A')}</td>${isHouseType ? `<td>${escapeHTML(i.assetHouseType || 'N/A')}</td>` : ''}<td>${formatINR(i.loanAmountRequested || 0)}</td></tr>`).join('');
-            ui.applicantModal.style.display = 'block';
-        }
+        function getStaffStats(staffName,rows){
+            const approvedRows=[],rejectedRows=[],pendingRows=[];
+            let managerPending=0,verifierPending=0,rework=0,inconsistent=0,movedPastManager=0;
 
-        function getStaffName(row) {
-            return getPersonName(row, ['fieldOfficerName', 'FieldOfficerName', 'StaffName', 'staffName', 'FOName', 'CreatedBy', 'createdBy'], 'Staff माहिती नाही');
-        }
+            rows.forEach(row=>{
+                const m=metaOf(row);
+                if(m.status==='Approved')approvedRows.push(row);
+                else if(m.status==='Rejected')rejectedRows.push(row);
+                else pendingRows.push(row);
 
-        function percent(n, d) { return d ? Math.round((Number(n || 0) / Number(d || 1)) * 100) : 0; }
-        function safeScore(n) { return Math.max(0, Math.min(100, Math.round(Number(n || 0)))); }
+                if(m.stageKey==='MANAGER_PENDING')managerPending++;
+                if(m.stageKey==='VERIFIER_PENDING')verifierPending++;
+                if(m.stageKey==='REWORK')rework++;
+                if(m.stageKey==='INCONSISTENT')inconsistent++;
 
-        function hasPhotoOrDocs(row, field) {
-            const raw = pickValue(row, [field]);
-            return hasValue(raw) && String(raw).split(/[\s,]+/).filter(Boolean).length > 0;
-        }
-
-        function rowDataQuality(row) {
-            const checks = [
-                hasValue(row.customerName),
-                hasValue(row.mobileNumber) && String(row.mobileNumber).replace(/\D/g, '').length >= 10,
-                hasValue(row.aadhaarNumber) || hasValue(row.panNumber),
-                hasValue(row.villageName),
-                hasValue(row.taluka),
-                hasValue(row.loanAmountRequested),
-                hasValue(row.loanPurpose),
-                hasValue(row.familyTotalIncome) || hasValue(row.primaryIncomeSource),
-                hasPhotoOrDocs(row, 'photoLinks'),
-                hasPhotoOrDocs(row, 'supportdoc') || hasValue(row.gpsLatitude) || hasValue(row.googleMapsLink)
-            ];
-            return percent(checks.filter(Boolean).length, checks.length);
-        }
-
-        function classifyRejectionReason(row) {
-            const meta = getProcessMeta(row);
-            const raw = [meta.latestRemark, meta.managerRemark, meta.verifierRemark, meta.blocker, meta.rejectedRemarkText, row.RejectRemarks, row.RejectedRemarks].filter(Boolean).join(' ').toLowerCase();
-            if (!raw.trim()) return 'Remark उपलब्ध नाही';
-            const has = (arr) => arr.some(k => raw.includes(k));
-            if (has(['aadhaar', 'adhar', 'आधार', 'pan', 'पॅन', 'kyc'])) return 'KYC / आधार-पॅन समस्या';
-            if (has(['mobile', 'मोबाईल', 'phone', 'फोन', 'contact', 'संपर्क', 'call', 'कॉल'])) return 'मोबाईल / संपर्क समस्या';
-            if (has(['gps', 'map', 'location', 'address', 'पत्ता', 'लोकेशन', 'गाव', 'village'])) return 'GPS / पत्ता mismatch';
-            if (has(['photo', 'फोटो', 'image', 'document', 'doc', 'कागदपत्र', 'पेपर', 'support'])) return 'फोटो / Document missing';
-            if (has(['income', 'उत्पन्न', 'emi', 'ईएमआय', 'कर्जबाजारी', 'repayment', 'परतफेड', 'क्षमता'])) return 'उत्पन्न / EMI risk';
-            if (has(['purpose', 'उद्देश', 'business', 'व्यवसाय', 'use', 'वापर'])) return 'कर्ज उद्देश अस्पष्ट';
-            if (has(['manager', 'bm', 'unit manager'])) return 'Manager quality rejection';
-            if (has(['verifier', 'verification', 'video', 'व्हिडिओ', 'पडताळणी'])) return 'Verifier quality objection';
-            return 'इतर / Manual remark';
-        }
-
-        function getStaffStats(staffName, sourceData) {
-            const rows = sourceData.filter(row => getStaffName(row) === staffName);
-            const total = rows.length;
-            const approved = rows.filter(row => getProcessMeta(row).status === 'Approved').length;
-            const rejected = rows.filter(row => getProcessMeta(row).status === 'Rejected').length;
-            const pending = rows.filter(row => getProcessMeta(row).status === 'Pending').length;
-            const managerPending = rows.filter(row => { const m = getProcessMeta(row); return m.status === 'Pending' && m.currentStage.includes('Manager'); }).length;
-            const verifierPending = rows.filter(row => { const m = getProcessMeta(row); return m.status === 'Pending' && m.currentStage.includes('Verifier'); }).length;
-            const rework = rows.filter(row => { const m = getProcessMeta(row); return m.status === 'Pending' && m.currentStage.includes('Correction'); }).length;
-            const movedPastManager = rows.filter(row => { const m = getProcessMeta(row); return m.hasManagerReview || m.hasFinalVerification || m.status === 'Approved' || m.status === 'Rejected'; }).length;
-            const closed = approved + rejected;
-            const qualityAverage = total ? Math.round(rows.reduce((sum, row) => sum + rowDataQuality(row), 0) / total) : 0;
-            const dataQualityScore = Math.round(qualityAverage * 0.25);
-            const acceptanceScore = closed ? Math.round((approved / closed) * 25) : 0;
-            const rejectionControlScore = total ? Math.round((1 - rejected / total) * 20) : 0;
-            const movementScore = total ? Math.round((movedPastManager / total) * 20) : 0;
-            const pendingControlScore = total ? Math.round((1 - pending / total) * 10) : 0;
-            const score = safeScore(dataQualityScore + acceptanceScore + rejectionControlScore + movementScore + pendingControlScore);
-            const reasonCounts = {};
-            rows.filter(row => getProcessMeta(row).status === 'Rejected' || getProcessMeta(row).currentStage.includes('Correction')).forEach(row => {
-                const reason = classifyRejectionReason(row);
-                reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
+                // जुने व सरळ Process Movement logic:
+                // Manager review / Verifier verification / Final decision पर्यंत गेलेली case पुढे गेलेली मानली जाते.
+                if(m.hasManagerReview||m.hasFinalVerification||m.status==='Approved'||m.status==='Rejected') movedPastManager++;
             });
-            const reasons = Object.entries(reasonCounts).sort((a,b) => b[1] - a[1]).map(([reason,count]) => ({ reason, count }));
-            const units = [...new Set(rows.map(row => row.Unit).filter(Boolean))].join(', ') || '-';
-            return { staffName, rows, total, approved, rejected, pending, managerPending, verifierPending, rework, movedPastManager, closed, qualityAverage, dataQualityScore, acceptanceScore, rejectionControlScore, movementScore, pendingControlScore, score, reasons, units };
+
+            const finalRows=[...approvedRows,...rejectedRows];
+            const total=rows.length;
+            const approved=approvedRows.length;
+            const rejected=rejectedRows.length;
+            const pending=pendingRows.length;
+            const finalCases=finalRows.length;
+
+            // 1) Data Quality = 25 marks; सर्व अर्जांची KYC/data completeness.
+            const dataAudit=aggregateStageAudit(rows,'data',25);
+            const qualityAverage=dataAudit.rawAverage;
+            const dataQualityScore=roundOne(dataAudit.earned);
+
+            // 2) Case Acceptance = Approved ÷ Final Cases × 25.
+            const acceptanceRate=finalCases?roundOne((approved/finalCases)*100):0;
+            const acceptanceScore=finalCases?roundOne((approved/finalCases)*25):0;
+            const acceptanceLost=roundOne(25-acceptanceScore);
+
+            // 3) Rejection Control = (1 − Rejected ÷ Total Cases) × 20.
+            const rejectRate=total?roundOne((rejected/total)*100):0;
+            const rejectionControlScore=total?roundOne((1-rejected/total)*20):0;
+            const rejectionControlLost=roundOne(20-rejectionControlScore);
+
+            // 4) Process Movement = Manager/Verifier/Final stage पर्यंत गेलेल्या Cases ÷ Total × 20.
+            const movementRate=total?roundOne((movedPastManager/total)*100):0;
+            const movementScore=total?roundOne((movedPastManager/total)*20):0;
+            const movementLost=roundOne(20-movementScore);
+            const notMoved=Math.max(0,total-movedPastManager);
+
+            // 5) Pending Control = (1 − Pending ÷ Total Cases) × 10.
+            const pendingRate=total?roundOne((pending/total)*100):0;
+            const pendingControlScore=total?roundOne((1-pending/total)*10):0;
+            const pendingControlLost=roundOne(10-pendingControlScore);
+
+            const score=total?roundOne(Math.max(0,Math.min(100,
+                dataQualityScore+acceptanceScore+rejectionControlScore+movementScore+pendingControlScore
+            ))):0;
+
+            const provisional=finalCases<MIN_FINAL_CASES_FOR_PP;
+            const ppEligible=!provisional&&score>=PP_SCORE_THRESHOLD;
+
+            const reasonCounts={};
+            rows.filter(r=>metaOf(r).status==='Rejected'||metaOf(r).stageKey==='REWORK').forEach(r=>{
+                const reason=classifyRejectionReason(r);
+                reasonCounts[reason]=(reasonCounts[reason]||0)+1;
+            });
+            const reasons=Object.entries(reasonCounts).sort((a,b)=>b[1]-a[1]).map(([reason,count])=>({reason,count}));
+            const units=[...new Set(rows.map(r=>r.Unit).filter(Boolean))].join(', ')||'-';
+
+            return {
+                staffName,rows,finalRows,total,approved,rejected,pending,finalCases,
+                managerPending,verifierPending,rework,inconsistent,movedPastManager,notMoved,
+                qualityAverage,dataQualityScore,
+                acceptanceRate,acceptanceScore,acceptanceLost,
+                rejectRate,rejectionControlScore,rejectionControlLost,
+                movementRate,movementScore,movementLost,
+                pendingRate,pendingControlScore,pendingControlLost,
+                score,provisional,ppEligible,reasons,units,
+                stageAudits:{data:dataAudit}
+            };
         }
 
-        function getScoreClass(score) { if (score >= 80) return 'good'; if (score >= 70) return 'watch'; return 'bad'; }
-        function getGradeText(score) { if (score >= 95) return 'Excellent - PP Unlock'; if (score >= 90) return 'Strong पण PP साठी 95% हवे'; if (score >= 80) return 'Good पण सुधारणा गरजेची'; if (score >= 70) return 'Watch List'; return 'Correction Required'; }
-
-        function getStaffNote(stats) {
-            if (!stats.total) return 'या filter मध्ये या staff चा data उपलब्ध नाही.';
-            const ppText = stats.score >= 95 ? 'Performance Pay unlock आहे.' : 'Performance Pay lock आहे कारण score 95% पेक्षा कमी आहे.';
-            const reasonText = stats.reasons.length ? stats.reasons.slice(0,2).map(r => `${r.reason} (${r.count})`).join(', ') : 'मोठे rejection कारण दिसत नाही.';
-            const pendingText = stats.pending ? `Pending ${stats.pending} आहेत - Manager कडे ${stats.managerPending}, Verifier कडे ${stats.verifierPending}, Rework ${stats.rework}.` : 'Pending नाहीत किंवा अत्यल्प आहेत.';
-            const qualityText = stats.qualityAverage >= 90 ? 'data quality मजबूत आहे' : stats.qualityAverage >= 75 ? 'data quality ठीक आहे पण काही fields/documents सुधारावेत' : 'data quality कमजोर आहे, KYC/photo/docs/amount/purpose तपासणे गरजेचे आहे';
-            return `${stats.staffName} यांचे एकूण ${stats.total} cases आहेत. Score ${stats.score}/100 आहे. ${ppText} Case quality: ${qualityText}. Reject/Rework कारणे: ${reasonText}. ${pendingText}`;
+        function getScoreClass(score){if(score>=90)return'good';if(score>=75)return'watch';return'bad';}
+        function getGradeText(s){
+            if(s.provisional)return`तात्पुरते गुण – किमान ${MIN_FINAL_CASES_FOR_PP} अंतिम प्रकरणे आवश्यक`;
+            if(s.ppEligible)return'उत्कृष्ट – PP पात्र';
+            if(s.score>=85)return`मजबूत – PP साठी ${PP_SCORE_THRESHOLD} गुण आवश्यक`;
+            if(s.score>=75)return'चांगले – घटकनिहाय सुधारणा आवश्यक';
+            if(s.score>=60)return'निरीक्षण सूची';
+            return'तातडीने सुधारणा आवश्यक';
         }
 
-        function renderStaffPerformance() {
-            const summaryEl = document.getElementById('staff-performance-summary');
-            const gridEl = document.getElementById('staff-performance-grid');
-            const detailEl = document.getElementById('staff-performance-detail');
-            const selectedStaff = ui.staffFilter.value;
-            const staffNames = [...new Set(filteredData.map(getStaffName).filter(Boolean))].sort();
-            const statsList = staffNames.map(name => getStaffStats(name, filteredData)).sort((a,b) => b.score - a.score || b.total - a.total);
-            const totalStaff = statsList.length;
-            const avgScore = totalStaff ? Math.round(statsList.reduce((sum, s) => sum + s.score, 0) / totalStaff) : 0;
-            const ppUnlocked = statsList.filter(s => s.score >= 95).length;
-            const totalReject = statsList.reduce((sum, s) => sum + s.rejected, 0);
-            const totalPending = statsList.reduce((sum, s) => sum + s.pending, 0);
-            summaryEl.innerHTML = `<div class="staff-mini-card"><span>एकूण Staff / FX</span><strong>${totalStaff}</strong></div><div class="staff-mini-card"><span>Average Score</span><strong>${avgScore}/100</strong></div><div class="staff-mini-card"><span>PP Unlock Staff</span><strong>${ppUnlocked}</strong></div><div class="staff-mini-card"><span>Total Reject</span><strong>${totalReject}</strong></div><div class="staff-mini-card"><span>Total Pending</span><strong>${totalPending}</strong></div>`;
+        function getStaffNote(s){
+            if(!s.total)return'या filter मध्ये कर्मचारी डेटा उपलब्ध नाही.';
+            const pp=s.provisional
+                ?`अंतिम प्रकरणे फक्त ${s.finalCases} असल्याने PP निर्णय तात्पुरता आहे.`
+                :s.ppEligible
+                    ?`एकूण ${displayScore(s.score)}/100 गुण असल्याने PP पात्रता पूर्ण आहे.`
+                    :`एकूण ${displayScore(s.score)}/100 गुण आहेत; PP साठी किमान ${PP_SCORE_THRESHOLD}/100 आवश्यक आहेत.`;
+            return `${s.staffName}: Data Quality ${displayScore(s.dataQualityScore)}/25, Case Acceptance ${displayScore(s.acceptanceScore)}/25, Rejection Control ${displayScore(s.rejectionControlScore)}/20, Process Movement ${displayScore(s.movementScore)}/20 आणि Pending Control ${displayScore(s.pendingControlScore)}/10. ${pp}`;
+        }
 
-            if (!statsList.length) {
-                gridEl.innerHTML = `<div class="staff-empty">या filter मध्ये staff-wise data नाही.</div>`;
-                detailEl.innerHTML = '';
+        function renderStaffPerformance(statsList=lastStaffStatsList){
+            lastStaffStatsList=statsList;
+            const selected=ui.staffFilter.value,totalStaff=statsList.length;
+            const scored=statsList.filter(s=>!s.provisional);
+            const avg=scored.length?roundOne(scored.reduce((a,s)=>a+s.score,0)/scored.length):0;
+            const avgReject=statsList.length?roundOne(statsList.reduce((a,s)=>a+s.rejectRate,0)/statsList.length):0;
+            const pp=statsList.filter(s=>s.ppEligible).length;
+            const totalFinal=statsList.reduce((a,s)=>a+s.finalCases,0);
+            const totalRejected=statsList.reduce((a,s)=>a+s.rejected,0);
+            const totalPending=statsList.reduce((a,s)=>a+s.pending,0);
+
+            ui.staffSummary.innerHTML=
+                `<div class="staff-mini-card"><span>एकूण कर्मचारी / FX</span><strong>${totalStaff}</strong></div>`+
+                `<div class="staff-mini-card"><span>अंतिम प्रकरणे</span><strong>${totalFinal}</strong></div>`+
+                `<div class="staff-mini-card"><span>एकूण नामंजूर</span><strong>${totalRejected}</strong></div>`+
+                `<div class="staff-mini-card"><span>सरासरी Reject %</span><strong>${displayScore(avgReject)}%</strong></div>`+
+                `<div class="staff-mini-card"><span>पात्र गुणांची सरासरी</span><strong>${displayScore(avg)}/100</strong></div>`+
+                `<div class="staff-mini-card"><span>PP पात्र कर्मचारी</span><strong>${pp}</strong></div>`+
+                `<div class="staff-mini-card"><span>एकूण प्रलंबित</span><strong>${totalPending}</strong></div>`+
+                `${!selected&&totalStaff>12?`<div class="staff-mini-card"><span>कर्मचारी कार्ड</span><strong><button id="toggle-all-staff" class="summary-action-btn">${showAllStaff?'फक्त Top 12':'सर्व दाखवा'}</button></strong></div>`:''}`;
+
+            if(!statsList.length){
+                ui.staffGrid.innerHTML='<div class="staff-empty">या filter मध्ये कर्मचारीनिहाय डेटा नाही.</div>';
+                ui.staffDetail.innerHTML='';
                 return;
             }
 
-            const cardsToShow = selectedStaff ? statsList : statsList.slice(0, 12);
-            gridEl.innerHTML = cardsToShow.map(stats => {
-                const ppClass = stats.score >= 95 ? 'pp-unlocked' : 'pp-locked';
-                const ppIcon = stats.score >= 95 ? 'fa-lock-open' : 'fa-lock';
-                const ppText = stats.score >= 95 ? 'PP UNLOCK' : 'NO PP';
-                const selectedClass = selectedStaff === stats.staffName ? ' selected' : '';
-                return `<div class="staff-card${selectedClass}" data-staff-name="${escapeHTML(stats.staffName)}">
+            const cards=selected?statsList:(showAllStaff?statsList:statsList.slice(0,12));
+            ui.staffGrid.innerHTML=cards.map(s=>{
+                const ppClass=s.provisional?'pp-provisional':s.ppEligible?'pp-unlocked':'pp-locked';
+                const icon=s.provisional?'fa-clock':s.ppEligible?'fa-lock-open':'fa-lock';
+                const txt=s.provisional?'तात्पुरते गुण':s.ppEligible?'PP पात्र':'PP अपात्र';
+                return `<div class="staff-card${selected===s.staffName?' selected':''}" data-staff-name="${escapeHTML(s.staffName)}">
                     <div class="staff-topline">
-                        <div><div class="staff-name">${escapeHTML(stats.staffName)}</div><div class="staff-unit"><i class="fas fa-building"></i> ${escapeHTML(stats.units)}</div><span class="pp-chip ${ppClass}"><i class="fas ${ppIcon}"></i> ${ppText}</span></div>
-                        <div class="score-ring ${getScoreClass(stats.score)}" style="--score:${stats.score}"><span>${stats.score}</span></div>
+                        <div>
+                            <div class="staff-name">${escapeHTML(s.staffName)}</div>
+                            <div class="staff-unit"><i class="fas fa-building"></i> ${escapeHTML(s.units)}</div>
+                            <span class="pp-chip ${ppClass}"><i class="fas ${icon}"></i> ${txt}</span>
+                        </div>
+                        <div class="score-ring ${s.total?getScoreClass(s.score):'score-na'}" style="--score:${s.score}">
+                            <span>${s.total?displayScore(s.score):'N/A'}</span>
+                        </div>
                     </div>
-                    <div class="staff-stat-row"><div class="staff-stat"><strong>${stats.total}</strong><span>Total</span></div><div class="staff-stat"><strong>${stats.approved}</strong><span>Approved</span></div><div class="staff-stat"><strong>${stats.rejected}</strong><span>Reject</span></div><div class="staff-stat"><strong>${stats.pending}</strong><span>Pending</span></div></div>
+                    <div class="staff-stat-row">
+                        <div class="staff-stat"><strong>${s.total}</strong><span>एकूण</span></div>
+                        <div class="staff-stat"><strong>${s.approved}</strong><span>मंजूर</span></div>
+                        <div class="staff-stat"><strong>${s.rejected}</strong><span>नामंजूर</span></div>
+                        <div class="staff-stat"><strong>${s.pending}</strong><span>Pending</span></div>
+                    </div>
                 </div>`;
             }).join('');
 
-            gridEl.querySelectorAll('.staff-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    ui.staffFilter.value = card.dataset.staffName;
-                    applyFiltersAndRender();
-                    document.getElementById('staff-performance-section')?.scrollIntoView({ behavior:'smooth', block:'start' });
-                });
-            });
-
-            if (selectedStaff) {
-                detailEl.innerHTML = buildStaffDetailHTML(getStaffStats(selectedStaff, filteredData));
-                detailEl.querySelectorAll('.process-btn').forEach(btn => btn.addEventListener('click', () => { const applicantData = getApplicantByRow(btn.dataset.row); if (applicantData) showProcessDetailsModal(applicantData); }));
-            } else {
-                detailEl.innerHTML = `<div class="staff-empty"><strong>Staff निवडा:</strong> वरच्या staff card वर click करा किंवा filter मधून कर्मचारी निवडा. मग त्या FX/Staff ची smart performance note, reject reasons आणि PP status दिसेल.</div>`;
-            }
+            ui.staffDetail.innerHTML=selected
+                ?buildStaffDetailHTML(statsList[0])
+                :'<div class="staff-empty"><strong>कर्मचारी निवडा:</strong> कर्मचारी कार्ड किंवा वरचा filter वापरा. त्यानंतर 25 + 25 + 20 + 20 + 10 या पाच घटकांची संपूर्ण गणना दिसेल.</div>';
         }
 
-        function buildStaffDetailHTML(stats) {
-            const ppClass = stats.score >= 95 ? 'pp-unlocked' : 'pp-locked';
-            const ppText = stats.score >= 95 ? 'PP UNLOCKED' : 'NO PP - Score below 95%';
-            const ppIcon = stats.score >= 95 ? 'fa-lock-open' : 'fa-lock';
-            const badRows = stats.rows.filter(row => {
-                const m = getProcessMeta(row);
-                return m.status === 'Rejected' || m.currentStage.includes('Correction') || m.currentStage.includes('Manager / BM कडे Pending') || m.currentStage.includes('Verifier कडे Pending');
-            }).slice(0, 12);
-            const reasonHTML = stats.reasons.length ? `<div class="reason-list">${stats.reasons.map(r => `<span class="reason-pill"><i class="fas fa-triangle-exclamation"></i> ${escapeHTML(r.reason)}: ${r.count}</span>`).join('')}</div>` : `<div class="reason-list"><span class="reason-pill"><i class="fas fa-check-circle"></i> Rejection reason दिसत नाही</span></div>`;
-            const tableRows = badRows.length ? badRows.map(row => {
-                const m = getProcessMeta(row);
-                return `<tr><td><strong>${escapeHTML(row.customerName || 'N/A')}</strong><br><small>${escapeHTML(row.villageName || '')}</small></td><td>${statusChip(m.status)}</td><td>${escapeHTML(m.currentStage)}</td><td>${escapeHTML(m.pendingWith)}</td><td>${escapeHTML(m.blocker || m.latestRemark || '-')}</td><td><button class="row-action-btn process-btn" data-row="${escapeHTML(row.row)}"><i class="fas fa-route"></i> Process</button></td></tr>`;
-            }).join('') : `<tr><td colspan="6" class="empty-state">या staff साठी reject/rework/pending problem cases नाहीत.</td></tr>`;
+        function buildStageDeductionCard(title,icon,audit){
+            const full=audit.lost<=.04;
+            const details=full
+                ?`<div class="deduction-ok"><i class="fas fa-circle-check"></i> या घटकात कोणतीही गुण कपात नाही.</div>`
+                :`<div class="deduction-list">${audit.details.map(d=>`<div class="deduction-item"><div class="deduction-item-top"><strong>${escapeHTML(d.label)} — ${displayScore(d.earned)}/${displayScore(d.max)}</strong><span class="deduction-loss">-${displayScore(d.lost)} गुण</span></div><div class="deduction-reason">${d.affected}/${audit.caseCount} प्रकरणांमध्ये कमतरता. ${escapeHTML(d.reasons||'आवश्यक माहिती/पुरावा अपुरा आहे.')}</div></div>`).join('')}</div>`;
+            return `<div class="deduction-card"><div class="deduction-head"><div class="deduction-head-title"><i class="fas ${icon}"></i>${escapeHTML(title)}</div><span class="deduction-score${full?' full':''}">${displayScore(audit.earned)}/${displayScore(audit.max)}</span></div><div class="deduction-body"><div class="deduction-summary">एकूण कपात: <strong>${displayScore(audit.lost)} गुण</strong> • तपासलेली प्रकरणे: ${audit.caseCount}</div>${details}</div></div>`;
+        }
 
-            return `<div class="staff-detail-panel">
-                <div class="staff-detail-head"><div><h3>${escapeHTML(stats.staffName)} - Smart Performance Note</h3><p>${escapeHTML(stats.units)} • ${stats.total} cases • Grade: ${escapeHTML(getGradeText(stats.score))}</p></div><div><div class="score-ring ${getScoreClass(stats.score)}" style="--score:${stats.score}; margin-left:auto;"><span>${stats.score}</span></div><span class="pp-chip ${ppClass}"><i class="fas ${ppIcon}"></i> ${ppText}</span></div></div>
-                <div class="staff-detail-body">
-                    <div class="staff-note"><strong>Auto Note:</strong> ${escapeHTML(getStaffNote(stats))}</div>
-                    <div class="staff-metric-grid"><div class="metric-box"><span>Total Cases</span><strong>${stats.total}</strong></div><div class="metric-box"><span>Approved</span><strong>${stats.approved}</strong></div><div class="metric-box"><span>Rejected</span><strong>${stats.rejected}</strong></div><div class="metric-box"><span>Pending</span><strong>${stats.pending}</strong></div><div class="metric-box"><span>Manager Pending</span><strong>${stats.managerPending}</strong></div><div class="metric-box"><span>Verifier Pending</span><strong>${stats.verifierPending}</strong></div><div class="metric-box"><span>Rework / Correction</span><strong>${stats.rework}</strong></div><div class="metric-box"><span>Data Quality Avg</span><strong>${stats.qualityAverage}%</strong></div></div>
-                    <div class="score-breakdown"><table><thead><tr><th>Score Component</th><th>Points</th><th>Meaning</th></tr></thead><tbody><tr><td>Data Quality</td><td>${stats.dataQualityScore}/25</td><td>KYC, mobile, loan purpose, income, photo/docs/GPS completeness</td></tr><tr><td>Case Acceptance</td><td>${stats.acceptanceScore}/25</td><td>Closed cases पैकी approved ratio</td></tr><tr><td>Rejection Control</td><td>${stats.rejectionControlScore}/20</td><td>Reject कमी असतील तर score जास्त</td></tr><tr><td>Process Movement</td><td>${stats.movementScore}/20</td><td>Cases Manager/Verifier stage पर्यंत पुढे गेल्या का</td></tr><tr><td>Pending Control</td><td>${stats.pendingControlScore}/10</td><td>Pending कमी ठेवणे</td></tr><tr><th>Total</th><th>${stats.score}/100</th><th>${stats.score >= 95 ? 'Performance Pay Unlock' : 'Performance Pay Locked'}</th></tr></tbody></table></div>
-                    <div class="remarks-panel" style="margin-bottom:14px;"><h3><i class="fas fa-bug"></i> Reject / Rework का होतो?</h3>${reasonHTML}</div>
-                    <div class="quality-table-wrap"><table class="quality-table"><thead><tr><th>Customer</th><th>Status</th><th>Current Stage</th><th>Pending / Decision By</th><th>Remark / Blocker</th><th>Action</th></tr></thead><tbody>${tableRows}</tbody></table></div>
-                </div>
+        function buildSimpleComponentCard(title,icon,earned,max,formula,lossReason,okText){
+            const lost=roundOne(max-earned),full=lost<=.04;
+            const details=full
+                ?`<div class="deduction-ok"><i class="fas fa-circle-check"></i> ${escapeHTML(okText)}</div>`
+                :`<div class="deduction-list"><div class="deduction-item"><div class="deduction-item-top"><strong>${escapeHTML(formula)}</strong><span class="deduction-loss">-${displayScore(lost)} गुण</span></div><div class="deduction-reason">${escapeHTML(lossReason)}</div></div></div>`;
+            return `<div class="deduction-card"><div class="deduction-head"><div class="deduction-head-title"><i class="fas ${icon}"></i>${escapeHTML(title)}</div><span class="deduction-score${full?' full':''}">${displayScore(earned)}/${max}</span></div><div class="deduction-body">${details}</div></div>`;
+        }
+
+        function caseAuditReasons(row){
+            const audit=row._scoreAudit||buildCaseScoreAudit(row);
+            return audit.data.items
+                .filter(i=>i.lost>.01)
+                .sort((a,b)=>b.lost-a.lost)
+                .slice(0,6)
+                .map(i=>`डेटा: ${i.label} (${i.reason||'अपूर्ण'})`);
+        }
+
+        function buildCaseScoreTable(s){
+            if(!s.rows.length)return '<div class="staff-empty">या कर्मचाऱ्याची प्रकरणे उपलब्ध नाहीत.</div>';
+            const rows=s.rows
+                .map(row=>({row,audit:row._scoreAudit||buildCaseScoreAudit(row),meta:metaOf(row)}))
+                .sort((a,b)=>{
+                    const rank=x=>x.meta.status==='Rejected'?0:x.meta.stageKey==='REWORK'?1:x.meta.status==='Pending'?2:3;
+                    return rank(a)-rank(b)||a.audit.marks.data-b.audit.marks.data;
+                })
+                .slice(0,30);
+
+            return `<div class="score-explain-note"><i class="fas fa-circle-info"></i>
+                प्रथम नामंजूर, दुरुस्ती/Pending आणि त्यानंतर कमी Data Quality असलेली जास्तीत जास्त 30 प्रकरणे दाखवली आहेत.
+            </div>
+            <div class="case-score-wrap">
+                <table class="case-score-table">
+                    <thead><tr><th>ग्राहक</th><th>स्थिती</th><th>Data /25</th><th>Score वर परिणाम</th><th>डेटा गुण कमी होण्याची कारणे</th><th>कृती</th></tr></thead>
+                    <tbody>${rows.map(({row,audit,meta})=>{
+                        const cls=audit.marks.data>=22.5?'score-high':audit.marks.data>=18.75?'score-mid':'score-low';
+                        const reasons=caseAuditReasons(row);
+                        let impact='मंजूर प्रकरण';
+                        if(meta.status==='Rejected')impact='Acceptance व Rejection Control कमी';
+                        else if(meta.status==='Pending')impact='Pending Control कमी';
+                        if(!meta.hasManagerReview&&!meta.hasFinalVerification&&!['Approved','Rejected'].includes(meta.status))impact+=' • Movement कमी';
+                        return `<tr>
+                            <td><strong>${escapeHTML(row.customerName||'N/A')}</strong><br><small>${escapeHTML(row.villageName||'')} • ${formatDate(row.actualTime)}</small></td>
+                            <td>${statusChip(meta.status,meta)}</td>
+                            <td class="${cls}">${displayScore(audit.marks.data)}</td>
+                            <td>${escapeHTML(impact)}</td>
+                            <td class="case-reasons">${reasons.length?reasons.map(r=>`<span>• ${escapeHTML(r)}</span>`).join(''):'<span style="color:#15803d">• डेटा गुणवत्ता कपात नाही</span>'}</td>
+                            <td><button class="row-action-btn process-btn" data-app-id="${escapeHTML(row._id)}"><i class="fas fa-route"></i> Process</button></td>
+                        </tr>`;
+                    }).join('')}</tbody>
+                </table>
             </div>`;
         }
 
-        function showFilesModal(applicantData, linkFieldKey, fileType) {
-            ui.fileModalTitle.textContent = `${applicantData.customerName || 'अर्जदार'} यांचे ${fileType}`;
-            const urlString = applicantData[linkFieldKey] || '';
-            const urls = String(urlString).split(/[\s,]+/).filter(url => url.trim() !== '');
-            if (!urls.length) {
-                ui.fileModalBody.innerHTML = `<p style="text-align:center;">या अर्जदारासाठी कोणत्याही ${fileType} फाइल्स सापडल्या नाहीत.</p>`;
-                ui.openLinksBtn.style.display = 'none';
-            } else {
-                if (fileType === 'फोटो') ui.fileModalBody.innerHTML = `<div class="photo-thumbnail-grid">${urls.map(url => `<a href="${escapeHTML(url)}" target="_blank" class="photo-thumbnail"><img src="${escapeHTML(url)}" alt="Photo Thumbnail" loading="lazy"></a>`).join('')}</div>`;
-                else ui.fileModalBody.innerHTML = `<div class="file-link-list">${urls.map((url, index) => `<a href="${escapeHTML(url)}" target="_blank" class="file-link">${fileType} ${index + 1} <i class="fas fa-external-link-alt"></i></a>`).join('')}</div>`;
-                ui.openLinksBtn.style.display = 'inline-flex';
-                ui.openLinksBtn.onclick = () => openAllLinks(urls);
-            }
-            ui.fileModal.style.display = 'block';
+        function buildStaffDetailHTML(s){
+            const ppClass=s.provisional?'pp-provisional':s.ppEligible?'pp-unlocked':'pp-locked';
+            const ppText=s.provisional
+                ?`तात्पुरते – ${MIN_FINAL_CASES_FOR_PP} अंतिम प्रकरणे आवश्यक`
+                :s.ppEligible
+                    ?`PP पात्र – ${PP_SCORE_THRESHOLD}+ गुण`
+                    :`PP अपात्र – ${PP_SCORE_THRESHOLD} पेक्षा कमी गुण`;
+
+            const bad=s.rows.filter(r=>{
+                const m=metaOf(r);
+                return m.status==='Rejected'||['REWORK','MANAGER_PENDING','VERIFIER_PENDING','INCONSISTENT'].includes(m.stageKey);
+            }).slice(0,20);
+
+            const reasonHTML=s.reasons.length
+                ?`<div class="reason-list">${s.reasons.map(r=>`<span class="reason-pill"><i class="fas fa-triangle-exclamation"></i> ${escapeHTML(r.reason)}: ${r.count}</span>`).join('')}</div>`
+                :'<div class="reason-list"><span class="reason-pill"><i class="fas fa-check-circle"></i> नामंजुरी/दुरुस्तीचे कारण दिसत नाही</span></div>';
+
+            const problemRows=bad.length
+                ?bad.map(r=>{
+                    const m=metaOf(r);
+                    return `<tr><td><strong>${escapeHTML(r.customerName||'N/A')}</strong><br><small>${escapeHTML(r.villageName||'')}</small></td><td>${statusChip(m.status,m)}</td><td>${escapeHTML(m.currentStage)}</td><td>${escapeHTML(m.pendingWith)}</td><td>${escapeHTML(m.blocker||m.latestRemark||'-')}</td><td><button class="row-action-btn process-btn" data-app-id="${escapeHTML(r._id)}"><i class="fas fa-route"></i> Process</button></td></tr>`;
+                }).join('')
+                :'<tr><td colspan="6" class="empty-state">या कर्मचाऱ्यासाठी समस्या प्रकरणे नाहीत.</td></tr>';
+
+            const deductionCards=[
+                buildStageDeductionCard('Data Quality','fa-clipboard-check',s.stageAudits.data),
+                buildSimpleComponentCard(
+                    'Case Acceptance','fa-circle-check',s.acceptanceScore,25,
+                    `मंजूर ${s.approved} ÷ अंतिम ${s.finalCases} × 25 = ${displayScore(s.acceptanceScore)}`,
+                    `${s.rejected} नामंजूर प्रकरणांमुळे Case Acceptance मध्ये ${displayScore(s.acceptanceLost)} गुण कमी झाले.`,
+                    'सर्व अंतिम प्रकरणे मंजूर असल्यामुळे पूर्ण 25 गुण.'
+                ),
+                buildSimpleComponentCard(
+                    'Rejection Control','fa-user-xmark',s.rejectionControlScore,20,
+                    `(1 − नामंजूर ${s.rejected} ÷ एकूण ${s.total}) × 20 = ${displayScore(s.rejectionControlScore)}`,
+                    `${s.rejected} नामंजूर प्रकरणांमुळे ${displayScore(s.rejectionControlLost)} गुण कमी झाले.`,
+                    'एकही प्रकरण नामंजूर नसल्यामुळे पूर्ण 20 गुण.'
+                ),
+                buildSimpleComponentCard(
+                    'Process Movement','fa-route',s.movementScore,20,
+                    `पुढे गेलेली ${s.movedPastManager} ÷ एकूण ${s.total} × 20 = ${displayScore(s.movementScore)}`,
+                    `${s.notMoved} प्रकरणे Manager/Verifier stage पर्यंत न गेल्यामुळे ${displayScore(s.movementLost)} गुण कमी झाले.`,
+                    'सर्व प्रकरणे Manager/Verifier/Final stage पर्यंत पुढे गेल्यामुळे पूर्ण 20 गुण.'
+                ),
+                buildSimpleComponentCard(
+                    'Pending Control','fa-hourglass-half',s.pendingControlScore,10,
+                    `(1 − Pending ${s.pending} ÷ एकूण ${s.total}) × 10 = ${displayScore(s.pendingControlScore)}`,
+                    `${s.pending} Pending प्रकरणांमुळे ${displayScore(s.pendingControlLost)} गुण कमी झाले.`,
+                    'एकही Pending प्रकरण नसल्यामुळे पूर्ण 10 गुण.'
+                )
+            ].join('');
+
+            return `<div class="staff-detail-panel">
+                <div class="staff-detail-head">
+                    <div><h3>${escapeHTML(s.staffName)} – FX गुणांचे सविस्तर विश्लेषण</h3><p>${escapeHTML(s.units)} • एकूण ${s.total} • अंतिम ${s.finalCases} • श्रेणी: ${escapeHTML(getGradeText(s))}</p></div>
+                    <div><div class="score-ring ${s.total?getScoreClass(s.score):'score-na'}" style="--score:${s.score};margin-left:auto"><span>${s.total?displayScore(s.score):'N/A'}</span></div><span class="pp-chip ${ppClass}">${ppText}</span></div>
+                </div>
+                <div class="staff-detail-body">
+                    <div class="staff-note"><strong>स्वयंचलित नोंद:</strong> ${escapeHTML(getStaffNote(s))}</div>
+
+                    <div class="staff-metric-grid">
+                        <div class="metric-box"><span>एकूण अर्ज</span><strong>${s.total}</strong></div>
+                        <div class="metric-box"><span>अंतिम प्रकरणे</span><strong>${s.finalCases}</strong></div>
+                        <div class="metric-box"><span>मंजूर</span><strong>${s.approved}</strong></div>
+                        <div class="metric-box"><span>नामंजूर</span><strong>${s.rejected}</strong></div>
+                        <div class="metric-box"><span>Pending</span><strong>${s.pending}</strong></div>
+                        <div class="metric-box"><span>Data Quality</span><strong>${displayScore(s.dataQualityScore)}/25</strong></div>
+                        <div class="metric-box"><span>Acceptance</span><strong>${displayScore(s.acceptanceScore)}/25</strong></div>
+                        <div class="metric-box"><span>Rejection Control</span><strong>${displayScore(s.rejectionControlScore)}/20</strong></div>
+                        <div class="metric-box"><span>Movement</span><strong>${displayScore(s.movementScore)}/20</strong></div>
+                        <div class="metric-box"><span>Pending Control</span><strong>${displayScore(s.pendingControlScore)}/10</strong></div>
+                        <div class="metric-box"><span>एकूण गुण</span><strong>${s.total?displayScore(s.score):'N/A'}/100</strong></div>
+                    </div>
+
+                    <div class="score-breakdown">
+                        <table>
+                            <thead><tr><th>Score Component</th><th>Points</th><th>Meaning</th></tr></thead>
+                            <tbody>
+                                <tr><td>Data Quality</td><td>${displayScore(s.dataQualityScore)}/25</td><td>KYC, mobile, loan purpose, income, photo/docs/GPS completeness</td></tr>
+                                <tr><td>Case Acceptance</td><td>${displayScore(s.acceptanceScore)}/25</td><td>Closed cases पैकी approved ratio</td></tr>
+                                <tr><td>Rejection Control</td><td>${displayScore(s.rejectionControlScore)}/20</td><td>Reject कमी असतील तर score जास्त</td></tr>
+                                <tr><td>Process Movement</td><td>${displayScore(s.movementScore)}/20</td><td>Cases Manager/Verifier stage पर्यंत पुढे गेलेल्या का</td></tr>
+                                <tr><td>Pending Control</td><td>${displayScore(s.pendingControlScore)}/10</td><td>Pending कमी ठेवणे</td></tr>
+                                <tr><th>Total</th><th>${s.total?displayScore(s.score):'N/A'}/100</th><th>${ppText}</th></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="score-explain-note"><strong>गुण कमी कुठे झाले?</strong> खाली प्रत्येक घटकात formula, मिळालेले गुण आणि नेमकी कपात स्वतंत्रपणे दिसेल.</div>
+                    <div class="deduction-grid">${deductionCards}</div>
+
+                    <div class="remarks-panel" style="margin-bottom:14px"><h3><i class="fas fa-user-magnifying-glass"></i> ग्राहकनिहाय गुण आणि परिणाम</h3>${buildCaseScoreTable(s)}</div>
+                    <div class="remarks-panel" style="margin-bottom:14px"><h3><i class="fas fa-bug"></i> नामंजुरी / दुरुस्ती का होते?</h3>${reasonHTML}</div>
+                    <div class="quality-table-wrap"><table class="quality-table"><thead><tr><th>ग्राहक</th><th>स्थिती</th><th>सध्याचा टप्पा</th><th>काम / निर्णय कोणाकडे?</th><th>शेरा / अडथळा</th><th>कृती</th></tr></thead><tbody>${problemRows}</tbody></table></div>
+                </div>
+            </div>`;
         }
+        function showFilesModal(data,key,type){ui.fileModalTitle.textContent=`${data.customerName||'अर्जदार'} यांचे ${type}`;const urls=String(data[key]||'').split(/[\s,]+/).filter(Boolean);if(!urls.length){ui.fileModalBody.innerHTML=`<p style="text-align:center">या अर्जदारासाठी ${type} उपलब्ध नाहीत.</p>`;ui.openLinksBtn.style.display='none';}else{ui.fileModalBody.innerHTML=type==='फोटो'?`<div class="photo-thumbnail-grid">${urls.map(u=>`<a href="${escapeHTML(u)}" target="_blank" class="photo-thumbnail"><img src="${escapeHTML(u)}" alt="Photo" loading="lazy"></a>`).join('')}</div>`:`<div class="file-link-list">${urls.map((u,i)=>`<a href="${escapeHTML(u)}" target="_blank" class="file-link">${type} ${i+1} <i class="fas fa-external-link-alt"></i></a>`).join('')}</div>`;ui.openLinksBtn.style.display='inline-flex';ui.openLinksBtn.onclick=()=>openAllLinks(urls);}ui.fileModal.style.display='block';}
+        function openAllLinks(urls){if(!urls?.length)return;alert(`${urls.length} फाइल्स नवीन टॅबमध्ये उघडल्या जात आहेत. कृपया pop-up allow करा.`);urls.forEach(u=>window.open(String(u).trim(),'_blank'));}
+        function exportDataToExcel(data,filename='Report'){try{const mapped=data.map(row=>{const x={};Object.keys(row).forEach(k=>{if(MARATHI_LABELS[k])x[MARATHI_LABELS[k]]=row[k];});return x;});const ws=XLSX.utils.json_to_sheet(mapped),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Data');XLSX.writeFile(wb,`${filename.replace(/[^a-zA-Z0-9\u0900-\u097F]/g,'_')}.xlsx`);}catch(e){console.error(e);alert('एक्सेल फाइल तयार करताना त्रुटी आली.');}}
+        function printReport(data){if(data)generatePrintHTML(data);}
+        function formatDateTimeForPrint(d){const x=parseDate(d);return x?`${x.toLocaleDateString('en-GB').replace(/\//g,'-')} ${x.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})}`:'N/A';}
+        function formatCurrency(n){return `रु. ${Math.round(parseNumber(n)).toLocaleString('en-IN')}`;}
 
-        function openAllLinks(urls) {
-            if (!urls || !urls.length) return;
-            alert(`${urls.length} फाइल्स नवीन टॅबमध्ये उघडल्या जात आहेत. कृपया pop-up allow करा.`);
-            urls.forEach(url => { if (String(url).trim()) window.open(String(url).trim(), '_blank'); });
-        }
-
-        function exportDataToExcel(data, filename = 'Report') {
-            try {
-                const mappedData = data.map(row => {
-                    const newRow = {};
-                    Object.keys(row).forEach(key => { if (MARATHI_LABELS[key]) newRow[MARATHI_LABELS[key]] = row[key]; });
-                    return newRow;
-                });
-                const worksheet = XLSX.utils.json_to_sheet(mappedData);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-                XLSX.writeFile(workbook, `${filename.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`);
-            } catch (error) {
-                console.error('Excel Export Error:', error);
-                alert('एक्सेल फाइल तयार करताना त्रुटी आली.');
-            }
-        }
-
-        function printReport(data) {
-            if (!data) return;
-            generatePrintHTML(data);
-        }
-
-        function formatDateTimeForPrint(d) {
-            const D = parseDate(d);
-            if (!D) return 'N/A';
-            return `${D.toLocaleDateString('en-GB').replace(/\//g,'-')} ${D.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
-        }
-
-        function formatCurrency(num) { return `रु ${Math.round(parseNumber(num)).toLocaleString('en-IN')}`; }
-
-        function generatePrintHTML(data) {
-            const logoUrl = 'https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png';
-            const mapImageUrl = (data.gpsLatitude && data.gpsLongitude) ? `https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLatitude},pm2rdl` : '';
-            const meta = getProcessMeta(data);
-
-            const renderTableRows = (keys) => keys.map(key => {
-                const value = data[key];
-                if (!hasValue(value)) return '';
-                let displayValue = value;
-                if (['loanAmountRequested', 'ApprovedLoanAmount', 'familyTotalIncome', 'secondaryIncomeAmount', 'expenseHousehold', 'expenseMedical', 'expenseOther', 'expenseTotal', 'existingEMI'].includes(key)) displayValue = formatCurrency(value);
-                else if (key === 'VerificationTimestamp') displayValue = formatDateTimeForPrint(value);
-                return `<tr><td>${MARATHI_LABELS[key] || key}</td><td>${escapeHTML(displayValue)}</td></tr>`;
-            }).join('');
-
-            const personalKeys = ['coApplicantName', 'applicantAge', 'applicantGender', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber'];
-            const financialKeys = ['familyTotalMembers', 'familyEarningMembers', 'familyTotalIncome', 'expenseTotal', 'existingEMI', 'primaryIncomeSource', 'secondaryIncomeSource', 'secondaryIncomeAmount'];
-            const assetKeys = ['assetHouseType', 'assetLandAcres', 'assetLandType', 'assetVehicle', 'cows', 'buffaloes', 'goats', 'poultry'];
-            const verificationKeys = ['ManagerApprovalStatus', 'ManagerName', 'ManagerRemarks', 'BMName', 'BMRemarks', 'VerificationStatus', 'VerifierName', 'VerifierRemarks', 'VerificationTimestamp', 'fieldOfficerName', 'remarks', 'RejectedRemarks', 'RejectRemarks'];
-            const photoLinks = String(data.photoLinks || '').split(/[\s,]+/).filter(Boolean);
-            const docLinks = String(data.supportdoc || '').split(/[\s,]+/).filter(Boolean);
-
-            const html = `<div class="print-container"><style>
-                .print-container { font-family: 'Noto Sans Devanagari', sans-serif; color: #333; font-size: 10pt; line-height: 1.5; }
-                .print-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 15px 0; border-bottom: 3px solid #0056b3; }
-                .print-header img { height: 40px; }
-                .print-header .title-block { text-align: right; }
-                .print-header h1 { margin: 0; color: #0056b3; font-size: 18pt; font-weight: 700; }
-                .print-header p { margin: 0; font-size: 11pt; color: #555; }
-                .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; }
-                .summary-box h3 { margin-top: 0; font-size: 13pt; color: #0078d4; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
-                .summary-box p { margin: 4px 0; } .summary-box p strong { color: #202020; }
-                .section-card { margin-top: 25px; border: 1px solid #e0e0e0; border-radius: 8px; page-break-inside: avoid; overflow: hidden; }
-                .section-title { font-size: 14pt; color: #ffffff; background-color: #0078d4; padding: 10px 15px; margin: 0; font-weight: 600; }
-                .data-table { width: 100%; border-collapse: collapse; }
-                .data-table tr:nth-child(even) { background-color: #f8f9fa; }
-                .data-table td { padding: 8px 15px; border-bottom: 1px solid #e7e7e7; vertical-align: top; }
-                .data-table td:first-child { font-weight: 600; width: 35%; color: #444; }
-                .map-container img { max-width: 100%; height: auto; margin-top: 10px; border: 1px solid #ddd; }
-                .attachments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 15px; }
-                .photo-item { border: 1px solid #ddd; border-radius: 6px; padding: 5px; text-align: center; }
-                .photo-item img { width: 100%; height: 110px; object-fit: cover; border-radius: 4px; }
-                .doc-list { list-style-type: none; padding: 10px 15px; margin: 0; }
-                .doc-list li { padding: 8px 0; border-bottom: 1px solid #eee; }
-                .print-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #0056b3; font-size: 9pt; color: #888; }
-                @media print { body { -webkit-print-color-adjust: exact; } .print-container { font-size: 9pt; } }
-            </style>
-            <header class="print-header"><img src="${logoUrl}" alt="Anik Financial Services"><div class="title-block"><h1>कर्ज अर्ज पडताळणी अहवाल</h1><p>अर्ज दिनांक: ${formatDate(data.actualTime)}</p></div></header>
-            <section class="summary-grid"><div class="summary-box"><h3>अर्जदार तपशील</h3><p><strong>नाव:</strong> ${escapeHTML(data.customerName || 'N/A')}</p><p><strong>पत्ता:</strong> ${escapeHTML(data.villageName || '')}, ${escapeHTML(data.taluka || '')}, ${escapeHTML(data.district || '')}</p><p><strong>मोबाईल:</strong> ${escapeHTML(data.mobileNumber || 'N/A')}</p></div><div class="summary-box"><h3>कर्ज तपशील</h3><p><strong>स्थिती:</strong> ${escapeHTML(meta.status)}</p><p><strong>सध्याचा Stage:</strong> ${escapeHTML(meta.currentStage)}</p><p><strong>मागितलेली रक्कम:</strong> ${formatCurrency(data.loanAmountRequested)}</p><p><strong>मंजूर रक्कम:</strong> ${formatCurrency(data.ApprovedLoanAmount)}</p><p><strong>कर्जाचा उद्देश:</strong> ${escapeHTML(data.loanPurpose || 'N/A')}</p></div></section>
-            <section class="section-card"><h3 class="section-title">अर्जदाराची वैयक्तिक माहिती</h3><table class="data-table">${renderTableRows(personalKeys)}</table></section>
-            <section class="section-card"><h3 class="section-title">कौटुंबिक आणि आर्थिक माहिती</h3><table class="data-table">${renderTableRows(financialKeys)}</table></section>
-            <section class="section-card"><h3 class="section-title">मालमत्ता तपशील</h3><table class="data-table">${renderTableRows(assetKeys)}</table></section>
-            <section class="section-card"><h3 class="section-title">पडताळणी तपशील</h3><table class="data-table">${renderTableRows(verificationKeys)}</table></section>
-            ${mapImageUrl ? `<section class="section-card"><h3 class="section-title">GPS स्थान आणि नकाशा</h3><div style="padding:15px;"><p><strong>पत्ता:</strong> ${escapeHTML(data.gpsAddress || 'N/A')}</p><div class="map-container"><img src="${mapImageUrl}" alt="Map"></div></div></section>` : ''}
-            ${photoLinks.length ? `<section class="section-card"><h3 class="section-title">छायाचित्रे</h3><div class="attachments-grid">${photoLinks.map((url, i) => `<div class="photo-item"><img src="${escapeHTML(url)}" alt="Photo ${i+1}" onerror="this.src='https://via.placeholder.com/150x110.png?text=Image+Error';"><p>फोटो ${i+1}</p></div>`).join('')}</div></section>` : ''}
-            ${docLinks.length ? `<section class="section-card"><h3 class="section-title">जोडलेली कागदपत्रे</h3><ul class="doc-list">${docLinks.map((url, i) => `<li><a href="${escapeHTML(url)}" target="_blank">कागदपत्र ${i+1} - लिंक उघडा</a></li>`).join('')}</ul></section>` : ''}
-            <footer class="print-footer">हा रिपोर्ट ${new Date().toLocaleDateString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे. | अनिक फायनान्शियल सर्व्हिसेस</footer></div>`;
-
-            ui.printArea.innerHTML = html;
-            const images = ui.printArea.querySelectorAll('img');
-            const promises = [...images].map(img => img.complete ? Promise.resolve() : new Promise(resolve => { img.onload = img.onerror = resolve; }));
-            Promise.all(promises).then(() => setTimeout(() => window.print(), 500));
+        function generatePrintHTML(data){
+            const logoUrl='https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png';
+            const mapImageUrl=(data.gpsLatitude&&data.gpsLongitude)?`https://static-maps.yandex.ru/1.x/?ll=${data.gpsLongitude},${data.gpsLatitude}&z=17&l=sat,skl&size=650,450&pt=${data.gpsLongitude},${data.gpsLatitude},pm2rdl`:'';
+            const m=metaOf(data);
+            const renderRows=keys=>keys.map(k=>{if(!hasValue(data[k]))return'';let v=data[k];if(['loanAmountRequested','ApprovedLoanAmount','familyTotalIncome','secondaryIncomeAmount','expenseHousehold','expenseMedical','expenseOther','expenseTotal','existingEMI'].includes(k))v=formatCurrency(v);else if(k==='VerificationTimestamp')v=formatDateTimeForPrint(v);return `<tr><td>${MARATHI_LABELS[k]||k}</td><td>${escapeHTML(v)}</td></tr>`;}).join('');
+            const personal=['coApplicantName','applicantAge','applicantGender','maritalStatus','educationLevel','mobileNumber','aadhaarNumber','panNumber'];
+            const financial=['familyTotalMembers','familyEarningMembers','familyTotalIncome','expenseTotal','existingEMI','primaryIncomeSource','secondaryIncomeSource','secondaryIncomeAmount'];
+            const asset=['assetHouseType','assetLandAcres','assetLandType','assetVehicle','cows','buffaloes','goats','poultry'];
+            const verification=['ManagerApprovalStatus','ManagerName','ManagerRemarks','BMName','BMRemarks','VerificationStatus','VerifierName','VerifierRemarks','VerificationTimestamp','fieldOfficerName','remarks','RejectedRemarks','RejectRemarks'];
+            const photos=String(data.photoLinks||'').split(/[\s,]+/).filter(Boolean),docs=String(data.supportdoc||'').split(/[\s,]+/).filter(Boolean);
+            const html=`<div class="print-container"><style>.print-container{font-family:'Noto Sans Devanagari',sans-serif;color:#333;font-size:10pt;line-height:1.5}.print-header{display:flex;justify-content:space-between;align-items:flex-start;padding:15px 0;border-bottom:3px solid #0056b3}.print-header img{height:40px}.print-header .title-block{text-align:right}.print-header h1{margin:0;color:#0056b3;font-size:18pt}.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;padding:15px;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px}.summary-box h3{margin-top:0;font-size:13pt;color:#0078d4;border-bottom:1px solid #ddd;padding-bottom:8px}.summary-box p{margin:4px 0}.section-card{margin-top:25px;border:1px solid #e0e0e0;border-radius:8px;page-break-inside:avoid;overflow:hidden}.section-title{font-size:14pt;color:#fff;background:#0078d4;padding:10px 15px;margin:0}.data-table{width:100%;border-collapse:collapse}.data-table tr:nth-child(even){background:#f8f9fa}.data-table td{padding:8px 15px;border-bottom:1px solid #e7e7e7;vertical-align:top}.data-table td:first-child{font-weight:600;width:35%}.map-container img{max-width:100%}.attachments-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:15px;padding:15px}.photo-item img{width:100%;height:110px;object-fit:cover}.doc-list{list-style:none;padding:10px 15px}.print-footer{text-align:center;margin-top:30px;padding-top:15px;border-top:2px solid #0056b3;font-size:9pt;color:#888}@media print{body{-webkit-print-color-adjust:exact}.print-container{font-size:9pt}}</style><header class="print-header"><img src="${logoUrl}" alt="ANIK"><div class="title-block"><h1>कर्ज अर्ज पडताळणी अहवाल</h1><p>अर्ज दिनांक: ${formatDate(data.actualTime)}</p></div></header><section class="summary-grid"><div class="summary-box"><h3>अर्जदार तपशील</h3><p><strong>नाव:</strong> ${escapeHTML(data.customerName||'N/A')}</p><p><strong>पत्ता:</strong> ${escapeHTML(data.villageName||'')}, ${escapeHTML(data.taluka||'')}, ${escapeHTML(data.district||'')}</p><p><strong>मोबाईल:</strong> ${escapeHTML(data.mobileNumber||'N/A')}</p></div><div class="summary-box"><h3>कर्ज तपशील</h3><p><strong>स्थिती:</strong> ${escapeHTML(m.inconsistent?'डेटा विसंगती':m.status)}</p><p><strong>सध्याचा टप्पा:</strong> ${escapeHTML(m.currentStage)}</p><p><strong>मागितलेली रक्कम:</strong> ${formatCurrency(data.loanAmountRequested)}</p><p><strong>मंजूर रक्कम:</strong> ${formatCurrency(data.ApprovedLoanAmount)}</p><p><strong>उद्देश:</strong> ${escapeHTML(data.loanPurpose||'N/A')}</p></div></section><section class="section-card"><h3 class="section-title">वैयक्तिक माहिती</h3><table class="data-table">${renderRows(personal)}</table></section><section class="section-card"><h3 class="section-title">कौटुंबिक आणि आर्थिक माहिती</h3><table class="data-table">${renderRows(financial)}</table></section><section class="section-card"><h3 class="section-title">मालमत्ता तपशील</h3><table class="data-table">${renderRows(asset)}</table></section><section class="section-card"><h3 class="section-title">पडताळणी तपशील</h3><table class="data-table">${renderRows(verification)}</table></section>${mapImageUrl?`<section class="section-card"><h3 class="section-title">GPS स्थान</h3><div style="padding:15px"><p>${escapeHTML(data.gpsAddress||'N/A')}</p><div class="map-container"><img src="${mapImageUrl}" alt="Map"></div></div></section>`:''}${photos.length?`<section class="section-card"><h3 class="section-title">छायाचित्रे</h3><div class="attachments-grid">${photos.map((u,i)=>`<div class="photo-item"><img src="${escapeHTML(u)}" alt="Photo ${i+1}"><p>फोटो ${i+1}</p></div>`).join('')}</div></section>`:''}${docs.length?`<section class="section-card"><h3 class="section-title">कागदपत्रे</h3><ul class="doc-list">${docs.map((u,i)=>`<li><a href="${escapeHTML(u)}" target="_blank">कागदपत्र ${i+1}</a></li>`).join('')}</ul></section>`:''}<footer class="print-footer">हा अहवाल ${new Date().toLocaleDateString('mr-IN')} रोजी स्वयंचलितपणे तयार झाला आहे. | अनिक फायनान्शियल सर्व्हिसेस</footer></div>`;
+            ui.printArea.innerHTML=html;const images=ui.printArea.querySelectorAll('img');Promise.all([...images].map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve;}))).then(()=>setTimeout(()=>window.print(),300));
         }
     </script>
 </body>
