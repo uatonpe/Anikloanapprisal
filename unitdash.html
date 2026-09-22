@@ -1,7 +1,6 @@
 
 
 
-
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -475,10 +474,12 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpqr11pG1WIM6mhcltwUFM9lktbueurVSRUVzKjnEp0RCJY-Qmi_FEcew00wYcpWM/exec';
-        const PAGE_SIZE = 2500;
+        const PAGE_SIZE = 1200;
         const MAX_PAGES = 20;
-        const FETCH_TIMEOUT_MS = 25000;
-        const MEMORY_CACHE_MS = 45000;
+        const FETCH_TIMEOUT_MS = 12000;
+        const MEMORY_CACHE_MS = 120000;
+        const PERSIST_CACHE_MS = 300000; // 5 min instant cache across refresh/reopen
+        const PERSIST_CACHE_PREFIX = 'ANIK_TURBO_DASH_V16_';
         const MODAL_BATCH_SIZE = 250;
         const MIN_FINAL_CASES_FOR_PP = 10;
         const PP_SCORE_THRESHOLD = 90;
@@ -593,7 +594,14 @@
         }
         function hideStatus() { ui.statusBar.className = 'data-status-bar'; ui.statusBar.innerHTML = ''; }
         function setLoading(isLoading) {
-            ui.loader.style.display = isLoading ? 'flex' : 'none';
+            clearTimeout(window.__anikLoaderTimer);
+            // Never keep the whole dashboard blocked while Apps Script is working.
+            if (isLoading && !allData.length) {
+                ui.loader.style.display = 'flex';
+                window.__anikLoaderTimer = setTimeout(() => { ui.loader.style.display = 'none'; }, 700);
+            } else {
+                ui.loader.style.display = 'none';
+            }
             ui.loadDateDataBtn.disabled = isLoading;
             ui.loadCurrentMonthBtn.disabled = isLoading;
         }
@@ -607,7 +615,7 @@
         }
 
         function buildDataUrl(page=1, offset=0, cursor='') {
-            const params = new URLSearchParams({ action:'getData', pageSize:String(PAGE_SIZE), page:String(page), offset:String(offset) });
+            const params = new URLSearchParams({ action:'getDataFast', pageSize:String(PAGE_SIZE), page:String(page), offset:String(offset), turbo:'1' });
             if (ui.dateFrom.value) params.set('dateFrom', ui.dateFrom.value);
             if (ui.dateTo.value) params.set('dateTo', ui.dateTo.value);
             if (cursor) params.set('cursor', cursor);
@@ -637,6 +645,45 @@
                 rangeDataCache.delete(firstKey);
             }
         }
+
+        function persistentCacheStorageKey() {
+            return PERSIST_CACHE_PREFIX + btoa(unescape(encodeURIComponent(cacheRangeKey()))).replace(/=+$/,'');
+        }
+
+        function readPersistentRangeCache() {
+            try {
+                const raw = localStorage.getItem(persistentCacheStorageKey());
+                if (!raw) return null;
+                const box = JSON.parse(raw);
+                if (!box || !box.time || !box.value || (Date.now() - box.time) > PERSIST_CACHE_MS) return null;
+                return box.value;
+            } catch (e) { return null; }
+        }
+
+        function writePersistentRangeCache(value) {
+            try {
+                const key = persistentCacheStorageKey();
+                localStorage.setItem(key, JSON.stringify({ time:Date.now(), value }));
+                // Keep storage small: only current range + one prior range.
+                const indexKey = PERSIST_CACHE_PREFIX + 'INDEX';
+                let keys = JSON.parse(localStorage.getItem(indexKey) || '[]').filter(k => k !== key);
+                keys.unshift(key);
+                while (keys.length > 2) {
+                    const old = keys.pop();
+                    try { localStorage.removeItem(old); } catch (e) {}
+                }
+                localStorage.setItem(indexKey, JSON.stringify(keys));
+            } catch (e) {
+                // Storage quota/private mode must never break dashboard loading.
+            }
+        }
+
+        function paintRowsInstant(rows) {
+            prepareData(rows || []);
+            setupFilters();
+            applyFiltersAndRender();
+        }
+
 
         function valueToBool(value) {
             if (typeof value === 'boolean') return value;
@@ -681,11 +728,7 @@
             } catch (error) {
                 if (timedOut) throw new Error('Server response timeout झाला. पुन्हा प्रयत्न करा.');
                 if (error.name === 'AbortError') throw error;
-                const shouldRetry = retry < 1 && !/JSON ऐवजी HTML|JSON स्वरूपात नाही/.test(error.message || '');
-                if (shouldRetry) {
-                    await new Promise(resolve => setTimeout(resolve, 450));
-                    return fetchJsonSafe(url, signal, retry + 1);
-                }
+                // No automatic retry here: repeated Apps Script calls only increase waiting time.
                 throw error;
             } finally {
                 clearTimeout(timeout);
@@ -693,10 +736,7 @@
             }
         }
 
-        async function fetchAllPages(signal) {
-            const cached = readRangeCache();
-            if (cached) return { ...cached, fromMemoryCache:true };
-
+        async function fetchAllPages(signal, onFirstBatch=null) {
             const rows = [];
             const unique = new Set();
             const pageSignatures = new Set();
@@ -723,6 +763,11 @@
                     if (!unique.has(key)) { unique.add(key); rows.push(row); added++; }
                 });
 
+                // Paint first useful page immediately. Do not wait for every remaining page.
+                if (pageSignatures.size === 1 && rows.length && typeof onFirstBatch === 'function') {
+                    try { onFirstBatch({ rows:rows.slice(), serverTotal, pages:1 }); } catch (e) {}
+                }
+
                 const nextCursor = result.nextCursor ?? result.next_cursor ?? meta.nextCursor ?? '';
                 const nextPage = Number(result.nextPage ?? result.next_page ?? meta.nextPage ?? 0);
                 const hasMoreRaw = meta.hasMore ?? result.hasMore ?? result.has_more;
@@ -740,6 +785,7 @@
 
             const output = { rows, serverTotal, backendPaginationWarning, pages:pageSignatures.size };
             writeRangeCache(output);
+            writePersistentRangeCache(output);
             return output;
         }
 
@@ -747,26 +793,49 @@
             const valid = validateDateRange();
             if (!valid.ok) { showStatus(valid.message, 'warn'); return; }
             if (loadController) loadController.abort();
-            if (force) rangeDataCache.delete(cacheRangeKey());
             loadController = new AbortController();
-            setLoading(true);
-            showStatus('निवडलेल्या कालावधीचा डेटा जलद गतीने लोड होत आहे…');
+
+            // INSTANT FIRST PAINT: reuse last successful data for this same date range.
+            // Fresh data is still requested in the background and replaces it when ready.
+            const instant = readRangeCache() || readPersistentRangeCache();
+            let painted = false;
+            if (instant && Array.isArray(instant.rows) && instant.rows.length) {
+                paintRowsInstant(instant.rows);
+                painted = true;
+                setLoading(false);
+                showStatus(`${instant.rows.length.toLocaleString('en-IN')} अर्ज त्वरित दाखवले. ताज्या डेटाचे अपडेट पार्श्वभूमीत सुरू आहे…`, 'info');
+            } else {
+                setLoading(true);
+                showStatus('डेटा आणत आहे… Dashboard थांबवलेला नाही.', 'info');
+            }
+
             const started = performance.now();
             try {
-                const result = await fetchAllPages(loadController.signal);
-                prepareData(result.rows);
-                setupFilters();
-                applyFiltersAndRender();
+                const result = await fetchAllPages(loadController.signal, partial => {
+                    if (painted || !partial.rows.length) return;
+                    paintRowsInstant(partial.rows);
+                    painted = true;
+                    setLoading(false);
+                    const totalText = Number.isFinite(partial.serverTotal) && partial.serverTotal > partial.rows.length
+                        ? ` / ${partial.serverTotal.toLocaleString('en-IN')}` : '';
+                    showStatus(`${partial.rows.length.toLocaleString('en-IN')}${totalText} अर्ज लगेच दाखवले. उर्वरित डेटा पार्श्वभूमीत येत आहे…`, 'info');
+                });
+
+                // Final accurate paint after all pages finish.
+                paintRowsInstant(result.rows);
                 const seconds = ((performance.now() - started) / 1000).toFixed(1);
-                let msg = `${allData.length.toLocaleString('en-IN')} अर्ज ${result.fromMemoryCache ? 'क्षणात (fast cache मधून)' : seconds + ' सेकंदांत'} लोड झाले.`;
-                if (Number.isFinite(result.serverTotal) && result.serverTotal > allData.length) msg += ` सर्व्हरवर एकूण ${result.serverTotal.toLocaleString('en-IN')} नोंदी आहेत.`;
-                if (result.backendPaginationWarning) showStatus(`${msg} पुढील पानांसाठी Backend pagination तपासणे आवश्यक आहे.`, 'warn');
+                let msg = `${allData.length.toLocaleString('en-IN')} अर्ज अपडेट झाले (${seconds} सेकंद).`;
+                if (result.backendPaginationWarning) showStatus(`${msg} Backend pagination तपासणे आवश्यक आहे.`, 'warn');
                 else showStatus(msg, 'info');
             } catch (error) {
                 if (error.name === 'AbortError') return;
                 console.error('Dashboard Load Error:', error);
-                showStatus(`डेटा लोड करताना त्रुटी आली: ${error.message}`, 'error', true);
-                if (allData.length) applyFiltersAndRender();
+                // If cached/first-page data is already visible, never replace the dashboard with a red blocking error.
+                if (painted || allData.length) {
+                    showStatus('डेटा स्क्रीनवर उपलब्ध आहे. Live refresh उशिरा प्रतिसाद देत आहे; पुढील refresh मध्ये पुन्हा प्रयत्न होईल.', 'warn');
+                } else {
+                    showStatus(`डेटा लोड झाला नाही: ${error.message}`, 'error', true);
+                }
             } finally {
                 setLoading(false);
             }
