@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -12,8 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -474,8 +475,10 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpqr11pG1WIM6mhcltwUFM9lktbueurVSRUVzKjnEp0RCJY-Qmi_FEcew00wYcpWM/exec';
-        const PAGE_SIZE = 1500;
-        const MAX_PAGES = 50;
+        const PAGE_SIZE = 2500;
+        const MAX_PAGES = 20;
+        const FETCH_TIMEOUT_MS = 25000;
+        const MEMORY_CACHE_MS = 45000;
         const MODAL_BATCH_SIZE = 250;
         const MIN_FINAL_CASES_FOR_PP = 10;
         const PP_SCORE_THRESHOLD = 90;
@@ -525,6 +528,7 @@
         let showAllStaff = false;
         let lastStaffStatsList = [];
         let modalState = { data:[], rendered:0 };
+        const rangeDataCache = new Map();
 
         const ui = {
             loader: document.getElementById('loader'),
@@ -564,11 +568,16 @@
             staffDetail: document.getElementById('staff-performance-detail')
         };
 
-        window.addEventListener('load', () => {
+        function startDashboardApp() {
             setCurrentMonthFilters();
             setupEventListeners();
             initializeDashboard();
-        });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startDashboardApp, { once:true });
+        } else {
+            startDashboardApp();
+        }
 
         function getTodayISO() {
             const d = new Date();
@@ -611,23 +620,99 @@
             return ['row', row.row ?? '', row.Unit ?? '', row.actualTime ?? row.timestamp ?? row.visitDate ?? '', row.mobileNumber ?? '', row.customerName ?? '', fallbackIndex].join('|');
         }
 
+        function cacheRangeKey() {
+            return `${ui.dateFrom.value || ''}|${ui.dateTo.value || ''}`;
+        }
+
+        function readRangeCache() {
+            const hit = rangeDataCache.get(cacheRangeKey());
+            if (!hit || (Date.now() - hit.time) > MEMORY_CACHE_MS) return null;
+            return hit.value;
+        }
+
+        function writeRangeCache(value) {
+            rangeDataCache.set(cacheRangeKey(), { time:Date.now(), value });
+            if (rangeDataCache.size > 4) {
+                const firstKey = rangeDataCache.keys().next().value;
+                rangeDataCache.delete(firstKey);
+            }
+        }
+
+        function valueToBool(value) {
+            if (typeof value === 'boolean') return value;
+            const v = normalizeText(value);
+            if (['true','1','yes','हो','होय'].includes(v)) return true;
+            if (['false','0','no','नाही',''].includes(v)) return false;
+            return Boolean(value);
+        }
+
+        function firstFinite(...values) {
+            for (const value of values) {
+                if (value === null || value === undefined || value === '') continue;
+                const n = Number(value);
+                if (Number.isFinite(n)) return n;
+            }
+            return null;
+        }
+
+        async function fetchJsonSafe(url, signal, retry=0) {
+            const controller = new AbortController();
+            let timedOut = false;
+            const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, FETCH_TIMEOUT_MS);
+            const abortFromParent = () => controller.abort();
+            if (signal) {
+                if (signal.aborted) controller.abort();
+                else signal.addEventListener('abort', abortFromParent, { once:true });
+            }
+            try {
+                const response = await fetch(url, { signal:controller.signal, cache:'no-store', redirect:'follow' });
+                const body = await response.text();
+                if (!response.ok) throw new Error(`Network error: ${response.status} ${response.statusText}`);
+                const trimmed = body.trim();
+                if (!trimmed) throw new Error('API ने रिकामा response दिला.');
+                if (/^</.test(trimmed) || /<!doctype|<html[\s>]/i.test(trimmed.slice(0, 300))) {
+                    throw new Error('API ने JSON ऐवजी HTML page दिला. Apps Script Web App deployment/access तपासा.');
+                }
+                try {
+                    return JSON.parse(trimmed);
+                } catch (parseError) {
+                    throw new Error(`API response JSON स्वरूपात नाही: ${parseError.message}`);
+                }
+            } catch (error) {
+                if (timedOut) throw new Error('Server response timeout झाला. पुन्हा प्रयत्न करा.');
+                if (error.name === 'AbortError') throw error;
+                const shouldRetry = retry < 1 && !/JSON ऐवजी HTML|JSON स्वरूपात नाही/.test(error.message || '');
+                if (shouldRetry) {
+                    await new Promise(resolve => setTimeout(resolve, 450));
+                    return fetchJsonSafe(url, signal, retry + 1);
+                }
+                throw error;
+            } finally {
+                clearTimeout(timeout);
+                if (signal) signal.removeEventListener('abort', abortFromParent);
+            }
+        }
+
         async function fetchAllPages(signal) {
+            const cached = readRangeCache();
+            if (cached) return { ...cached, fromMemoryCache:true };
+
             const rows = [];
             const unique = new Set();
             const pageSignatures = new Set();
             let page = 1, offset = 0, cursor = '', serverTotal = null, backendPaginationWarning = false;
 
             while (page <= MAX_PAGES) {
-                const response = await fetch(buildDataUrl(page, offset, cursor), { signal, cache:'no-store' });
-                if (!response.ok) throw new Error(`Network error: ${response.status} ${response.statusText}`);
-                const result = await response.json();
+                const result = await fetchJsonSafe(buildDataUrl(page, offset, cursor), signal);
                 if (result.status && normalizeText(result.status) !== 'success') throw new Error(result.message || 'डेटा मिळाला नाही');
 
+                const meta = result.meta && typeof result.meta === 'object' ? result.meta : {};
                 const batch = Array.isArray(result.data) ? result.data : Array.isArray(result.rows) ? result.rows : Array.isArray(result.items) ? result.items : [];
-                serverTotal = Number(result.totalRecords ?? result.total ?? result.count ?? serverTotal);
+                serverTotal = firstFinite(meta.totalMatched, result.totalRecords, result.total, result.count, serverTotal);
+
                 const signature = batch.length ? `${rawUniqueKey(batch[0])}::${rawUniqueKey(batch[batch.length-1])}::${batch.length}` : `empty-${page}`;
                 if (pageSignatures.has(signature)) {
-                    backendPaginationWarning = batch.length >= PAGE_SIZE || Boolean(result.hasMore || result.has_more || result.nextCursor || result.nextPage);
+                    backendPaginationWarning = true;
                     break;
                 }
                 pageSignatures.add(signature);
@@ -638,24 +723,31 @@
                     if (!unique.has(key)) { unique.add(key); rows.push(row); added++; }
                 });
 
-                const nextCursor = result.nextCursor ?? result.next_cursor ?? '';
-                const nextPage = Number(result.nextPage ?? result.next_page ?? 0);
-                const explicitHasMore = Boolean(result.hasMore ?? result.has_more ?? nextCursor ?? nextPage);
+                const nextCursor = result.nextCursor ?? result.next_cursor ?? meta.nextCursor ?? '';
+                const nextPage = Number(result.nextPage ?? result.next_page ?? meta.nextPage ?? 0);
+                const hasMoreRaw = meta.hasMore ?? result.hasMore ?? result.has_more;
+                const hasExplicitMoreFlag = hasMoreRaw !== undefined && hasMoreRaw !== null;
+                const explicitHasMore = hasExplicitMoreFlag ? valueToBool(hasMoreRaw) : Boolean(nextCursor || nextPage);
                 const totalHasMore = Number.isFinite(serverTotal) && rows.length < serverTotal;
-                const probableHasMore = batch.length >= PAGE_SIZE;
+                const probableHasMore = !hasExplicitMoreFlag && !Number.isFinite(serverTotal) && batch.length >= PAGE_SIZE;
+
                 if (!batch.length || !added || !(explicitHasMore || totalHasMore || probableHasMore)) break;
 
                 cursor = nextCursor || cursor;
                 page = nextPage > page ? nextPage : page + 1;
                 offset += batch.length;
             }
-            return { rows, serverTotal, backendPaginationWarning, pages:pageSignatures.size };
+
+            const output = { rows, serverTotal, backendPaginationWarning, pages:pageSignatures.size };
+            writeRangeCache(output);
+            return output;
         }
 
         async function initializeDashboard(force=false) {
             const valid = validateDateRange();
             if (!valid.ok) { showStatus(valid.message, 'warn'); return; }
             if (loadController) loadController.abort();
+            if (force) rangeDataCache.delete(cacheRangeKey());
             loadController = new AbortController();
             setLoading(true);
             showStatus('निवडलेल्या कालावधीचा डेटा जलद गतीने लोड होत आहे…');
@@ -666,7 +758,7 @@
                 setupFilters();
                 applyFiltersAndRender();
                 const seconds = ((performance.now() - started) / 1000).toFixed(1);
-                let msg = `${allData.length.toLocaleString('en-IN')} अर्ज ${seconds} सेकंदांत लोड झाले.`;
+                let msg = `${allData.length.toLocaleString('en-IN')} अर्ज ${result.fromMemoryCache ? 'क्षणात (fast cache मधून)' : seconds + ' सेकंदांत'} लोड झाले.`;
                 if (Number.isFinite(result.serverTotal) && result.serverTotal > allData.length) msg += ` सर्व्हरवर एकूण ${result.serverTotal.toLocaleString('en-IN')} नोंदी आहेत.`;
                 if (result.backendPaginationWarning) showStatus(`${msg} पुढील पानांसाठी Backend pagination तपासणे आवश्यक आहे.`, 'warn');
                 else showStatus(msg, 'info');
@@ -691,8 +783,7 @@
                 row._staff = getStaffName(row);
                 row._searchName = normalizeText(row.customerName);
                 row._meta = getProcessMeta(row);
-                row._scoreAudit = buildCaseScoreAudit(row);
-                row._quality = row._scoreAudit.data.percent;
+                row._scoreAudit = null; // expensive quality audit is calculated lazily only when staff score section needs it
                 applicantIndex.set(String(row._id), row);
                 return row;
             }).sort((a,b) => b._dateMs - a._dateMs);
@@ -760,16 +851,41 @@
             renderDashboard();
         }
 
+        function runWhenIdle(fn, timeout=300) {
+            if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout });
+            else setTimeout(fn, 0);
+        }
+
         function renderDashboard() {
             const version = ++renderVersion;
             const summary = summarizeRows(filteredData);
+
+            // Critical UI first: KPI + process cards appear immediately.
             updateKPIs(summary);
             renderProcessOverview(summary);
-            const statsList = buildStaffStatsList(filteredData);
-            lastStaffStatsList = statsList;
-            renderStaffPerformance(statsList);
-            const deferred = () => { if (version !== renderVersion) return; renderCharts(); generateApprovedCustomerInsights(); };
-            if ('requestIdleCallback' in window) requestIdleCallback(deferred, { timeout:250 }); else requestAnimationFrame(deferred);
+
+            // Heavy score calculations are deferred so the screen never feels frozen.
+            ui.staffSummary.innerHTML = '<div class="staff-mini-card"><span>कर्मचारी गुणांकन</span><strong><i class="fas fa-spinner fa-spin"></i></strong></div>';
+            ui.staffGrid.innerHTML = '<div class="staff-empty">कर्मचारीनिहाय गुणांकन तयार होत आहे…</div>';
+            ui.staffDetail.innerHTML = '';
+
+            runWhenIdle(() => {
+                if (version !== renderVersion) return;
+                const statsList = buildStaffStatsList(filteredData);
+                if (version !== renderVersion) return;
+                lastStaffStatsList = statsList;
+                renderStaffPerformance(statsList);
+            }, 180);
+
+            runWhenIdle(() => {
+                if (version !== renderVersion) return;
+                renderCharts();
+            }, 320);
+
+            runWhenIdle(() => {
+                if (version !== renderVersion) return;
+                generateApprovedCustomerInsights();
+            }, 420);
         }
 
         function summarizeRows(rows) {
@@ -1097,7 +1213,7 @@
             add('unit','युनिट/शाखा/केंद्र माहिती',2,hasValue(row.Unit)||hasValue(row.branchName)||hasValue(row.centerName),'युनिट, शाखा किंवा केंद्र माहिती उपलब्ध नाही.');
             return finishAudit(items);
         }
-        function rowDataQuality(row){ return row?._scoreAudit?.data?.percent ?? dataQualityAudit(row).percent; }
+        function rowDataQuality(row){ return getCaseScoreAudit(row).data.percent; }
 
         function decisionTrailAudit(row){
             const m=metaOf(row),items=[];
@@ -1155,12 +1271,16 @@ function buildCaseScoreAudit(row){
             const marks={data:roundOne(data.percent*.25)};
             return {data,marks};
         }
+        function getCaseScoreAudit(row){
+            if (!row._scoreAudit) row._scoreAudit = buildCaseScoreAudit(row);
+            return row._scoreAudit;
+        }
         function aggregateStageAudit(rows,stageKey,stageMax){
             const count=rows.length;
             if(!count)return {earned:0,max:stageMax,lost:stageMax,details:[],caseCount:0,rawAverage:0};
             const grouped=new Map(); let rawTotal=0;
             rows.forEach(row=>{
-                const audit=row._scoreAudit||buildCaseScoreAudit(row),stage=audit[stageKey];
+                const audit=getCaseScoreAudit(row),stage=audit[stageKey];
                 rawTotal+=stage.percent;
                 stage.items.forEach(item=>{
                     if(!grouped.has(item.key))grouped.set(item.key,{key:item.key,label:item.label,max:0,earned:0,affected:0,reasons:new Map()});
@@ -1377,7 +1497,7 @@ function buildCaseScoreAudit(row){
         }
 
         function caseAuditReasons(row){
-            const audit=row._scoreAudit||buildCaseScoreAudit(row);
+            const audit=getCaseScoreAudit(row);
             return audit.data.items
                 .filter(i=>i.lost>.01)
                 .sort((a,b)=>b.lost-a.lost)
@@ -1388,7 +1508,7 @@ function buildCaseScoreAudit(row){
         function buildCaseScoreTable(s){
             if(!s.rows.length)return '<div class="staff-empty">या कर्मचाऱ्याची प्रकरणे उपलब्ध नाहीत.</div>';
             const rows=s.rows
-                .map(row=>({row,audit:row._scoreAudit||buildCaseScoreAudit(row),meta:metaOf(row)}))
+                .map(row=>({row,audit:getCaseScoreAudit(row),meta:metaOf(row)}))
                 .sort((a,b)=>{
                     const rank=x=>x.meta.status==='Rejected'?0:x.meta.stageKey==='REWORK'?1:x.meta.status==='Pending'?2:3;
                     return rank(a)-rank(b)||a.audit.marks.data-b.audit.marks.data;
