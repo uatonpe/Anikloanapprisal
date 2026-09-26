@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="mr">
 <head>
@@ -17,10 +16,10 @@
             --danger-color: #dc3545; --danger-rgb: 220, 53, 69;
             --warning-color: #ffc107; --warning-rgb: 255, 193, 7;
             --manager-color: #17a2b8; /* For Manager Section */
-            
+
             --light-bg: #f5f7fa; --white-color: #ffffff;
             --dark-text: #2c3e50; --light-text: #7f8c8d; --border-color: #dfe6e9;
-            
+
             --card-shadow: 0 5px 15px rgba(0,0,0,0.05);
             --card-shadow-hover: 0 10px 25px rgba(0,0,0,0.1);
             --border-radius-md: 10px; --border-radius-lg: 15px;
@@ -47,7 +46,7 @@
         #full-page-loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         .dashboard-container { display: flex; flex-direction: column; height: 100vh; }
-    
+
         /* Top Bar & KPI Cards */
         .top-bar { background-color: var(--white-color); padding: 12px 25px; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.03); z-index: 50; }
         .top-bar-header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 15px; font-weight: 700; color: #1e2a38; }
@@ -75,7 +74,7 @@
         /* Main Layout & Sidebar */
         .main-layout { display: flex; flex: 1; overflow: hidden; position: relative; }
         .applicant-sidebar { width: 380px; background-color: var(--white-color); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); will-change: transform; z-index: 10; }
-        
+
         /* Sidebar Filters Grid */
         .sidebar-filters { padding: 15px; border-bottom: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background-color: #fcfdff; flex-shrink: 0; }
         .filter-group.full-width { grid-column: 1 / -1; }
@@ -106,7 +105,7 @@
         #welcome-message i { animation: pulse 2s infinite ease-in-out; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         .details-view-card { background-color: var(--white-color); border-radius: var(--border-radius-lg); box-shadow: var(--card-shadow); overflow: hidden; margin-bottom: 20px; }
-        
+
         .details-header { 
             padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; 
             border-bottom: 1px solid var(--border-color); background: linear-gradient(to right, #fdfdff, #f8faff); 
@@ -136,7 +135,7 @@
         .action-button { padding: 10px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
         .call-button { background-color: var(--success-color); color: white; box-shadow: 0 4px 10px rgba(var(--success-rgb), 0.3); }
         .call-button:active { transform: translateY(1px); }
-        
+
         /* Loan Amount Display */
         .details-header .loan-amount { font-size: 1.15rem; font-weight: 600; color: var(--light-text); }
         .details-header .loan-amounts { text-align: right; display: flex; flex-direction: column; gap: 3px; }
@@ -149,19 +148,19 @@
         .tabs { display: flex; border-bottom: 2px solid transparent; width: max-content; }
         .tab-button { padding: 15px 20px; border: none; background: transparent; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--light-text); transition: color 0.2s; display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; border-bottom: 3px solid transparent; }
         .tab-button.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        
+
         .tab-content { display: none; padding: 25px; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .tab-content.active { display: block; }
         .tab-content h3 { font-size: 1.25rem; margin: 0 0 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; align-items: center; gap: 10px; color: var(--primary-dark); }
-        
+
         /* Data Grid */
         .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
         .info-group { display: flex; align-items: flex-start; gap: 12px; background: #fcfdff; padding: 15px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); border-left: 4px solid var(--primary-color); }
         .info-group i { color: var(--primary-color); font-size: 1.15rem; margin-top: 4px; }
         .info-group label { font-weight: 600; color: var(--dark-text); font-size: 0.85rem; margin-bottom: 3px; display: block; }
         .info-group p { margin: 0; color: var(--light-text); font-weight: 500; font-size: 0.95rem; word-break: break-word;}
-        
+
         /* Map and Gallery */
         .map-container img { max-width: 100%; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); }
         .map-container a.map-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; text-decoration: none; color: var(--primary-color); font-weight: 600; }
@@ -170,11 +169,11 @@
         .photo-link-item:hover { transform: translateY(-3px); box-shadow: var(--card-shadow); }
         .photo-link-item .photo-placeholder { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 110px; color: var(--dark-text); font-weight: 600; font-size: 0.9rem;}
         .photo-link-item i { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 8px; }
-        
+
         /* Verification Form & Manager Section */
         .verification-section { border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 20px; margin-bottom: 20px; background-color: var(--white-color); }
         .verification-section h4 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 18px; font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 10px; color: var(--primary-dark); }
-        
+
         /* Special Styling for Manager Section */
         .manager-review-box {
             background: linear-gradient(145deg, #f0f8ff, #f6faff);
@@ -202,7 +201,7 @@
         .manager-item i { color: var(--manager-color); font-size: 1.3rem; margin-top: 3px; }
         .manager-item label { display: block; font-size: 0.85rem; color: #6c757d; font-weight: 600; margin-bottom: 4px; }
         .manager-item p { margin: 0; font-size: 1rem; color: #2c3e50; font-weight: 500; }
-        
+
         /* Form Grid */
         .verification-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .form-group.full-width { grid-column: 1 / -1; }
@@ -210,7 +209,7 @@
         .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; color: var(--dark-text); }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: var(--border-radius-md); border: 1px solid #ced4da; font-size: 0.95rem; background-color: #fff; transition: border-color 0.2s; font-family: 'Poppins', sans-serif;}
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1); }
-        
+
         .form-actions { text-align: right; margin-top: 20px; }
         .form-actions button { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 1.05rem; font-weight: 600; box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.3); transition: transform 0.2s; display: inline-flex; align-items: center; gap: 8px;}
         .form-actions button:active { transform: translateY(2px); }
@@ -224,15 +223,15 @@
             .top-bar { padding: 12px 15px; } 
             .top-bar-header h1 { font-size: 1.3rem; }
             .sidebar-filters { grid-template-columns: 1fr; } 
-            
+
             /* Slide Animation Logic for Mobile */
             .main-layout { overflow-x: hidden; } 
             .applicant-sidebar { position: absolute; width: 100%; height: 100%; transform: translate3d(0,0,0); z-index: 10; border-right: none;} 
             .details-panel { position: absolute; width: 100%; height: 100%; padding: 10px; transform: translate3d(100%,0,0); z-index: 20; background: var(--light-bg); } 
-            
+
             .main-layout.mobile-details-active .applicant-sidebar { transform: translate3d(-30%,0,0); opacity: 0; pointer-events: none; } 
             .main-layout.mobile-details-active .details-panel { transform: translate3d(0,0,0); } 
-            
+
             #back-to-list-btn { display: grid; flex-shrink: 0; } 
             .whatsapp-copy-tool { padding: 15px; }
             .tab-button { padding: 12px 15px; font-size: 0.9rem; }
@@ -280,7 +279,7 @@
             </div>
             <div class="applicant-list-container" id="applicant-list-container"></div>
         </aside>
-        
+
         <main class="details-panel">
             <div id="welcome-message"><h2><i class="fas fa-file-alt fa-3x"></i></h2><h2>डॅशबोर्डमध्ये आपले स्वागत आहे!</h2><p>माहिती पाहण्यासाठी डावीकडील यादीतून एका नावावर क्लिक करा.</p></div>
             <div class="details-view-card" id="details-view" style="display: none;"></div>
@@ -304,7 +303,7 @@
         mainLayout: document.getElementById('main-layout'),
         kpi: { totalCount: document.getElementById('total-count'), pendingCount: document.getElementById('pending-count'), approvedCount: document.getElementById('approved-count'), rejectedCount: document.getElementById('rejected-count') }
     };
-    
+
     // Original complete Marathi Labels Mapping
     const MARATHI_LABELS = {
         actualTime: "अर्ज केल्याची वेळ", Unit: "युनिट", customerName: "ग्राहक नाव", applicantAge: "वय", applicantGender: "लिंग", castcat: "जात प्रवर्ग",
@@ -328,7 +327,7 @@
         ApprovedLoanAmount: "मंजूर केलेली रक्कम", VerifierRemarks: "व्हेरिफायरचे मत", VerifierName: "व्हेरिफायरचे नाव", VerificationTimestamp: "व्हेरिफिकेशन वेळ",
         cast: "जात प्रवर्ग", ManagerName: "मॅनेजर यांचे नांव", ManagerRemarks: "मॅनेजर यांचे मत"
     }; 
-    
+
     const STRUCTURED_FIELDS = {
         'ऑपरेशन्स आणि संपर्क तपशील': ['actualTime', 'Unit', 'branchName', 'centerName', 'villageName', 'taluka', 'district', 'gpsAddress', 'fieldOfficerName', 'visitDate', 'remarks'],
         'वैयक्तिक आणि KYC तपशील': ['customerName', 'applicantAge', 'applicantGender', 'castcat', 'maritalStatus', 'educationLevel', 'mobileNumber', 'aadhaarNumber', 'panNumber', 'isExistingCustomer', 'existingAccountNumber', 'cast'],
@@ -345,7 +344,7 @@
     };
 
     function formatHeader(key) { return MARATHI_LABELS[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim(); }
-    
+
     // Robust Date Parsing
     function parseDate(dateStr) {
         if (!dateStr || typeof dateStr !== 'string') return null;
@@ -393,7 +392,7 @@
         const safeName = (applicantName || 'Applicant').trim().replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
         return JITSI_BASE_URL + encodeURIComponent(`AnikVeri_${safeName}_${rowId}`);
     }
-    
+
     window.copyJitsiLink = function() {
         const linkDisplayElement = document.getElementById('jitsi-link-content');
         if (!linkDisplayElement) return;
@@ -566,7 +565,7 @@
         const unit = ui.unitFilter.value; const staffName = ui.staffFilter.value; const status = ui.statusFilter.value;
         const fDate = ui.fromDateFilter.value ? parseDate(ui.fromDateFilter.value) : null; if (fDate) fDate.setHours(0, 0, 0, 0); 
         const tDate = ui.toDateFilter.value ? parseDate(ui.toDateFilter.value) : null; if (tDate) tDate.setHours(23, 59, 59, 999); 
-        
+
         const filtered = allApplicants.filter(app => {
             const appDate = parseDate(app.actualTime || app.timestamp || app.Timestamp || app.visitDate); 
             const passesBasic = (app.customerName?.toLowerCase().includes(searchTerm) || app.villageName?.toLowerCase().includes(searchTerm)) && 
@@ -580,7 +579,7 @@
             }
             return true;
         });
-        
+
         updateKpis(filtered); renderApplicantList(filtered);
     }
 
@@ -598,7 +597,7 @@
             ui.applicantListContainer.innerHTML = '<p style="text-align:center; padding:20px;">एकही अर्ज सापडला नाही.</p>';
             return;
         }
-        
+
         const fragment = document.createDocumentFragment();
         applicants.forEach(app => {
             const item = document.createElement('div'); item.className = 'applicant-item';
@@ -612,7 +611,7 @@
                 summaryHtml = `<div class="verification-summary"> ${app.ApprovedLoanAmount && parseInt(app.ApprovedLoanAmount) > 0 ? `<div class="summary-item"><i class="fas fa-rupee-sign"></i> ${parseInt(app.ApprovedLoanAmount).toLocaleString('en-IN')}</div>` : ''} <div class="summary-item">${callStatusIcon} व्हिडिओ कॉल</div> ${app.VerifierName ? `<div class="summary-item"><i class="fas fa-user-check"></i> ${app.VerifierName}</div>` : ''} </div>`;
             }
             item.innerHTML = `<div class="applicant-info"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><div><h4>${app.customerName || 'N/A'}</h4><p>${app.villageName || 'N/A'} | ${displayDate}</p></div><span class="status-pill ${status}">${statusText}</span></div></div>${summaryHtml}`;
-            
+
             item.addEventListener('click', () => {
                 document.querySelectorAll('.applicant-item').forEach(el => el.classList.remove('active'));
                 item.classList.add('active');
@@ -667,7 +666,7 @@
         const requestedAmount = parseInt(app.loanAmountRequested || 0).toLocaleString('en-IN');
         const approvedAmountValue = parseInt(app.ApprovedLoanAmount || 0);
         const status = app.VerificationStatus || 'Pending';
-        
+
         let loanAmountDisplay = `<div class="loan-amount">मागणी: ₹${requestedAmount}</div>`;
         if (approvedAmountValue > 0 && (status === 'Approved' || status === 'Rejected')) {
             const color = status === 'Approved' ? 'var(--success-color)' : 'var(--danger-color)';
@@ -675,7 +674,7 @@
         } else if (status === 'Rejected') {
             loanAmountDisplay = `<div class="loan-amounts"><div class="loan-amount-requested">मागणी: ₹${requestedAmount}</div><div class="loan-amount-approved" style="color: var(--danger-color);">नामंजूर</div></div>`;
         }
-        
+
         const safeCustomerName = (app.customerName || 'ग्राहक').replace(/'/g, "\\'");
         const jitsiUrl = generateJitsiUrl(safeCustomerName, app.row);
 
@@ -699,7 +698,7 @@
                     <button id="copy-whatsapp-btn" onclick="copyJitsiLink()"><i class="fas fa-copy"></i> लिंक कॉपी करा</button>
                 </div>
             </div>
-            
+
             <div class="tabs-container">
                 <div class="tabs">
                     <button class="tab-button active" onclick="openTab(event, 'tab-income-expense')"><i class="fas fa-chart-bar"></i> उत्पन्न/खर्च</button>
@@ -722,7 +721,7 @@
                         <div><label>उत्पन्न वजा खर्च (शिल्लक)</label><p style="font-size: 1.3rem; color: ${netIncomeColor}; font-weight: 700;">₹${netIncome.toLocaleString('en-IN')}</p></div>
                     </div>
                 </div>
-                
+
                 <h4><i class="fas fa-file-invoice-dollar"></i> तपशीलवार खर्च</h4>
                 <div class="info-grid">
                     <div class="info-group" style="border-left-color: #3498db;"><i class="fas fa-home" style="color: #3498db;"></i><div><label>घरगुती खर्च</label><p>₹${expenseH.toLocaleString('en-IN')}</p></div></div>
@@ -742,14 +741,14 @@
                 <h3 style="margin-top: 25px;"><i class="fas fa-map-marked-alt"></i> GPS नकाशा</h3>
                 <div class="map-container" id="media-map"></div>
             </div>
-            
+
             <div id="tab-documents" class="tab-content">
                 <h3><i class="fas fa-folder-open"></i> सहाय्यक कागदपत्रे</h3>
                 <div class="document-gallery" id="media-docs"></div>
             </div>
 
             <div id="tab-verification" class="tab-content">
-                
+
                 <!-- NEW: Manager Review Section (At Top of Verification Tab) -->
                 <div class="manager-review-box">
                     <h4><i class="fas fa-user-tie"></i> मॅनेजर यांचा अभिप्राय</h4>
@@ -828,10 +827,10 @@
                     </div>
                 </form>
             </div>`;
-        
+
         ui.detailsView.style.display = 'block';
         document.getElementById('back-to-list-btn').addEventListener('click', () => ui.mainLayout.classList.remove('mobile-details-active'));
-        
+
         // 4. Populate Details Tab strictly as per original logic
         const detailTabContainer = ui.detailsView.querySelector('#tab-details');
         let detailHtml = '';
@@ -863,60 +862,74 @@
         // 5. Populate Media & Map 
         const photos = parseMultiUrlString(app.photoLinks);
         ui.detailsView.querySelector('#media-photos').innerHTML = photos.length ? photos.map((u,i) => `<a class="photo-link-item" href="${u}" target="_blank" rel="noopener noreferrer"><div class="photo-placeholder"><i class="fas fa-camera"></i><span>फोटो ${i+1}</span></div></a>`).join('') : '<p>या अर्जासाठी फोटो उपलब्ध नाहीत.</p>';
-        
+
         const mapContainer = ui.detailsView.querySelector('#media-map');
         if (app.gpsLatitude && app.gpsLongitude) {
-            mapContainer.innerHTML = `<a href="https://www.google.com/maps?q=${app.gpsLatitude},${app.gpsLongitude}" target="_blank"><img loading="lazy" src="https://static-maps.yandex.ru/1.x/?ll=${app.gpsLongitude},${app.gpsLatitude}&z=17&l=sat,skl&size=650,300&pt=${app.gpsLongitude},${app.gpsLatitude},pm2rdl" alt="Location Map"></a><br><a href="https://www.google.com/maps?q=${app.gpsLatitude},${app.gpsLongitude}" target="_blank" class="map-link">Google Maps वर पाहा <i class="fas fa-external-link-alt"></i></a>`;
-        } else { mapContainer.innerHTML = '<p>नकाशा किंवा लोकेशन लिंक उपलब्ध नाही.</p>'; }
+            mapContainer.innerHTML = `<a href="https://www.google.com/maps?q=${app.gpsLatitude},${app.gpsLongitude}" target="_blank"><img loading="lazy" src="https://static-maps.yandex.ru/1.x/?ll=${app.gpsLongitude},${app.gpsLatitude}&z=17&l=sat,skl&size=650,300&pt=${app.gpsLongitude},${app.gpsLatitude},pm2rdl" alt="Location Map"></a><br><a href="https://www.google.com/maps?q=${app.gpsLatitude},${app.gpsLongitude}" target="_blank" class="map-link">Google Maps वर पाहा <i class="fas fa-external-link-alt"></i></a>`; 
+        } else { mapContainer.innerHTML = '<p>नकाशा किंवा लोकेशन लिंक उपलब्ध नाही.</p>'; } 
 
-        // 6. Populate Documents
-        const docUrls = parseMultiUrlString(app.supportdoc);
-        const docGallery = ui.detailsView.querySelector('#media-docs');
-        if (docUrls.length > 0) {
-            docGallery.innerHTML = docUrls.map((u,i) => {
-                let icon = 'fas fa-file-alt'; if(u.toLowerCase().endsWith('.pdf')) icon = 'fas fa-file-pdf'; else if(u.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/i)) icon = 'fas fa-file-image';
-                return `<a class="photo-link-item" href="${u}" target="_blank" rel="noopener noreferrer"><div class="photo-placeholder"><i class="${icon}"></i><span>कागदपत्र ${i+1}</span></div></a>`;
-            }).join('');
-        } else { docGallery.innerHTML = '<p>या अर्जासाठी सहाय्यक कागदपत्रे उपलब्ध नाहीत.</p>'; }
+        // 6. Populate Documents 
+        const docUrls = parseMultiUrlString(app.supportdoc); 
+        const docGallery = ui.detailsView.querySelector('#media-docs'); 
+        if (docUrls.length > 0) { 
+            docGallery.innerHTML = docUrls.map((u,i) => { 
+                let icon = 'fas fa-file-alt'; if(u.toLowerCase().endsWith('.pdf')) icon = 'fas fa-file-pdf'; else if(u.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/i)) icon = 'fas fa-file-image'; 
+                return `<a class="photo-link-item" href="${u}" target="_blank" rel="noopener noreferrer"><div class="photo-placeholder"><i class="${icon}"></i><span>कागदपत्र ${i+1}</span></div></a>`; 
+            }).join(''); 
+        } else { docGallery.innerHTML = '<p>या अर्जासाठी सहाय्यक कागदपत्रे उपलब्ध नाहीत.</p>'; } 
 
-        // 7. Form Handling
-        const form = ui.detailsView.querySelector('#verification-form');
-        form.elements.isInfoCorrect.value = app.IsInfoCorrect || ''; 
-        form.elements.isVideoCallDone.value = app.IsVideoCallDone || '';
-        form.elements.cast.value = app.cast || ''; 
-        form.elements.verificationStatus.value = app.VerificationStatus || 'Pending'; 
-        form.elements.verifierRemarks.value = app.VerifierRemarks || '';
-        form.elements.verifierName.value = app.VerifierName || ''; 
-        form.elements.approvedLoanAmount.value = app.ApprovedLoanAmount || app.loanAmountRequested || '';
-        
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-            const btn = form.querySelector('#update-btn'); const statusEl = form.querySelector('#update-status');
-            const originalBtnHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> अपडेट करत आहे...'; btn.disabled = true;
-            try {
-                const formData = new FormData(form);
-                const data = { action: 'updateVerification', row: currentApplicant.row };
-                for (let [k, v] of formData.entries()) data[k] = v;
-                const result = await fetchJsonSafe(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) }, 35000);
-                if (result.status === 'success') {
-                    applicantDetailsCache.delete(Number(currentApplicant.row));
-                    statusEl.style.color = 'var(--success-color)'; statusEl.textContent = '✅ माहिती यशस्वीरित्या अपडेट झाली! यादी रिफ्रेश होत आहे...';
-                    setTimeout(() => fetchData(true), 500);
-                } else throw new Error(result.message || 'Update failed');
-            } catch (err) {
-                statusEl.style.color = 'var(--danger-color)'; statusEl.textContent = `त्रुटी: ${err.message}`;
-                btn.innerHTML = originalBtnHtml; btn.disabled = false;
-            }
-        });
-    }
+        // 7. Form Handling 
+        const form = ui.detailsView.querySelector('#verification-form'); 
+        form.elements.isInfoCorrect.value = app.IsInfoCorrect || '';  
+        form.elements.isVideoCallDone.value = app.IsVideoCallDone || ''; 
+        form.elements.cast.value = app.cast || '';  
+        form.elements.verificationStatus.value = app.VerificationStatus || 'Pending';  
+        form.elements.verifierRemarks.value = app.VerifierRemarks || ''; 
+        form.elements.verifierName.value = app.VerifierName || '';  
+        form.elements.approvedLoanAmount.value = app.ApprovedLoanAmount || app.loanAmountRequested || ''; 
 
-    function openTab(evt, tabName) {
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-        evt.currentTarget.classList.add('active');
-    }
-</script>
-</body>
+        form.addEventListener('submit', async (e) => { 
+            e.preventDefault();  
+            const btn = form.querySelector('#update-btn'); const statusEl = form.querySelector('#update-status'); 
+            const originalBtnHtml = btn.innerHTML; 
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> अपडेट करत आहे...'; btn.disabled = true; 
+            try { 
+                const formData = new FormData(form); 
+                const data = { action: 'updateVerification', row: currentApplicant.row }; 
+                for (let [k, v] of formData.entries()) data[k] = v; 
+                const result = await fetchJsonSafe(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) }, 35000); 
+                if (result.status === 'success') { 
+                    applicantDetailsCache.delete(Number(currentApplicant.row)); 
+                    statusEl.style.color = 'var(--success-color)'; 
+                    statusEl.textContent = '✅ माहिती यशस्वीरित्या अपडेट झाली!'; 
+
+                    // Success state - spinner इथे थांबतो
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> अपडेट पूर्ण झाले';
+                    btn.style.background = 'linear-gradient(135deg, #28a745, #1e7e34)';
+
+                    // यादी background मध्ये refresh
+                    setTimeout(() => fetchData(true), 300);
+
+                    // Button पुन्हा normal
+                    setTimeout(() => {
+                        btn.innerHTML = originalBtnHtml;
+                        btn.style.background = '';
+                        btn.disabled = false;
+                    }, 1500);
+                } else throw new Error(result.message || 'Update failed'); 
+            } catch (err) { 
+                statusEl.style.color = 'var(--danger-color)'; statusEl.textContent = `त्रुटी: ${err.message}`; 
+                btn.innerHTML = originalBtnHtml; btn.style.background = ''; btn.disabled = false; 
+            } 
+        }); 
+    } 
+
+    function openTab(evt, tabName) { 
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active')); 
+        document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active')); 
+        document.getElementById(tabName).classList.add('active'); 
+        evt.currentTarget.classList.add('active'); 
+    } 
+</script> 
+</body> 
 </html>
